@@ -165,12 +165,12 @@ public class FlightModelMain extends FMMath {
 	public float VmaxH;
 	public float Vmin;
 	public float HofVmax;
-    
-    // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
-    private float               vMaxGear;
-    private float               vJamFlaps;
-    // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
-    
+
+	// TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+	private float vMaxGear;
+	private float vJamFlaps;
+	// TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+
 	public float VmaxFLAPS;
 	public float VminFLAPS;
 	public float VmaxAllowed;
@@ -758,15 +758,15 @@ public class FlightModelMain extends FMMath {
 		Range = sectfile.get(s2, "Range", 800F);
 		CruiseSpeed = sectfile.get(s2, "CruiseSpeed", 0.7F * Vmax);
 		FuelConsumption = M.maxFuel / (0.64F * ((Range / CruiseSpeed) * 3600F) * (float) EI.getNum());
-        
-        // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
-        this.vMaxGear = sectfile.get(s2, "VmaxGEAR", 405F);
-        this.vJamFlaps = sectfile.get(s2, "VjamFLAPS", -1F);
-        if (this.vJamFlaps < 0F) this.vJamFlaps = Math.max(this.VmaxFLAPS, 300F);
-        this.vMaxGear /= 3.6F;
-        this.vJamFlaps /= 3.6F;
-        // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
-        
+
+		// TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+		vMaxGear = sectfile.get(s2, "VmaxGEAR", 405F);
+		vJamFlaps = sectfile.get(s2, "VjamFLAPS", -1F);
+		if (vJamFlaps < 0F) vJamFlaps = Math.max(VmaxFLAPS, 300F);
+		vMaxGear /= 3.6F;
+		vJamFlaps /= 3.6F;
+		// TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+
 		Vmax /= 3.6F;
 		VmaxH /= 3.6F;
 		Vmin /= 3.6F;
@@ -868,10 +868,10 @@ public class FlightModelMain extends FMMath {
 			if (machCheck.length() > 8) {
 				Wing.loadMachParams(sectfile);
 			} else {
-				//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+				// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //				System.out.println("Flight Model File " + s + " contains no Mach Drag Parameters.");
 				logFmLoad("Flight Model File \"{0}\" contains no Mach Drag Parameters.", s, null, FM_LOGLEVEL_EVERYFM);
-				//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+				// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 				Wing.mcMin = 999.0F;
 			}
 			// Wing.loadMachParams(sectfile);
@@ -1141,13 +1141,13 @@ public class FlightModelMain extends FMMath {
 		speedFile = new String();
 		craftFile = new String();
 		Operate = 0xfffffffffffL;
-        
-        // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
-        this.vMaxGear = 405F;
-        this.vJamFlaps = 300F;
-        // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
 
-        load(s);
+		// TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+		vMaxGear = 405F;
+		vJamFlaps = 300F;
+		// TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+
+		load(s);
 		init_G_Limits();
 	}
 
@@ -2056,12 +2056,12 @@ public class FlightModelMain extends FMMath {
 //By PAL, different additions for auto DiffFM, DM Debugging, etc.
 	public static SectFile sectFile(String s) {
 
-		//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+		// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 		if (logLevel == FM_LOGLEVEL_NOT_INITIALIZED) {
 			logLevel = Config.cur.ini.get("Mods", "fmloglevel", FM_LOGLEVEL_ERROR);
 			flightModelsLogged.clear();
 		}
-		//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+		// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 		SectFile sectfile = null;
 		String sName = s.toLowerCase();
@@ -2079,25 +2079,25 @@ public class FlightModelMain extends FMMath {
 				sDir = sDir.substring(0, sDir.length() - 4);
 			}
 
-			//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+			// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 			//System.out.println("*DiffFM '" + sName + "' being loaded from: '" + sDir + "'...");
 			logFmLoad("*DiffFM \"{0}\" being loaded from: \"{1}\"...", sName, sDir, FM_LOGLEVEL_DIFFFM|FM_LOGLEVEL_EVERYFM);
-			//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+			// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 		}
 
 		//By PAL, Option A: for Debug, not Encrypted, direct File Names. Only in Single Mission!!!
 		if (bDebugFM) {
 			//By PAL, if not loading Mission or possitive it is a Single Mission
-			//TODO: Fixed by Storebror, original line was "if(Main.cur().mission.isSingle())"
+			// TODO: Fixed by Storebror, original line was "if(Main.cur().mission.isSingle())"
 			if (Mission.isSingle())
 				if (fileExists(sName)) {
 					sectfile = new SectFile(sName, 0);
 
-					//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+					// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 					//System.out.println("**Debug FM loaded directly from '" + sName + "' File!!!'");
 					logFmLoad("**Debug FM loaded directly from \"{1}\" File!!!", sName, null, FM_LOGLEVEL_DEBUGFM|FM_LOGLEVEL_EVERYFM);
-					//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+					// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 					if (bDumpFM)
 						sectfile.saveFile(sDumpPath + sName);
@@ -2110,7 +2110,7 @@ public class FlightModelMain extends FMMath {
 			//By PAL, new: Object obj = Property.value(s, "stream", null);
 //			Object obj = Property.value(sName, "stream", null);
 
-			// TODO: Changed by SAS~Storebror, DiffFM file name added to Property Name if applicable to avoid overlapping buttons/DiffFM 
+			// TODO: Changed by SAS~Storebror, DiffFM file name added to Property Name if applicable to avoid overlapping buttons/DiffFM
 			String propertyName = sName;
 			if(diffFMSeparatorPos > -1) propertyName += ":" + sDir;
 			Object obj = Property.value(propertyName, "stream", null);
@@ -2120,7 +2120,7 @@ public class FlightModelMain extends FMMath {
 				inputstream = (InputStream)obj;
 			} else {
 			//By PAL, DiffFM begin
-				//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+				// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //				if(bPrintFM)
 //				{
 //					System.out.println("FM Requested = " + s);
@@ -2129,7 +2129,7 @@ public class FlightModelMain extends FMMath {
 //					System.out.println("**fmLastDir  = " + fmLastDir);
 //				}
 				logFmLoad("FM Requested="+s+", FM sDir={1}, FM sName={0}, fmLastDir="+fmLastDir, sName, sDir, FM_LOGLEVEL_EVERYFM);
-				//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+				// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 				//By PAL, first check if it is the last one or not. If so fmDir should be the same and not null.
 				if (!sDir.equalsIgnoreCase(fmLastDir)) { //By PAL, if different one, reopen it.
@@ -2142,11 +2142,11 @@ public class FlightModelMain extends FMMath {
 						if (sDir.equalsIgnoreCase(sAux)) {
 							fmDir = (InOutStreams)fmDirs.get(j);
 
-							//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+							// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //							if(bPrintFM)
 //								System.out.println("Getting FM from Previous File: '" + sDir + "'");
 							logFmLoad("Getting FM from Previous File: \"{1}\"", sName, sDir, FM_LOGLEVEL_EVERYFM);
-							//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+							// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 							fmLastDir = sDir;
 							break;
@@ -2162,19 +2162,19 @@ public class FlightModelMain extends FMMath {
 							fmDirs.add(fmDir); //By PAL, from DiffFM
 							fmDirNames.add(sDir); //By PAL, from DiffFM
 
-							//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+							// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //							if(bPrintFM)
 //								System.out.println("Opening FM from New File: '" + sDir + "'");
 							logFmLoad("Opening FM from New File: \"{1}\"", sName, sDir, FM_LOGLEVEL_EVERYFM);
-							//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+							// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 							fmLastDir = sDir;
 						}
 					} else {
-						//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+						// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //						System.out.println("*Warning: the '" + sDir + "' File Doesn't Exist! Check your Configuration.");
 						logFmLoad("*Warning: the \"{1}\" File Doesn't Exist! Check your Configuration.", null, sDir, FM_LOGLEVEL_ERROR);
-						//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+						// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 					}
 				}
 
@@ -2195,18 +2195,18 @@ public class FlightModelMain extends FMMath {
 					if (sName.endsWith(".emd")) {
 						sName = "FlightModels/DB-600_Series.emd"; //By PAL, open PlaceHolder FM to avoid 60% CTD!!!
 
-						//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+						// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //						System.out.println("**Engine FM will be loaded from placeholder: '" + sName + "'! Not from the expected one.");
 						logFmLoad("**Engine FM will be loaded from placeholder: \"{0}\"! Not from the expected one.", sName, null, FM_LOGLEVEL_ERROR);
-						//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+						// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 					} else {
 						sName = "FlightModels/Bf-109F-2.fmd"; //By PAL, open PlaceHolder FM to avoid 60% CTD!!!
 
-						//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+						// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //						System.out.println("**Plane FM will be loaded from placeholder: '" + sName + "'! Not from the expected one.");
 						logFmLoad("**Plane FM will be loaded from placeholder: \"{0}\"! Not from the expected one.", sName, null, FM_LOGLEVEL_ERROR);
-						//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+						// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 					}
 					sName = sName.toLowerCase();
@@ -2246,10 +2246,10 @@ public class FlightModelMain extends FMMath {
 		}
 		catch(Exception exception) {
 			//By PAL, tell the Reason of the Crash
-			//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+			// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 //			System.out.println("FM Loading General Exception!\nWarning, the '" + s + "' cannot be loaded from '" + sDir + "' File");
 			logFmLoad("FM Loading General Exception!\nWarning, the \"{0}\" cannot be loaded from \"{1}\" File", s, sDir, FM_LOGLEVEL_ERROR);
-			//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+			// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 		}
 		if (bDumpFM)
 			sectfile.saveFile(sDumpPath + sName);
@@ -2271,7 +2271,25 @@ public class FlightModelMain extends FMMath {
 		return ai;
 	}
 
-	//TODO: +++ log.lst Spam fighting by SAS~Storebror +++
+	// TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+	public float getvMaxGear() {
+		return vMaxGear;
+	}
+
+	public void setvMaxGear(float fvMaxGear) {
+		vMaxGear = fvMaxGear;
+	}
+
+	public float getvJamFlaps() {
+		return vJamFlaps;
+	}
+
+	public void setvJamFlaps(float fvJamFlaps) {
+		vJamFlaps = fvJamFlaps;
+	}
+	// TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+
+	// TODO: +++ log.lst Spam fighting by SAS~Storebror +++
 
 	/*
 	 * New conf.ini parameters for [Mods] Section:
@@ -2326,24 +2344,6 @@ public class FlightModelMain extends FMMath {
 
 	}
 
-    // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
-    public float getvMaxGear() {
-        return vMaxGear;
-    }
-
-    public void setvMaxGear(float vMaxGear) {
-        this.vMaxGear = vMaxGear;
-    }
-
-    public float getvJamFlaps() {
-        return vJamFlaps;
-    }
-
-    public void setvJamFlaps(float vJamFlaps) {
-        this.vJamFlaps = vJamFlaps;
-    }
-    // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
-
 	private static final int FM_LOGLEVEL_ERROR = 0x1;
 	private static final int FM_LOGLEVEL_DEBUGFM = 0x2;
 	private static final int FM_LOGLEVEL_DIFFFM = 0x4;
@@ -2353,6 +2353,6 @@ public class FlightModelMain extends FMMath {
 
 	private static ArrayList flightModelsLogged = new ArrayList();
 	private static int logLevel = FM_LOGLEVEL_NOT_INITIALIZED;
-	//TODO: --- log.lst Spam fighting by SAS~Storebror ---
+	// TODO: --- log.lst Spam fighting by SAS~Storebror ---
 
 }
