@@ -66,6 +66,7 @@ import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.net.NetWing;
 import com.maddox.il2.objects.ActorCrater;
 import com.maddox.il2.objects.ActorSimpleMesh;
+import com.maddox.il2.objects.ObjectsLogLevel;
 import com.maddox.il2.objects.Wreck;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.effects.Explosions;
@@ -2254,8 +2255,10 @@ public abstract class Aircraft extends NetAircraft implements MsgCollisionListen
 		// FIXME: By SAS~Storebror: Don't hide potential errors inside cod files
 		} catch (FileNotFoundException fnfe) {
 		} catch (Exception exception) {
-			System.out.println("Aircraft cod/ register error in " + class1.getName());
-			exception.printStackTrace();
+			if (ObjectsLogLevel.getObjectsLogLevel() > ObjectsLogLevel.OBJECTS_LOGLEVEL_NONE)
+				System.out.println("Some weapon class is missing. Loadout list is unfinished. Aircraft cod/ register error in " + class1.getName());
+			if (ObjectsLogLevel.getObjectsLogLevel() == ObjectsLogLevel.OBJECTS_LOGLEVEL_FULL)
+				exception.printStackTrace();
 		}
 	}
 

@@ -810,10 +810,10 @@ public class RealFlightModel extends Pilot {
 			// ----------------------------------------------------------------------
 			if ((super.actor instanceof TypeSupersonic) && getOverload() > 15F && !super.Gears.onGround() && World.Rnd().nextInt(0, 100) > 98) cutWing();
 			else if (getOverload() > 13.5F && !super.Gears.onGround() && World.Rnd().nextInt(0, 100) > 98) cutWing();
-            // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
-            if (indSpeed > this.getvMaxGear() && World.Rnd().nextInt(0, 100) > 98 && super.CT.getGear() > 0.3F && super.CT.GearControl == 1.0F) {
+			// TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+			if (indSpeed > getvMaxGear() && World.Rnd().nextInt(0, 100) > 98 && super.CT.getGear() > 0.3F && super.CT.GearControl == 1.0F) {
 			//if (indSpeed > 112.5F && World.Rnd().nextInt(0, 100) > 98 && super.CT.getGear() > 0.3F && super.CT.GearControl == 1.0F) {
-	        // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+			// TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
 				if (CT.getGear() >= 0.1F && CT.GearControl != 0.0F && !bGearCut) if (!(actor instanceof F4U) && !(super.actor instanceof TypeSupersonic)) {
 					if (World.Rnd().nextInt(0, 100) > 76 && gearCutCounter != 1) {
 						((Aircraft) actor).msgCollision(actor, "GearR2_D0", "GearR2_D0");
@@ -855,10 +855,10 @@ public class RealFlightModel extends Pilot {
 				if (World.Rnd().nextInt(0, 100) > 90 && ((Aircraft) actor).isChunkAnyDamageVisible("WingRMid")) ((Aircraft) actor).msgCollision(actor, "WingRMid_D0", "WingRMid_D0");
 			}
 			// TODO: Gives exemption to supersonic aircraft
-            // TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
-            if (!(super.actor instanceof TypeSupersonic) && indSpeed > this.getvJamFlaps() && super.CT.bHasFlapsControl && super.CT.FlapsControl > 0.21F && (indSpeed - 81F) * super.CT.getFlap() > 8F) {
+			// TODO: Added by SAS~Storebror: +++ Additional parameter for max flaps & gear speeds +++
+			if (!(super.actor instanceof TypeSupersonic) && !(super.actor instanceof TypeFastJet) && indSpeed > this.getvJamFlaps() && super.CT.bHasFlapsControl && super.CT.FlapsControl > 0.21F && (indSpeed - 81F) * super.CT.getFlap() > 8F) {
 			// if (!(super.actor instanceof TypeSupersonic) && indSpeed > 81F && super.CT.bHasFlapsControl && super.CT.FlapsControl > 0.21F && (indSpeed - 81F) * super.CT.getFlap() > 8F) {
-	        // TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
+			// TODO: Added by SAS~Storebror: --- Additional parameter for max flaps & gear speeds ---
 				if (World.getPlayerAircraft() == actor && CT.bHasFlapsControl) HUD.log("FailedFlaps");
 				CT.bHasFlapsControl = false;
 				CT.FlapsControl = 0.0F;
