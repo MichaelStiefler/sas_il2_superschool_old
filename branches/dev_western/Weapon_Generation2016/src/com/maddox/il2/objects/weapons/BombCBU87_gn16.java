@@ -4,10 +4,8 @@
 
 package com.maddox.il2.objects.weapons;
 
-import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3d;
-import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.Orient;
+import com.maddox.JGP.*;
+import com.maddox.il2.engine.*;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -61,7 +59,7 @@ public class BombCBU87_gn16 extends Bomb
             orient.set(TrueRandom.nextFloat(0.0F, 360F), TrueRandom.nextFloat(-90F, 90F), TrueRandom.nextFloat(-180F, 180F));
             getSpeed(vector3d);
             vector3d.add(TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D));
-            BombletBLU97 bombletblu97 = new BombletBLU97();
+            BombletBLU97_4x bombletblu97 = new BombletBLU97_4x();
             bombletblu97.pos.setUpdateEnable(true);
             bombletblu97.pos.setAbs(point3d, orient);
             bombletblu97.pos.reset();
@@ -87,6 +85,6 @@ public class BombCBU87_gn16 extends Bomb
         Property.set(class1, "kalibr", 0.396F);
         Property.set(class1, "massa", 430.9F);
         Property.set(class1, "sound", "weapon.bomb_std");
- 		Property.set(class1, "dragCoefficient", 0.36F);
+ 		Property.set(class1, "dragCoefficient", 0.36F); // Aerodynamic Drag Coefficient, Stock WWII bombs=1.0F
     }
 }

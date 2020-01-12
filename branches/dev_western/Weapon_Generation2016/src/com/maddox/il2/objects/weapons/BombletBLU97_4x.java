@@ -1,12 +1,14 @@
 // US BLU-97 Bomblet class for CBU-87 Cluster bomb
 
+// TODO: Edited by SAS~Storebror 0n 2019-12-26: Increase explosive power to balance reduction of spawned bomblets to reasonable figures, code cleanup.
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 import com.maddox.sas1946.il2.util.TrueRandom;
 
 
-public class BombletBLU97 extends Bomb
+public class BombletBLU97_4x extends Bomb
 {
 
     public void start()
@@ -22,13 +24,13 @@ public class BombletBLU97 extends Bomb
         {
             bChuteDeployed = true;
             super.S *= 24F;
-            setMesh("3do/arms/BLU97Bomlet/monoC.sim");
+            setMesh("3do/arms/BLU97Bomlet/monoC_4x.sim");
         }
     }
 
     protected boolean haveSound()
     {
-        return index % 64 == 0;
+        return index % 32 == 0;
     }
 
     private boolean bChuteDeployed = false;
@@ -36,8 +38,8 @@ public class BombletBLU97 extends Bomb
 
     static 
     {
-        Class class1 = BombletBLU97.class;
-        Property.set(class1, "mesh", "3do/arms/BLU97Bomlet/mono.sim");
+        Class class1 = BombletBLU97_4x.class;
+        Property.set(class1, "mesh", "3do/arms/BLU97Bomlet/mono_4x.sim");
         Property.set(class1, "radius", 2.6F);
         Property.set(class1, "power", 9.0F);
         Property.set(class1, "powerType", 0);

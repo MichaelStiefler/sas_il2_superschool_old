@@ -32,8 +32,7 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
-import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.Orient;
+import com.maddox.il2.engine.*;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -85,7 +84,7 @@ public class BombCBU24_gn16 extends Bomb
             orient.set(TrueRandom.nextFloat(0.0F, 360F), TrueRandom.nextFloat(-90F, 90F), TrueRandom.nextFloat(-180F, 180F));
             getSpeed(vector3d);
             vector3d.add(TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D));
-            BombletBLU26 bombletblu26 = new BombletBLU26();
+            BombletBLU26_10x bombletblu26 = new BombletBLU26_10x();
             bombletblu26.pos.setUpdateEnable(true);
             bombletblu26.pos.setAbs(point3d, orient);
             bombletblu26.pos.reset();
