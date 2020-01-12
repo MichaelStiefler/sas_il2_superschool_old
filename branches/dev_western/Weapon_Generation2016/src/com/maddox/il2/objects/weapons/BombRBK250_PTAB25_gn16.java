@@ -1,4 +1,4 @@
-// Last Modified by: western0221 2019-01-02
+// Last Modified by: western0221 2020-01-12
 
 package com.maddox.il2.objects.weapons;
 
@@ -15,10 +15,6 @@ import com.maddox.rts.Time;
 
 public class BombRBK250_PTAB25_gn16 extends Bomb
 {
-
-    public BombRBK250_PTAB25_gn16()
-    {
-    }
 
     public void start()
     {
@@ -56,9 +52,9 @@ public class BombRBK250_PTAB25_gn16 extends Bomb
             getSpeed(vector3d);
             vector3d.add(World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D));
             BombPTAB25 bombptab25 = new BombPTAB25();
-            ((Actor) (bombptab25)).pos.setUpdateEnable(true);
-            ((Actor) (bombptab25)).pos.setAbs(point3d, orient);
-            ((Actor) (bombptab25)).pos.reset();
+            bombptab25.pos.setUpdateEnable(true);
+            bombptab25.pos.setAbs(point3d, orient);
+            bombptab25.pos.reset();
             bombptab25.start();
             bombptab25.setOwner(actor, false, false, false);
             bombptab25.setSpeed(vector3d);
@@ -71,7 +67,7 @@ public class BombRBK250_PTAB25_gn16 extends Bomb
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.BombRBK250_PTAB25_gn16.class;
+        Class class1 = BombRBK250_PTAB25_gn16.class;
         Property.set(class1, "mesh", "3DO/Arms/RBK250_PTAB25_gn16/mono.sim");
         Property.set(class1, "radius", 1.0F);
         Property.set(class1, "power", 0.15F);

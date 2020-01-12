@@ -1,4 +1,4 @@
-// Last Modified by: western0221 2019-01-02
+// Last Modified by: western0221 2020-01-12
 
 package com.maddox.il2.objects.weapons;
 
@@ -15,10 +15,6 @@ import com.maddox.rts.Time;
 
 public class BombRBK250270_AO1_gn16 extends Bomb
 {
-
-    public BombRBK250270_AO1_gn16()
-    {
-    }
 
     public void start()
     {
@@ -42,23 +38,23 @@ public class BombRBK250270_AO1_gn16 extends Bomb
 
     private void doFireContaineds()
     {
-        Explosions.AirFlak(super.pos.getAbsPoint(), 1);
+        Explosions.AirFlak(pos.getAbsPoint(), 1);
         Actor actor = null;
         if(Actor.isValid(getOwner()))
             actor = getOwner();
-        Point3d point3d = new Point3d(super.pos.getAbsPoint());
+        Point3d point3d = new Point3d(pos.getAbsPoint());
         Orient orient = new Orient();
         Vector3d vector3d = new Vector3d();
-        // "RBK-250-270 AO-1Sch" contains __150x__ "AO-1Sch" bomblets
-        for(int i = 0; i < 150; i++)
+        // "RBK-250-270 AO-1Sch" contains __150x__ "AO-1Sch" bomblets, reduced into 15x cycles with 10x merged class
+        for(int i = 0; i < 15; i++)
         {
             orient.set(World.Rnd().nextFloat(0.0F, 360F), World.Rnd().nextFloat(-90F, 90F), World.Rnd().nextFloat(-180F, 180F));
             getSpeed(vector3d);
             vector3d.add(World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D));
-            BombAO1Sch bombao1 = new BombAO1Sch();
-            ((Actor) (bombao1)).pos.setUpdateEnable(true);
-            ((Actor) (bombao1)).pos.setAbs(point3d, orient);
-            ((Actor) (bombao1)).pos.reset();
+            BombAO1Sch_10x bombao1 = new BombAO1Sch_10x();
+            bombao1.pos.setUpdateEnable(true);
+            bombao1.pos.setAbs(point3d, orient);
+            bombao1.pos.reset();
             bombao1.start();
             bombao1.setOwner(actor, false, false, false);
             bombao1.setSpeed(vector3d);
@@ -71,7 +67,7 @@ public class BombRBK250270_AO1_gn16 extends Bomb
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.BombRBK250270_AO1_gn16.class;
+        Class class1 = BombRBK250270_AO1_gn16.class;
         Property.set(class1, "mesh", "3DO/Arms/RBK250_PTAB25_gn16/mono.sim");
         Property.set(class1, "radius", 1.0F);
         Property.set(class1, "power", 0.15F);

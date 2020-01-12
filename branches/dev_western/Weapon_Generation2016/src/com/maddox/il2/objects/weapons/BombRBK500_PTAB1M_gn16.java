@@ -1,4 +1,4 @@
-// Last Modified by: western0221 2019-01-09
+// Last Modified by: western0221 2020-01-12
 
 package com.maddox.il2.objects.weapons;
 
@@ -15,10 +15,6 @@ import com.maddox.rts.Time;
 
 public class BombRBK500_PTAB1M_gn16 extends Bomb
 {
-
-    public BombRBK500_PTAB1M_gn16()
-    {
-    }
 
     public void start()
     {
@@ -49,16 +45,16 @@ public class BombRBK500_PTAB1M_gn16 extends Bomb
         Point3d point3d = new Point3d(super.pos.getAbsPoint());
         Orient orient = new Orient();
         Vector3d vector3d = new Vector3d();
-        // "RBK-500 PTAB-1M" contains __268x__ "PTAB-1M" bomblets
-        for(int i = 0; i < 268; i++)
+        // "RBK-500 PTAB-1M" contains __268x__ "PTAB-1M" bomblets, reduced into 27x cycles with 10x merged class
+        for(int i = 0; i < 27; i++)
         {
             orient.set(World.Rnd().nextFloat(0.0F, 360F), World.Rnd().nextFloat(-90F, 90F), World.Rnd().nextFloat(-180F, 180F));
             getSpeed(vector3d);
             vector3d.add(World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D), World.Rnd().nextDouble(-15D, 15D));
-            BombPTAB1M bombptab1m = new BombPTAB1M();
-            ((Actor) (bombptab1m)).pos.setUpdateEnable(true);
-            ((Actor) (bombptab1m)).pos.setAbs(point3d, orient);
-            ((Actor) (bombptab1m)).pos.reset();
+            BombPTAB1M_10x bombptab1m = new BombPTAB1M_10x();
+            bombptab1m.pos.setUpdateEnable(true);
+            bombptab1m.pos.setAbs(point3d, orient);
+            bombptab1m.pos.reset();
             bombptab1m.start();
             bombptab1m.setOwner(actor, false, false, false);
             bombptab1m.setSpeed(vector3d);
@@ -71,7 +67,7 @@ public class BombRBK500_PTAB1M_gn16 extends Bomb
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.BombRBK500_PTAB1M_gn16.class;
+        Class class1 = BombRBK500_PTAB1M_gn16.class;
         Property.set(class1, "mesh", "3DO/Arms/RBK500_AO25_gn16/mono.sim");
         Property.set(class1, "radius", 1.0F);
         Property.set(class1, "power", 0.15F);
