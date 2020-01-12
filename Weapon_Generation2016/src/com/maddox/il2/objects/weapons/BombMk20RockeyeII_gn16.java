@@ -1,11 +1,11 @@
 // US Mk-20 RockeyeII Cluster bomb
 // Navy carrier base usage, called as CBU-99 or CBU-100
 
+// TODO: Edited on 12-Jan-2020: Increase explosive power to balance reduction of spawned bomblets to reasonable figures, code cleanup.
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.*;
-import com.maddox.il2.ai.RangeRandom;
-import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
@@ -15,10 +15,6 @@ import com.maddox.sas1946.il2.util.TrueRandom;
 
 public class BombMk20RockeyeII_gn16 extends Bomb
 {
-
-    public BombMk20RockeyeII_gn16()
-    {
-    }
 
     public void start()
     {
@@ -52,22 +48,22 @@ public class BombMk20RockeyeII_gn16 extends Bomb
 
     private void doFireContaineds()
     {
-        Explosions.AirFlak(super.pos.getAbsPoint(), 1);
+        Explosions.AirFlak(pos.getAbsPoint(), 1);
         Actor actor = null;
         if(Actor.isValid(getOwner()))
             actor = getOwner();
-        Point3d point3d = new Point3d(super.pos.getAbsPoint());
+        Point3d point3d = new Point3d(pos.getAbsPoint());
         Orient orient = new Orient();
         Vector3d vector3d = new Vector3d();
-        for(int i = 0; i < 247; i++)
+        for(int i = 0; i < 62; i++)
         {
             orient.set(TrueRandom.nextFloat(0.0F, 360F), TrueRandom.nextFloat(-90F, 90F), TrueRandom.nextFloat(-180F, 180F));
             getSpeed(vector3d);
             vector3d.add(TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D), TrueRandom.nextDouble(-15D, 15D));
-            BombletMk118 bombletmk118 = new BombletMk118();
-            ((Actor) (bombletmk118)).pos.setUpdateEnable(true);
-            ((Actor) (bombletmk118)).pos.setAbs(point3d, orient);
-            ((Actor) (bombletmk118)).pos.reset();
+            BombletMk118_4x bombletmk118 = new BombletMk118_4x();
+            bombletmk118.pos.setUpdateEnable(true);
+            bombletmk118.pos.setAbs(point3d, orient);
+            bombletmk118.pos.reset();
             bombletmk118.start();
             bombletmk118.setOwner(actor, false, false, false);
             bombletmk118.setSpeed(vector3d);
@@ -82,7 +78,7 @@ public class BombMk20RockeyeII_gn16 extends Bomb
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.BombMk20RockeyeII_gn16.class;
+        Class class1 = BombMk20RockeyeII_gn16.class;
         Property.set(class1, "mesh", "3DO/Arms/Mk20_RockeyeII_gn16/mono.sim");
         Property.set(class1, "radius", 1.5F);
         Property.set(class1, "power", 0.25F);
