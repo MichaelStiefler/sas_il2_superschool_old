@@ -20,7 +20,7 @@ public class ME_264_4M_801E extends ME_264
                 CockpitME_264.class, CockpitME_264_Bombardier.class, CockpitME_264_T1Gunner.class, CockpitME_264_T2Gunner.class, CockpitME_264_B1Gunner.class, CockpitME_264_B2Gunner.class
         });
         
-        int slotLen = 251;
+        int slotLen = 253;
         
         int[] triggers = new int[slotLen];
         for (int hookIndex=0; hookIndex < 7; hookIndex++) triggers[hookIndex] = 10 + (hookIndex + 1) / 2;        
