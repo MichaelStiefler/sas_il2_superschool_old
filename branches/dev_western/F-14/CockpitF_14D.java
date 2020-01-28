@@ -206,7 +206,7 @@ public class CockpitF_14D extends CockpitPilot
         float f3 = setOld.altimeter * f1;
         float f4 = setNew.radioaltimeter * f1;
         float f5 = setOld.radioaltimeter * f1;
-        float f6 = fm.getAOA() * 1.84F + 4.28F;
+        float f6 = ((F_14)aircraft()).unitsAoA;
         Cockpit.xyz[0] = Cockpit.xyz[1] = Cockpit.xyz[2] = 0.0F;
         if(bNeedSetUp)
         {
