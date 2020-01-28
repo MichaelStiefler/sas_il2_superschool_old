@@ -107,6 +107,7 @@ public class F_14 extends Scheme2
         lTimeHydroChecked = -1L;
         engineOilPressurePSI = new float[2];
         lTimeOilPressChecked = -1L;
+        unitsAoA = 0.0F;
         APmode1 = false;
         APmode2 = false;
         APmode3 = false;
@@ -552,10 +553,10 @@ public class F_14 extends Scheme2
             if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
                 break;
             targetDistance = this.pos.getAbsPoint().distance(point3d);
-            if (targetDistance > maxPavewayDistance)
+            if(targetDistance > maxPavewayDistance)
                 break;
             targetAngle = angleBetween(this, point3d);
-            if (targetAngle > maxPavewayFOVfrom)
+            if(targetAngle > maxPavewayFOVfrom)
                 break;
 
             laseron = true;
@@ -577,14 +578,14 @@ public class F_14 extends Scheme2
                     if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
                         continue;
                     targetDistance = this.pos.getAbsPoint().distance(point3d);
-                    if (targetDistance > maxPavewayDistance)
+                    if(targetDistance > maxPavewayDistance)
                         continue;
                     targetAngle = angleBetween(this, point3d);
-                    if (targetAngle > maxPavewayFOVfrom)
+                    if(targetAngle > maxPavewayFOVfrom)
                         continue;
 
                     targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
-                    if (targetBait <= maxTargetBait)
+                    if(targetBait <= maxTargetBait)
                         continue;
 
                     maxTargetBait = targetBait;
@@ -2476,6 +2477,7 @@ public class F_14 extends Scheme2
         computeFlapsFixing();
         computeCombatFlaps(f);
         computeSupersonicLimiter();
+        computeAoAunits();
         FlapAssistTakeoff();
         if(FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
         {
@@ -3078,7 +3080,7 @@ public class F_14 extends Scheme2
         if(((FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6)
          || (FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)) && calculateMach() >= 1.12F)
         {
-            if (x > 4F)
+            if(x > 4F)
             {
                 Drag = 0.0F;
             }
@@ -3311,7 +3313,7 @@ public class F_14 extends Scheme2
         float thrustDegradation = 0.0F;
         if(FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6
          && FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)
-            if (x > 19.0F)
+            if(x > 19.0F)
             {
                 thrustDegradation = 25.0F;
             }
@@ -3527,6 +3529,45 @@ public class F_14 extends Scheme2
         lTimeOilPressChecked = Time.current();
     }
 
+    private void computeAoAunits()
+    {
+        // over 250 knots
+        if(FM.getSpeed() > 128.1F || FM.CT.getGear() == 0.0F || FM.CT.getFlap() < 0.29F)
+            unitsAoA = FM.getAOA() * 1.84F + 4.28F;
+        else
+        {
+            tmpx = (double)FM.getSpeed();
+            if(tmpx < 0.4D) tmpx = 0.4D;
+            tmpx2 = tmpx * tmpx;  // faster than using Math.pow(double, double)
+            tmpx3 = tmpx2 * tmpx;
+            tmpx4 = tmpx3 * tmpx;
+            tmpx5 = tmpx4 * tmpx;
+            tmpx6 = tmpx5 * tmpx;
+            float fmass = (FM.M.mass - 18143.68F) / 4535.92F;  // index-ize with 40000, 50000, 60000, 70000 lbs.
+            if(fmass < 0.0F) fmass = 0.0F;
+            if(fmass > 3.0F) fmass = 3.0F;
+            int i0 = (int)Math.floor(fmass);
+            int j0 = 0;
+            if(bDLCengaged) j0 = 1;
+
+            if(fmass == 0.0F || fmass == 3.0F)
+            {
+                unitsAoA = (float)(caoa6[j0][i0] * tmpx6 + caoa5[j0][i0] * tmpx5 + caoa4[j0][i0] * tmpx4 + caoa3[j0][i0] * tmpx3 + caoa2[j0][i0] * tmpx2 + caoa1[j0][i0] * tmpx + caoa0[j0][i0]);
+            }
+            else
+            {
+                float u0 = (float)(caoa6[j0][i0] * tmpx6 + caoa5[j0][i0] * tmpx5 + caoa4[j0][i0] * tmpx4 + caoa3[j0][i0] * tmpx3 + caoa2[j0][i0] * tmpx2 + caoa1[j0][i0] * tmpx + caoa0[j0][i0]);
+                float u1 = (float)(caoa6[j0][i0 + 1] * tmpx6 + caoa5[j0][i0 + 1] * tmpx5 + caoa4[j0][i0 + 1] * tmpx4 + caoa3[j0][i0 + 1] * tmpx3 + caoa2[j0][i0 + 1] * tmpx2 + caoa1[j0][i0 + 1] * tmpx + caoa0[j0][i0 + 1]);
+                if(u0 > 35.0F) u0 = 35.0F;
+                if(u0 < 0.0F) u0 = 0.0F;
+                if(u1 > 35.0F) u1 = 35.0F;
+                if(u1 < 0.0F) u1 = 0.0F;
+                unitsAoA = cvt(fmass, (float)i0, (float)(i0 + 1), u0, u1);
+            }
+            if(unitsAoA > 25.5F) unitsAoA = 25.5F;
+            else if(unitsAoA < 0.0F) unitsAoA = 0.0F;
+        }
+    }
 
     public float Fuelamount;
     public boolean radartoggle;
@@ -3627,6 +3668,28 @@ public class F_14 extends Scheme2
     private boolean bFlapsInFixed;
     private Eff3DActor antiColLight[];
     private boolean oldAntiColLight;
+
+    public float unitsAoA;
+    private static double caoa6[][] = {{ 4.80782167719908E-009D, 3.99576141267209E-009D, 5.41273413671136E-009D, 7.48344287205741E-009D }
+                                      ,{ 1.93936081032443E-009D, 3.64870244307957E-009D, 5.27154966598838E-009D, 5.036772132305634E-009D }};
+    private static double caoa5[][] = {{ -2.61589037982822E-006D, -2.33151730910257E-006D, -3.23180238379053E-006D, -4.591E-006D }
+                                      ,{ -1.10262747258236E-006D, -2.10463221728266E-006D, -3.16153368019415E-006D, -3.15144808172798E-006D }};
+    private static double caoa4[][] = {{ 0.000586227D, 0.0005614348D, 0.000797895D, 0.0011658065D }
+                                      ,{ 0.0002587275D, 0.0005014314D, 0.0007835203D, 0.000816535D }};
+    private static double caoa3[][] = {{ -0.069293325D, -0.0714401185D, -0.104293672D, -0.1568768777D }
+                                      ,{ -0.0321065658D, -0.0632099656D, -0.1027380313D, -0.112168896D }};
+    private static double caoa2[][] = {{ 4.5627552178D, 5.0717691878D, 7.6182287471D, 11.8052442765D }
+                                      ,{ 2.2278825993D, 4.4536001235D, 7.5234941351D, 8.6224239708D }};
+    private static double caoa1[][] = {{ -159.262272854D, -191.0108768886D, -295.457957995D, -471.7157625482 }
+                                      ,{ -82.4482547981D, -166.8932406462D, -292.3519584234D, -352.2766119171D }};
+    private static double caoa0[][] = {{ 2322.219702527D, 3002.684851714D, 4777.6553315341D, 7847.7906941935D }
+                                      ,{ 1290.4449614683D, 2622.9919181958D, 4736.6939598851D, 6004.7605937287D }};
+    private static double tmpx = 0.0D;  // "static" for saving memory
+    private static double tmpx2 = 0.0D;
+    private static double tmpx3 = 0.0D;
+    private static double tmpx4 = 0.0D;
+    private static double tmpx5 = 0.0D;
+    private static double tmpx6 = 0.0D;
 
     private float stockCy0_0;
     private float stockCy0_1;
