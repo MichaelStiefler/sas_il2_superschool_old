@@ -653,17 +653,17 @@ public class Config {
     public static final boolean AEROMASH = false;
 //    public static final String  PRODUCT                       = "FB_PF";
 //    private static final String _VERSION                      = "4.10.1_(UP_EDITION)";
-    private static final String   CORE_VERSION_NUMBER   = "4.54";
+    private static final String   CORE_VERSION_NUMBER   = "4.55";
     private static final String   VERSION_NUMBER        = "3.3";
     private static final String   VERSION_NAME          = "Bigfoot";
     private static final String   CONNECT_VERSION       = "IL2_UP" + VERSION_NUMBER;
     private static final String[] CONNECT_VERSION2      = { "IL2_UP3.2", "IL2_UP3_RC_MDS_v1.2_v2" };
 
-    private static final String   MIN_PATCH_LEVEL       = "5";
-    private static final String   MAX_PATCH_LEVEL       = "6";
-    private static final String   PATCH_LEVEL           = "6";
-    private static final String[] PATCHLEVEL_G          = { "6" };
-    private static final String[] PATCHLEVEL_Y          = { "5", "4" };
+    private static final String   MIN_PATCH_LEVEL       = "6";
+    private static final String   MAX_PATCH_LEVEL       = "7";
+    private static final String   PATCH_LEVEL           = "7";
+    private static final String[] PATCHLEVEL_G          = { "7" };
+    private static final String[] PATCHLEVEL_Y          = { "6", "5" };
 
     private static final String   VERSION_STRING        = "Ultrapack";
     private static final String   PRODUCT               = VERSION_STRING + "_" + VERSION_NUMBER;
