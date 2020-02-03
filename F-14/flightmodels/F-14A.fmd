@@ -167,11 +167,11 @@
   NoseGearMaxSteer 70.0
 [Params]
   CriticalAOA 30.00
-  CriticalCy 00.7
+  CriticalCy 0.7
   CxCurvature 1.0
-  CxStraightness 00.08
+  CxStraightness 0.08
   CriticalAOAFlap 35.00
-  CriticalCyFlap 00.93
+  CriticalCyFlap 0.93
   SpinTailAlpha 17.00
   SpinCxLoss 0.10
   SpinCyLoss 0.05
@@ -191,7 +191,7 @@
   V_turn 618.00494
   K_max 13.0
   Cy0_max 0.15
-  FlapsMult 2.0
+  FlapsMult 1.25
   FlapsAngSh 6.0
   Range 4180.0
   CruiseSpeed 900.0
@@ -210,12 +210,12 @@
   CyCritL_0 -0.75
   CxMin_0 0.032
   parabCxCoeff_0 9.0E-4
-  Cy0_1 0.85
+  Cy0_1 0.80
   AOACritH_1 36.0
   AOACritL_1 -22.0
   CyCritH_1 1.5
   CyCritL_1 -0.7
-  CxMin_1 0.10
+  CxMin_1 0.08
   parabCxCoeff_1 10.0E-4
   parabAngle 6.0
   Decline 0.004

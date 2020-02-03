@@ -65,6 +65,7 @@ public class F_14 extends Scheme2
         counterChaffList = new ArrayList();
         lLightHook = new Hook[4];
         SonicBoom = 0.0F;
+        lastUpdateTime = -1L;
         k14Mode = 2;
         k14WingspanType = 0;
         k14Distance = 200F;
@@ -108,6 +109,7 @@ public class F_14 extends Scheme2
         engineOilPressurePSI = new float[2];
         lTimeOilPressChecked = -1L;
         unitsAoA = 0.0F;
+        dragPylons = 0.0F;
         APmode1 = false;
         APmode2 = false;
         APmode3 = false;
@@ -914,13 +916,14 @@ public class F_14 extends Scheme2
         stockSqWingOut = FM.Sq.liftWingLOut;
         stockSqFlaps = FM.Sq.squareFlaps;
         stockDragAirbrake = FM.Sq.dragAirbrakeCx;
+        dragPylons = 0.0000F;
         if(thisWeaponsName.startsWith("Fighter_4xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
             hierMesh().chunkVisible("Pylon2L", true);
             hierMesh().chunkVisible("Pylon2R", true);
-            FM.Sq.dragParasiteCx += 0.0001F;
+            dragPylons = 0.001F;
         }
         if(thisWeaponsName.startsWith("Fighter_6xAIM54"))
         {
@@ -928,13 +931,13 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon1R", true);
             hierMesh().chunkVisible("Pylon2L", true);
             hierMesh().chunkVisible("Pylon2R", true);
-            FM.Sq.dragParasiteCx += 0.0001F;
+            dragPylons = 0.001F;
         }
         if(thisWeaponsName.startsWith("Fighter_2xAIM54"))
         {
             hierMesh().chunkVisible("Pylon1L", true);
             hierMesh().chunkVisible("Pylon1R", true);
-            FM.Sq.dragParasiteCx += 0.00007F;
+            dragPylons = 0.0007F;
         }
         if(thisWeaponsName.startsWith("GAttack_2xMk"))
         {
@@ -942,7 +945,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon1R", true);
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
-            FM.Sq.dragParasiteCx += 0.00007F;
+            dragPylons = 0.0007F;
         }
         if(thisWeaponsName.startsWith("GAttackFLIR_ALQ"))
         {
@@ -950,7 +953,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon1R", true);
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
-            FM.Sq.dragParasiteCx += 0.00007F;
+            dragPylons = 0.0007F;
         }
         if(thisWeaponsName.startsWith("Recon_ALQ"))
         {
@@ -958,7 +961,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon1R", true);
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
-            FM.Sq.dragParasiteCx += 0.00007F;
+            dragPylons = 0.0007F;
         }
         if(thisWeaponsName.startsWith("GAttackFLIR_2xGBU"))
         {
@@ -966,7 +969,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon1R", true);
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
-            FM.Sq.dragParasiteCx += 0.00007F;
+            dragPylons = 0.0007F;
         }
         if(thisWeaponsName.startsWith("GAttack_2xCBU"))
         {
@@ -974,7 +977,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon1R", true);
             hierMesh().chunkVisible("Pylon3L", true);
             hierMesh().chunkVisible("Pylon3R", true);
-            FM.Sq.dragParasiteCx += 0.00007F;
+            dragPylons = 0.0007F;
         }
         if(thisWeaponsName.startsWith("GAttack_4xMk"))
          {
@@ -986,7 +989,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             hierMesh().chunkVisible("Pylon4L", true);
             hierMesh().chunkVisible("Pylon4R", true);
-            FM.Sq.dragParasiteCx += 0.0001F;
+            dragPylons = 0.001F;
         }
         if(thisWeaponsName.startsWith("GAttack_4xCBU"))
         {
@@ -998,7 +1001,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             hierMesh().chunkVisible("Pylon4L", true);
             hierMesh().chunkVisible("Pylon4R", true);
-            FM.Sq.dragParasiteCx += 0.0001F;
+            dragPylons = 0.001F;
         }
         if(thisWeaponsName.startsWith("GAttackFLIR_4xGBU"))
         {
@@ -1010,7 +1013,7 @@ public class F_14 extends Scheme2
             hierMesh().chunkVisible("Pylon3R", true);
             hierMesh().chunkVisible("Pylon4L", true);
             hierMesh().chunkVisible("Pylon4R", true);
-            FM.Sq.dragParasiteCx += 0.0001F;
+            dragPylons = 0.001F;
         }
         rwrUtils.onAircraftLoaded();
         if(this instanceof F_14D)
@@ -1394,11 +1397,12 @@ public class F_14 extends Scheme2
         FM.CT.bHasVarWingControl = false;
     }
 
-    private void checkHydraulicStatus(float f)
+    private void checkHydraulicStatus()
     {
         if(lTimeHydroChecked == Time.current())
             return;
 
+        float f = 0.03F;
         if(!bCheckedHydro1st && Time.current() > 900L)
         {
             if(FM.CT.getGear() == 0.0F && FM.getSpeedKMH() > 120F)
@@ -2422,150 +2426,169 @@ public class F_14 extends Scheme2
 
     public void update(float f)
     {
-        guidedMissileUtils.update();
-        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
+        if(lastUpdateTime != Time.current())
         {
-            overrideBailout = true;
-            FM.AS.bIsAboutToBailout = false;
-            if(FM.crew > 1)
+            guidedMissileUtils.update();
+            if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
             {
-                if(Time.current() > lTimeNextEject)
-                    bailout();
-            }
-            else
-            {
-                bailout();
-            }
-        }
-        if(FM.AS.isMaster() && Config.isUSE_RENDER())
-        {
-            for(int en = 0; en < 2; en++)
-            {
-                if(FM.EI.engines[en].getThrustOutput() > 0.4F && FM.EI.engines[en].getStage() == 6)
+                overrideBailout = true;
+                FM.AS.bIsAboutToBailout = false;
+                if(FM.crew > 1)
                 {
-                    if(FM.EI.engines[en].getThrustOutput() > 1.001F)
-                        FM.AS.setSootState(this, en, 5);
-                    else
-                    if(FM.EI.engines[en].getThrustOutput() > 0.96F && FM.EI.engines[en].getThrustOutput() < 1.001F)
-                        FM.AS.setSootState(this, en, 3);
-                    else
-                        FM.AS.setSootState(this, en, 2);
+                    if(Time.current() > lTimeNextEject)
+                        bailout();
                 }
                 else
                 {
-                    FM.AS.setSootState(this, en, 0);
+                    bailout();
                 }
-                setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.7F, 0.92F, 0.0F, 12F)), en);
+            }
+            if(FM.AS.isMaster() && Config.isUSE_RENDER())
+            {
+                for(int en = 0; en < 2; en++)
+                {
+                    if(FM.EI.engines[en].getThrustOutput() > 0.4F && FM.EI.engines[en].getStage() == 6)
+                    {
+                        if(FM.EI.engines[en].getThrustOutput() > 1.001F)
+                            FM.AS.setSootState(this, en, 5);
+                        else
+                        if(FM.EI.engines[en].getThrustOutput() > 0.96F && FM.EI.engines[en].getThrustOutput() < 1.001F)
+                            FM.AS.setSootState(this, en, 3);
+                        else
+                            FM.AS.setSootState(this, en, 2);
+                    }
+                    else
+                    {
+                        FM.AS.setSootState(this, en, 0);
+                    }
+                    setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.7F, 0.92F, 0.0F, 12F)), en);
+                }
+            }
+            if(FLIR)
+                laser(getLaserSpot());
+            updatecontrollaser();
+//        typeFighterAceMakerRangeFinder();
+            soundbarier();
+            rwrUtils.update();
+            backfire = rwrUtils.getBackfire();
+            bRadarWarning = rwrUtils.getRadarLockedWarning();
+            bMissileWarning = rwrUtils.getMissileWarning();
+            if(backfire)
+                backFire();
+            checkHydraulicStatus();
+            computeEngineOilPressure();
+            computeLift();
+            computeVarWing();
+            computeFlapsFixing();
+            if(FM.isTick(44, 1))
+                computeSupersonicLimiter();
+            computeAoAunits();
+            FlapAssistTakeoff();
+            if(FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
+            {
+                if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
+                    obsMove += 0.3F * 0.03F;
+                else
+                if(obsMove < 0.1F || obsMove > obsMoveTot - 0.1F)
+                    obsMove += 0.15F;
+                else
+                    obsMove += 1.2F * 0.03F;
+                obsLookAzimuth = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsAzimuthOld, obsAzimuth);
+                obsLookElevation = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsElevationOld, obsElevation);
+                hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
+            }
+            gearlimit();
+            moveInletRamps();
+            checkSpoilers();
+        }
+        engineSurge(f);
+        computeCombatFlaps(f);
+
+        super.update(f);
+
+        if(lastUpdateTime != Time.current())
+        {
+            if(this instanceof F_14A)
+            {
+                int step;
+
+                if(!exNozzleBroken[0])
+                {
+                    fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
+                    step = (int)Math.floor(fNozzleOpenL * 10F);
+                    for(int i = 0; i < 10; i++)
+                        hierMesh().chunkVisible("ExhaustL" + i, i == step);
+                }
+
+                if(!exNozzleBroken[1])
+                {
+                    fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
+                    step = (int)Math.floor(fNozzleOpenR * 10F);
+                    for(int i = 0; i < 10; i++)
+                        hierMesh().chunkVisible("ExhaustR" + i, i == step);
+                }
+            }
+            if((this instanceof F_14B) || (this instanceof F_14D))
+            {
+                float deg;
+
+                if(!exNozzleBroken[0])
+                {
+                    fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
+                    deg = -9F * (1F - fNozzleOpenL);
+                    for(int i = 1; i < 33; i++)
+                        hierMesh().chunkSetAngles("Eflap" + i, deg, 0.0F, 0.0F);
+                }
+
+                if(!exNozzleBroken[1])
+                {
+                    fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
+                    deg = -9F * (1F - fNozzleOpenR);
+                    for(int j = 33; j > 32 && j < 65; j++)
+                        hierMesh().chunkSetAngles("Eflap" + j, deg, 0.0F, 0.0F);
+                }
+            }
+
+            if(FM.getSpeedKMH() > 300F)
+                FM.CT.cockpitDoorControl = 0.0F;
+
+            float f1 = cvt(FM.getSpeedKMH(), 500F, 1000F, 0.999F, 0.601F);
+            if(FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
+            {
+                if(FM.getOverload() > 5.7F)
+                {
+                    pull01 = Eff3DActor.New(this, findHook("_Pull01"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+                    pull02 = Eff3DActor.New(this, findHook("_Pull02"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+                    pull03 = Eff3DActor.New(this, findHook("_Pull03"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+                    pull04 = Eff3DActor.New(this, findHook("_Pull04"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+                }
+                if(FM.getOverload() <= 5.7F)
+                {
+                    Eff3DActor.finish(pull01);
+                    Eff3DActor.finish(pull02);
+                    Eff3DActor.finish(pull03);
+                    Eff3DActor.finish(pull04);
+                }
+            }
+            if(!FM.Gears.onGround() && FM.getSpeedKMH() < 550F)
+            {
+                if(FM.CT.getFlap() > 0.99F)
+                {
+                    float zp = cvt(FM.getSpeedKMH(), 160F, 360F, 0F, 16000F) * cvt(FM.getAOA(), 0.3F, 10.0F, 0.001F, 4.0F);
+                    FM.producedAF.z += (double)zp;
+                    if(bDLCengaged)
+                    {
+                        if(iDLCcommand > 0)
+                            FM.producedAF.z -= (double)((float)iDLCcommand * FM.getSpeedKMH() * 1.2F + 100F);
+                        else
+                            FM.producedAF.z += (double)((float)iDLCcommand * FM.getSpeedKMH() * 0.8F - 100F);
+                    }
+                }
             }
         }
-        if(FLIR)
-            laser(getLaserSpot());
-        updatecontrollaser();
-        engineSurge(f);
-//        typeFighterAceMakerRangeFinder();
-        soundbarier();
-        rwrUtils.update();
-        backfire = rwrUtils.getBackfire();
-        bRadarWarning = rwrUtils.getRadarLockedWarning();
-        bMissileWarning = rwrUtils.getMissileWarning();
-        if(backfire)
-            backFire();
-        checkHydraulicStatus(f);
-        computeEngineOilPressure();
-        computeLift();
-        computeVarWing();
-        computeFlapsFixing();
-        computeCombatFlaps(f);
-        computeSupersonicLimiter();
-        computeAoAunits();
-        FlapAssistTakeoff();
-        if(FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
-        {
-            if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
-                obsMove += 0.3F * f;
-            else
-            if(obsMove < 0.1F || obsMove > obsMoveTot - 0.1F)
-                obsMove += 0.15F;
-            else
-                obsMove += 1.2F * f;
-            obsLookAzimuth = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsAzimuthOld, obsAzimuth);
-            obsLookElevation = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsElevationOld, obsElevation);
-            hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
-        }
-        gearlimit();
-        moveInletRamps();
-        checkSpoilers();
-        super.update(f);
+        lastUpdateTime = Time.current();
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
-        if(this instanceof F_14A)
-        {
-            int step;
-
-            if(!exNozzleBroken[0])
-            {
-                fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
-                step = (int)Math.floor(fNozzleOpenL * 10F);
-                for(int i = 0; i < 10; i++)
-                    hierMesh().chunkVisible("ExhaustL" + i, i == step);
-            }
-
-            if(!exNozzleBroken[1])
-            {
-                fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0F, 0.9999F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.9999F, 0F);
-                step = (int)Math.floor(fNozzleOpenR * 10F);
-                for(int i = 0; i < 10; i++)
-                    hierMesh().chunkVisible("ExhaustR" + i, i == step);
-            }
-        }
-        if((this instanceof F_14B) || (this instanceof F_14D))
-        {
-            float deg;
-
-            if(!exNozzleBroken[0])
-            {
-                fNozzleOpenL = FM.EI.engines[0].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
-                deg = -9F * (1F - fNozzleOpenL);
-                for(int i = 1; i < 33; i++)
-                    hierMesh().chunkSetAngles("Eflap" + i, deg, 0.0F, 0.0F);
-            }
-
-            if(!exNozzleBroken[1])
-            {
-                fNozzleOpenR = FM.EI.engines[1].getPowerOutput() <= 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, 0.0F, 1.0F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 1.0F, 0.0F);
-                deg = -9F * (1F - fNozzleOpenR);
-                for(int j = 33; j > 32 && j < 65; j++)
-                    hierMesh().chunkSetAngles("Eflap" + j, deg, 0.0F, 0.0F);
-            }
-        }
-
-        float f1 = cvt(FM.getSpeedKMH(), 500F, 1000F, 0.999F, 0.601F);
-        if(FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
-        {
-            if(FM.getOverload() > 5.7F)
-            {
-                pull01 = Eff3DActor.New(this, findHook("_Pull01"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
-                pull02 = Eff3DActor.New(this, findHook("_Pull02"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
-                pull03 = Eff3DActor.New(this, findHook("_Pull03"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
-                pull04 = Eff3DActor.New(this, findHook("_Pull04"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
-            }
-            if(FM.getOverload() <= 5.7F)
-            {
-                Eff3DActor.finish(pull01);
-                Eff3DActor.finish(pull02);
-                Eff3DActor.finish(pull03);
-                Eff3DActor.finish(pull04);
-            }
-        }
-        if(FM.getSpeedKMH() > 300F)
-            FM.CT.cockpitDoorControl = 0.0F;
-        if(bDLCengaged && !FM.Gears.onGround())
-        {
-            if(iDLCcommand > 0)
-                FM.producedAF.z -= (double)((float)iDLCcommand * FM.getSpeedKMH());
-            else
-                FM.producedAF.z += (double)((float)iDLCcommand * FM.getSpeedKMH() * 0.6F);
-        }
     }
 
 
@@ -3060,10 +3083,11 @@ public class F_14 extends Scheme2
         }
         else if(x < 2.3F)
         {
-            float x2 = x * x;
-            float x3 = x2 * x;
-            float x4 = x3 * x;
-            polares.lineCyCoeff = 0.0348639F*x4 - 0.271173F*x3 + 0.785774F*x2 - 1.02525F*x + 0.541057F;
+            tmpx = (double)x;
+            tmpx2 = tmpx * tmpx;  // faster than using Math.pow(double, double)
+            tmpx3 = tmpx2 * tmpx;
+            tmpx4 = tmpx3 * tmpx;
+            polares.lineCyCoeff = (float)(0.034863946D * tmpx4 - 0.27117347D * tmpx3 + 0.78577381D * tmpx2 - 1.025247449D * tmpx + 0.541057143D);
     // {{0.9, 0.08}, {1.3, 0.04},{1.6, 0.03},{2.1, 0.02}, {2.3, 0.016}}
         }
         else
@@ -3078,7 +3102,8 @@ public class F_14 extends Scheme2
         float x = FM.getAltitude() / 1000F;
         float Drag = 0.0F;
         if(((FM.EI.engines[0].getThrustOutput() > 1.001F && FM.EI.engines[0].getStage() == 6)
-         || (FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6)) && calculateMach() >= 1.12F)
+            || (FM.EI.engines[1].getThrustOutput() > 1.001F && FM.EI.engines[1].getStage() == 6))
+           && calculateMach() > 1.1F)
         {
             if(x > 4F)
             {
@@ -3086,11 +3111,12 @@ public class F_14 extends Scheme2
             }
             else
             {
-                Drag = 0.00045F - 0.0001125F*x;
-        //{{0,0.00045},{4, 0.0}}
+                Drag = 0.0198F - 0.00495F * x;
+        //{{0,0.0198},{4, 0.0}}
+                Drag *= cvt(calculateMach(), 1.1F, 1.12F, 0.0F, 1.0F);
             }
-            FM.Sq.dragParasiteCx += Drag;
         }
+        FM.Sq.dragParasiteCx += Drag + dragPylons;
     }
 
     protected void moveVarWing(float f)
@@ -3109,7 +3135,7 @@ public class F_14 extends Scheme2
         if((!(FM instanceof RealFlightModel) || !((RealFlightModel)FM).isRealMode()) && (FM instanceof Maneuver))
         {
             //When AI goes 'GAttack' waypoint, set VarWingControlSwitch = "BOMB". Others "AUTO".
-            if(FM.AP.way.curr().Action == 3 || (((Maneuver)FM).Group != null && ((Maneuver)FM).Group.grTask == 4) || ((Maneuver)FM).get_task() == 4)
+            if(calculateMach() > 0.6F &&(FM.AP.way.curr().Action == 3 || (((Maneuver)FM).Group != null && ((Maneuver)FM).Group.grTask == 4) || ((Maneuver)FM).get_task() == 4))
             {
                 FM.CT.VarWingControlSwitch = 4;
                 FM.CT.setTrimElevatorControl(0.50F);
@@ -3298,7 +3324,7 @@ public class F_14 extends Scheme2
     }
 
 
-    public void computeF110GE400_AB()
+    protected void computeF110GE400_AB()
     {
         for(int en = 0; en < 2; en++)
         {
@@ -3319,12 +3345,13 @@ public class F_14 extends Scheme2
             }
             else
             {
-                float x2 = x * x;
-                float x3 = x2 * x;
-                float x4 = x3 * x;
-                float x5 = x4 * x;
-                float x6 = x5 * x;
-                thrustDegradation = -(17077F*x6/142443000F) + (13553F*x5/2374050F) - (13203787F*x4/142443000F) + (434033F*x3/698250F) - (71389321F*x2/35610750F) + (1247081F*x/339150F);
+                tmpx = (double)x;
+                tmpx2 = tmpx * tmpx;  // faster than using Math.pow(double, double)
+                tmpx3 = tmpx2 * tmpx;
+                tmpx4 = tmpx3 * tmpx;
+                tmpx5 = tmpx4 * tmpx;
+                tmpx6 = tmpx5 * tmpx;
+                thrustDegradation = (float)(-0.0001198866D * tmpx6 + 0.0057088098D * tmpx5 - 0.0926952325D * tmpx4 + 0.6216011457D * tmpx3 - 2.00471265D * tmpx2 + 3.6770779891D * tmpx);
         //{{0,0},{2,3},{5,4},{7,0},{12,-30},{17,7},{19,25}}
             }
         if(exNozzleBroken[0]) thrustDegradation += 0.3F;
@@ -3649,6 +3676,8 @@ public class F_14 extends Scheme2
     public float engineOilPressurePSI[];
     private long lTimeOilPressChecked;
 
+    private long lastUpdateTime;
+    private float dragPylons;
     public boolean bHasUnderTank;
     private boolean bSpawnedAsAI;
     public int freq;
