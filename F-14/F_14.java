@@ -2447,21 +2447,24 @@ public class F_14 extends Scheme2
             {
                 for(int en = 0; en < 2; en++)
                 {
-                    if(FM.EI.engines[en].getThrustOutput() > 0.4F && FM.EI.engines[en].getStage() == 6)
+                    if(FM.EI.engines[en].getThrustOutput() > 0.5F && FM.EI.engines[en].getStage() == 6)
                     {
                         if(FM.EI.engines[en].getThrustOutput() > 1.001F)
                             FM.AS.setSootState(this, en, 5);
-                        else
-                        if(FM.EI.engines[en].getThrustOutput() > 0.96F && FM.EI.engines[en].getThrustOutput() < 1.001F)
+                        else if(FM.EI.engines[en].getThrustOutput() > 0.96F)
+                            FM.AS.setSootState(this, en, 4);
+                        else if(FM.EI.engines[en].getThrustOutput() > 0.88F)
                             FM.AS.setSootState(this, en, 3);
-                        else
+                        else if(FM.EI.engines[en].getThrustOutput() > 0.7F)
                             FM.AS.setSootState(this, en, 2);
+                        else
+                            FM.AS.setSootState(this, en, 1);
                     }
                     else
                     {
                         FM.AS.setSootState(this, en, 0);
                     }
-                    setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.7F, 0.92F, 0.0F, 12F)), en);
+                    setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.76F, 0.94F, 0.0F, 12F)), en);
                 }
             }
             if(FLIR)
@@ -2552,6 +2555,9 @@ public class F_14 extends Scheme2
             if(FM.getSpeedKMH() > 300F)
                 FM.CT.cockpitDoorControl = 0.0F;
 
+            if(FM.CT.getArrestor() > 0.2F)
+                calculateArrestor();
+
             float f1 = cvt(FM.getSpeedKMH(), 500F, 1000F, 0.999F, 0.601F);
             if(FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
             {
@@ -2562,7 +2568,7 @@ public class F_14 extends Scheme2
                     pull03 = Eff3DActor.New(this, findHook("_Pull03"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
                     pull04 = Eff3DActor.New(this, findHook("_Pull04"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
                 }
-                if(FM.getOverload() <= 5.7F)
+                else
                 {
                     Eff3DActor.finish(pull01);
                     Eff3DActor.finish(pull02);
@@ -2574,7 +2580,11 @@ public class F_14 extends Scheme2
             {
                 if(FM.CT.getFlap() > 0.99F)
                 {
-                    float zp = cvt(FM.getSpeedKMH(), 160F, 360F, 0F, 16000F) * cvt(FM.getAOA(), 0.3F, 10.0F, 0.001F, 4.0F);
+                    float zp = cvt(FM.getAOA(), 0.3F, 10.0F, 0.001F, 4.0F);
+                    if(FM.getSpeedKMH() < 200F)
+                        zp *= cvt(FM.getSpeedKMH(), 160F, 200F, 0F, 10000F);
+                    else
+                        zp *= cvt(FM.getSpeedKMH(), 200F, 360F, 10000F, 16000F);
                     FM.producedAF.z += (double)zp;
                     if(bDLCengaged)
                     {
@@ -2587,8 +2597,6 @@ public class F_14 extends Scheme2
             }
         }
         lastUpdateTime = Time.current();
-        if(FM.CT.getArrestor() > 0.2F)
-            calculateArrestor();
     }
 
 
@@ -2709,27 +2717,25 @@ public class F_14 extends Scheme2
         switch(j)
         {
         case 1: // '\001'
-            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
-            break;
-
-        case 3: // '\003'
-            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 4F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.5F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 0.4F, "3DO/Effects/Aircraft/BlackMediumWtTSPD.eff", -1F);
             break;
 
         case 2: // '\002'
-            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.8F, "3DO/Effects/Aircraft/TurboZippo.eff", -1F);
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 0.8F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1F);
+            break;
+
+        case 3: // '\003'
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
+            break;
+
+        case 4: // '\004'
+            FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 4F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1F);
             FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.5F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
             break;
 
         case 5: // '\005'
             FM.AS.astateSootEffects[i][0] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 3F, "3DO/Effects/Aircraft/AfterBurnerF100D.eff", -1F);
             FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "ES_01"), null, 1.5F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
-            break;
-
-        case 4: // '\004'
-            FM.AS.astateSootEffects[i][1] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1F);
             break;
         }
     }
