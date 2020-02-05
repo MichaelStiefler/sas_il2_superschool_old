@@ -1,15 +1,37 @@
 package com.maddox.il2.builder;
 
-import com.maddox.JGP.*;
-import com.maddox.gwindow.*;
+import java.util.ArrayList;
+
+import com.maddox.JGP.Point2d;
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Tuple2d;
+import com.maddox.JGP.Tuple3d;
+import com.maddox.gwindow.GNotifyListener;
+import com.maddox.gwindow.GRegion;
+import com.maddox.gwindow.GWindow;
+import com.maddox.gwindow.GWindowButton;
+import com.maddox.gwindow.GWindowCheckBox;
+import com.maddox.gwindow.GWindowComboControl;
+import com.maddox.gwindow.GWindowDialogClient;
+import com.maddox.gwindow.GWindowDialogControl;
+import com.maddox.gwindow.GWindowEditControl;
+import com.maddox.gwindow.GWindowEditText;
+import com.maddox.gwindow.GWindowEditTextControl;
+import com.maddox.gwindow.GWindowHSliderInt;
+import com.maddox.gwindow.GWindowLabel;
+import com.maddox.gwindow.GWindowMenuItem;
+import com.maddox.gwindow.GWindowTabDialogClient;
 import com.maddox.il2.ai.Army;
-import com.maddox.il2.engine.*;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.IconDraw;
+import com.maddox.il2.engine.Loc;
+import com.maddox.il2.engine.Mat;
+import com.maddox.il2.engine.Render;
 import com.maddox.il2.game.I18N;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.util.NumberTokenizer;
 import com.maddox.util.UnicodeTo8bit;
-import java.util.*;
 
 public class PlMisTrigger extends Plugin
 {
@@ -568,6 +590,7 @@ public class PlMisTrigger extends Plugin
         float f = 1.0F;
         GWindowDialogClient gwindowdialogclient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient());        
         tabTrigger = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("tTrigger"), gwindowdialogclient);
+       
         gwindowdialogclient.addLabel(wType = new GWindowLabel(gwindowdialogclient, 1.0F, f, 20F, 1.3F, Plugin.i18n("lType"), null));
         f += 2.0F;
         gwindowdialogclient.addControl(wBTimeout = new GWindowCheckBox(gwindowdialogclient, 1.0F, f, null) {
@@ -1051,7 +1074,7 @@ public class PlMisTrigger extends Plugin
         wTimeoutM.setValue("" + actortrigger.timeout % 60, false);
         PlMission.setChanged();
     }
-
+    
     protected ArrayList allActors;
     Item item[] = {
         new Item("NewAircraftAir", 0), new Item("NewAircraftSol", 1), new Item("NewAircraftAirLevel", 2), new Item("NewMessage", 3)
@@ -1064,7 +1087,7 @@ public class PlMisTrigger extends Plugin
     private int startComboBox1;
     private GWindowMenuItem viewType;
     private PlMission pluginMission;
-    com.maddox.gwindow.GWindowTabDialogClient.Tab tabTrigger;
+    GWindowTabDialogClient.Tab tabTrigger;
     GWindowLabel wType;
     GWindowLabel wTrigger;
     GWindowCheckBox wBTimeout;
