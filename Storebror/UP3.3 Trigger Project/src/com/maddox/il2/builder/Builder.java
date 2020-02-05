@@ -11,7 +11,6 @@ import com.maddox.JGP.Vector3f;
 import com.maddox.gwindow.GPoint;
 import com.maddox.gwindow.GRegion;
 import com.maddox.gwindow.GWindow;
-import com.maddox.gwindow.GWindowDialogControl;
 import com.maddox.gwindow.GWindowHScrollBar;
 import com.maddox.gwindow.GWindowMenu;
 import com.maddox.gwindow.GWindowMenuBarItem;
@@ -50,7 +49,6 @@ import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.air.Runaway;
 import com.maddox.il2.objects.bridges.Bridge;
 import com.maddox.il2.objects.bridges.BridgeSegment;
-import com.maddox.il2.objects.vehicles.planes.PlaneGeneric;
 import com.maddox.rts.HotKeyCmd;
 import com.maddox.rts.HotKeyCmdEnv;
 import com.maddox.rts.HotKeyEnv;
@@ -968,12 +966,12 @@ public class Builder {
                     break;
                     
                     // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-                case 6:
-                    movedActor = null;
-                    setOverActor(selectNear(i, i_52_));
-                    if(!Actor.isValid(selectedPoint()) && !(selectedActor() instanceof PlMisRocket.Rocket))
-                        breakSelectSpawnPoint();
-                    break;
+//                case 6:
+//                    movedActor = null;
+//                    setOverActor(selectNear(i, i_52_));
+//                    if(!Actor.isValid(selectedPoint()) && !(selectedActor() instanceof PlMisRocket.Rocket))
+//                        breakSelectSpawnPoint();
+//                    break;
 
                 case 8:
                     movedActor = null;
@@ -1372,55 +1370,55 @@ public class Builder {
     }
 
     // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-    public void beginSelectSpawnPoint()
-    {
-        Path path = selectedPath();
-        if(path == null || !(path instanceof PathAir))
-        {
-            Actor actor = selectedActor();
-            if(!(actor instanceof PlMisRocket.Rocket))
-                return;
-        }
-        mouseState = 6;
-        viewWindow.mouseCursor = 1;
-    }
-
-    public void endSelectSpawnPoint()
-    {
-        if(mouseState != 6)
-            return;
-        mouseState = 0;
-        viewWindow.mouseCursor = 1;
-        Actor actor = getOverActor();
-        PathAir pathair = (PathAir)selectedPath();
-        if(!Actor.isValid(actor))
-            return;
-        if(actor instanceof PlaneGeneric)
-        {
-            PlaneGeneric planegeneric = (PlaneGeneric)actor;
-            PlMisAir plmisair = (PlMisAir)Plugin.getPlugin("MisAir");
-            int i = plmisair.getSelectedPlaneIndex();
-            pathair.setSpawnPoint(i, planegeneric);
-            ((GWindowDialogControl) (plmisair.wSpawnPointLabel[i])).cap.set(Plugin.i18n("IndicatedByTheYellowLine"));
-        }
-        Plugin plugin = (Plugin)Property.value(pathair, "builderPlugin");
-        if(plugin != null)
-            plugin.updateSelector();
-        PlMission.setChanged();
-    }
-
-    public void breakSelectSpawnPoint()
-    {
-        if(mouseState != 6)
-        {
-            return;
-        } else
-        {
-            mouseState = 0;
-            viewWindow.mouseCursor = 1;
-            return;
-        }
-    }
+//    public void beginSelectSpawnPoint()
+//    {
+//        Path path = selectedPath();
+//        if(path == null || !(path instanceof PathAir))
+//        {
+//            Actor actor = selectedActor();
+//            if(!(actor instanceof PlMisRocket.Rocket))
+//                return;
+//        }
+//        mouseState = 6;
+//        viewWindow.mouseCursor = 1;
+//    }
+//
+//    public void endSelectSpawnPoint()
+//    {
+//        if(mouseState != 6)
+//            return;
+//        mouseState = 0;
+//        viewWindow.mouseCursor = 1;
+//        Actor actor = getOverActor();
+//        PathAir pathair = (PathAir)selectedPath();
+//        if(!Actor.isValid(actor))
+//            return;
+//        if(actor instanceof PlaneGeneric)
+//        {
+//            PlaneGeneric planegeneric = (PlaneGeneric)actor;
+//            PlMisAir plmisair = (PlMisAir)Plugin.getPlugin("MisAir");
+//            int i = plmisair.getSelectedPlaneIndex();
+//            pathair.setSpawnPoint(i, planegeneric);
+//            ((GWindowDialogControl) (plmisair.wSpawnPointLabel[i])).cap.set(Plugin.i18n("IndicatedByTheYellowLine"));
+//        }
+//        Plugin plugin = (Plugin)Property.value(pathair, "builderPlugin");
+//        if(plugin != null)
+//            plugin.updateSelector();
+//        PlMission.setChanged();
+//    }
+//
+//    public void breakSelectSpawnPoint()
+//    {
+//        if(mouseState != 6)
+//        {
+//            return;
+//        } else
+//        {
+//            mouseState = 0;
+//            viewWindow.mouseCursor = 1;
+//            return;
+//        }
+//    }
 
     public void beginSelectTrigger()
     {
@@ -1713,11 +1711,11 @@ public class Builder {
                     endSelectTarget();
                     return;
                 }
-                if(mouseState == 6)
-                {
-                    endSelectSpawnPoint();
-                    return;
-                }
+//                if(mouseState == 6)
+//                {
+//                    endSelectSpawnPoint();
+//                    return;
+//                }
                 if(mouseState == 8)
                 {
                     endSelectTrigger();
@@ -1869,7 +1867,7 @@ public class Builder {
                     Builder.this.setOverActor(null);
                     Builder.this.breakSelectTarget();
                     // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-                    Builder.this.breakSelectSpawnPoint();
+//                    Builder.this.breakSelectSpawnPoint();
                     Builder.this.breakSelectTrigger();
                     Builder.this.breakSelectTriggerLink();
                     // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
@@ -2524,7 +2522,11 @@ public class Builder {
                     else if (tab.cap.caption.equals(Plugin.i18n("mds.tabRRR"))) Plugin.builder.wSelect.setMetricSize(40, 45);
                     else if (tab.cap.caption.equals(Plugin.i18n("Type"))) Plugin.builder.wSelect.setMetricSize(20, 25);
                     else if (tab.cap.caption.equals(Plugin.i18n("tTarget"))) Plugin.builder.wSelect.setMetricSize(36, 29);
+                    // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
+                    else if (tab.cap.caption.equals(Plugin.i18n("tTrigger"))) Plugin.builder.wSelect.setMetricSize(40, 36);
+                    // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
 
+                    System.out.println("Caption: " + tab.cap.caption);
                     Builder.zutiLastTabCaption = tab.cap.caption;
                 }
                 super.doRender(arg0);
