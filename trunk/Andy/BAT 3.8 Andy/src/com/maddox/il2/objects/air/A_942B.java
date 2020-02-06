@@ -1,4 +1,4 @@
-// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 06.10.2019 10:43:07
+// Decompiled by DJ v3.10.10.93 Copyright 2007 Atanas Neshkov  Date: 06.02.2020 17:49:59
 // Home Page: http://members.fortunecity.com/neshkov/dj.html  http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: fullnames 
 // Source File Name:   A_942B.java
@@ -23,17 +23,14 @@ import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.RealFlightModel;
 import com.maddox.il2.fm.Squares;
-import com.maddox.rts.Finger;
 import com.maddox.rts.Property;
-import com.maddox.util.HashMapInt;
-import java.util.ArrayList;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Scheme1, PaintSchemeBMPar04, TypeTransport, TypeSailPlane, 
 //            Aircraft, NetAircraft, PaintScheme
 
 public class A_942B extends com.maddox.il2.objects.air.Scheme1
-    implements com.maddox.il2.objects.air.TypeTransport, com.maddox.il2.objects.air.TypeSailPlane
+    implements com.maddox.il2.objects.air.TypeTransport, com.maddox.il2.objects.air.TypeSeaPlane
 {
 
     public A_942B()
@@ -360,17 +357,6 @@ public class A_942B extends com.maddox.il2.objects.air.Scheme1
         }
     }
 
-    static java.lang.Class _mthclass$(java.lang.String s)
-    {
-        try
-        {
-            return java.lang.Class.forName(s);
-        }
-        catch(java.lang.ClassNotFoundException classnotfoundexception)
-        {
-            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
-        }
-    }
 
     private static com.maddox.JGP.Point3d tmpp = new Point3d();
     private int Payload;
