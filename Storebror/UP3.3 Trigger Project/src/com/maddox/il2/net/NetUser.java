@@ -1311,7 +1311,7 @@ public class NetUser extends NetHost implements NetFileClient, NetUpdate {
                 this.replicatePilot();
                 return true;
 
-            case MSG_NOISEART: // ' '
+            case MSG_NOISEART:
                 String s3 = netmsginput.read255();
                 this.setNoseart(s3);
                 this.replicateNoseart();
