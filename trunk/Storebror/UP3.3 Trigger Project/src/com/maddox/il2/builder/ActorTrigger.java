@@ -153,4 +153,17 @@ public class ActorTrigger extends Actor
     public int proba;
     public String textDisplay;
     public int textDuree;
+    
+    public static final int TYPE_ALL = 0;
+    public static final int TYPE_AI_AIRCRAFT_ONLY = 1;
+    public static final int TYPE_HUMAN_AIRCRAFT_ONLY = 2;
+    public static final int TYPE_GROUND_OBJECTS_ONLY = 3;
+    public static final int TYPE_MOVING_AIRCRAFTS_ONLY = 4;
+    public static final int TYPE_STATIC_AIRCRAFTS_ONLY = 5;
+    public static final int TYPE_ARMOUR_ONLY = 6;
+    public static final int TYPE_ARTILLERY_ONLY = 7;
+    public static final int TYPE_INFANTRY_ONLY = 8;
+    public static final int TYPE_SHIPS_ONLY = 9;
+    public static final int TYPE_TRAINS_ONLY = 10;
+    public static final int TYPE_VEHICLES_ONLY = 11;
 }

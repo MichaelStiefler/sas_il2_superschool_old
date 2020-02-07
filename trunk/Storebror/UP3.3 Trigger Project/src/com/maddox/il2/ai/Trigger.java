@@ -2,7 +2,6 @@ package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Tuple2d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.CollideEnv.ResultTrigger;
 import com.maddox.il2.engine.Config;
@@ -65,11 +64,11 @@ public class Trigger extends Actor
         }
         if(actor.isAlive())
         {
-            Point2d tmp = new Point2d(((Tuple3d) (actor.pos.getAbsPoint())).x, ((Tuple3d) (actor.pos.getAbsPoint())).y);
+            Point2d tmp = new Point2d(actor.pos.getAbsPoint().x, actor.pos.getAbsPoint().y);
             if(lastPosLink == null)
                 lastPosLink = tmp;
-            posTigger.x += ((Tuple2d) (tmp)).x - ((Tuple2d) (lastPosLink)).x;
-            posTigger.y += ((Tuple2d) (tmp)).y - ((Tuple2d) (lastPosLink)).y;
+            posTigger.x += tmp.x - lastPosLink.x;
+            posTigger.y += tmp.y - lastPosLink.y;
             lastPosLink = tmp;
         } else
         {
@@ -128,7 +127,7 @@ public class Trigger extends Actor
             intTimeOut = -1;
         int posx = numbertokenizer.next(0);
         int posy = numbertokenizer.next(0);
-        int r = numbertokenizer.next(1000, 1, 0x186a0);
+        int r = numbertokenizer.next(1000, 1, 100000);
         int zmin = numbertokenizer.next(0, 0, 20000);
         int zmax = numbertokenizer.next(10000, 0, 20000);
         String s1 = null;
@@ -158,21 +157,21 @@ public class Trigger extends Actor
         default:
             break;
 
-        case 0: // '\0'
+        case 0:
             new TriNewAircraftAir(name, army, intTimeOut, posx, posy, r, s1, zmin, zmax, zAppliesFor, bSortie, zAvionMin, zProba, slink, sTextDisplay, zTextDuree);
             break;
 
-        case 1: // '\001'
+        case 1:
             new TriNewAircraftSol(name, army, intTimeOut, posx, posy, r, s1, zmin, zmax, zAppliesFor, bSortie, zAvionMin, zProba, slink, sTextDisplay, zTextDuree);
             break;
 
-        case 2: // '\002'
+        case 2:
             if(zAppliesFor == 0)
                 zAppliesFor = 4;
             new TriNewAircraftAirLevel(name, army, intTimeOut, posx, posy, r, s1, zmin, zmax, zAppliesFor, bSortie, zAvionMin, zProba, zAltiDiff, slink, sTextDisplay, zTextDuree);
             break;
 
-        case 3: // '\003'
+        case 3:
             new TriNewMessage(name, army, intTimeOut, posx, posy, r, zmin, zmax, zAppliesFor, bSortie, zAvionMin, zProba, slink, sTextDisplay, zTextDuree);
             break;
         }
@@ -247,15 +246,15 @@ public class Trigger extends Actor
                     subString(stringbuffer, s, posPrev, posWord);
                     switch(i)
                     {
-                    case 0: // '\0'
+                    case 0:
                         stringbuffer.append(getGrid(pos));
                         break;
 
-                    case 1: // '\001'
+                    case 1:
                         stringbuffer.append(((alti + 50) / 100) * 100 + " m");
                         break;
 
-                    case 2: // '\002'
+                    case 2:
                         stringbuffer.append((int)(((double)alti * 3.28084D + 250D) / 500D) * 500 + " ft");
                         break;
                     }
@@ -305,7 +304,7 @@ public class Trigger extends Actor
             else
                 return null;
         }
-        return new Point2d(((Tuple3d) (actorlink.pos.getAbsPoint())).x, ((Tuple3d) (actorlink.pos.getAbsPoint())).y);
+        return new Point2d(actorlink.pos.getAbsPoint().x, actorlink.pos.getAbsPoint().y);
     }
 
     protected void doSendMsg(boolean bLink)

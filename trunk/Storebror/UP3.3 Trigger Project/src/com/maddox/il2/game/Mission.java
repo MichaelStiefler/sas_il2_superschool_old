@@ -2431,27 +2431,33 @@ public class Mission implements Destroy {
         try {
             NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
             netmsgguaranted.writeByte(i);
-            int i_143_ = this.sectFile.sections();
-            for (int i_144_ = 0; i_144_ < i_143_; i_144_++) {
-                String string = this.sectFile.sectionName(i_144_);
-                if (!string.startsWith("$$$")) {
-                    if (netmsgguaranted.size() >= 128) {
+            int numSections = this.sectFile.sections();
+            for (int sectionIndex = 0; sectionIndex < numSections; sectionIndex++) {
+                String sectionName = this.sectFile.sectionName(sectionIndex);
+                if (!sectionName.startsWith("$$$")) {
+                    // TODO: +++ Fix exceeding netmessage length issue by SAS~Storebror +++
+                    //if (netmsgguaranted.size() >= 128) {
+                    if ((netmsgguaranted.size() + sectionName.length()) >= 240) {
+                    // TODO: --- Fix exceeding netmessage length issue by SAS~Storebror ---
                         this.net.postTo(netchannel, netmsgguaranted);
                         netmsgguaranted = new NetMsgGuaranted();
                         netmsgguaranted.writeByte(i);
                     }
                     netmsgguaranted.writeInt(-1);
-                    netmsgguaranted.write255(string);
-                    int i_145_ = this.sectFile.vars(i_144_);
-                    for (int i_146_ = 0; i_146_ < i_145_; i_146_++) {
-                        if (netmsgguaranted.size() >= 128) {
+                    netmsgguaranted.write255(sectionName);
+                    int numVars = this.sectFile.vars(sectionIndex);
+                    for (int varsIndex = 0; varsIndex < numVars; varsIndex++) {
+                        // TODO: +++ Fix exceeding netmessage length issue by SAS~Storebror +++
+//                        if (netmsgguaranted.size() >= 128) {
+                        if ((netmsgguaranted.size() + this.sectFile.var(sectionIndex, varsIndex).length() + this.sectFile.value(sectionIndex, varsIndex).length()) >= 240) {
+                        // TODO: --- Fix exceeding netmessage length issue by SAS~Storebror ---
                             this.net.postTo(netchannel, netmsgguaranted);
                             netmsgguaranted = new NetMsgGuaranted();
                             netmsgguaranted.writeByte(i);
                         }
-                        netmsgguaranted.writeInt(i_144_);
-                        netmsgguaranted.write255(this.sectFile.var(i_144_, i_146_));
-                        netmsgguaranted.write255(this.sectFile.value(i_144_, i_146_));
+                        netmsgguaranted.writeInt(sectionIndex);
+                        netmsgguaranted.write255(this.sectFile.var(sectionIndex, varsIndex));
+                        netmsgguaranted.write255(this.sectFile.value(sectionIndex, varsIndex));
                     }
                 }
             }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple2d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.gwindow.GNotifyListener;
 import com.maddox.gwindow.GRegion;
 import com.maddox.gwindow.GWindow;
@@ -13,7 +11,6 @@ import com.maddox.gwindow.GWindowButton;
 import com.maddox.gwindow.GWindowCheckBox;
 import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowDialogClient;
-import com.maddox.gwindow.GWindowDialogControl;
 import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowEditText;
 import com.maddox.gwindow.GWindowEditTextControl;
@@ -22,6 +19,7 @@ import com.maddox.gwindow.GWindowLabel;
 import com.maddox.gwindow.GWindowMenuItem;
 import com.maddox.gwindow.GWindowTabDialogClient;
 import com.maddox.il2.ai.Army;
+import com.maddox.il2.ai.Trigger;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.IconDraw;
 import com.maddox.il2.engine.Loc;
@@ -76,27 +74,27 @@ public class PlMisTrigger extends Plugin
         for(int j = 0; j < allActors.size(); j++)
         {
             ActorTrigger actortrigger = (ActorTrigger)allActors.get(j);
-            if(Actor.isValid(actortrigger.getTrigger()) && Plugin.builder.project2d(((Actor) (actortrigger)).pos.getAbsPoint(), p2d) && Plugin.builder.project2d(actortrigger.getTrigger().pos.getAbsPoint(), p2dt) && p2d.distance(p2dt) > 4D)
+            if(Actor.isValid(actortrigger.getTrigger()) && Plugin.builder.project2d(actortrigger.pos.getAbsPoint(), p2d) && Plugin.builder.project2d(actortrigger.getTrigger().pos.getAbsPoint(), p2dt) && p2d.distance(p2dt) > 4D)
             {
                 int k = TriggerColor(actortrigger == actor);
-                line2XYZ[0] = (float)((Tuple2d) (p2d)).x;
-                line2XYZ[1] = (float)((Tuple2d) (p2d)).y;
+                line2XYZ[0] = (float)p2d.x;
+                line2XYZ[1] = (float)p2d.y;
                 line2XYZ[2] = 0.0F;
-                line2XYZ[3] = (float)((Tuple2d) (p2dt)).x;
-                line2XYZ[4] = (float)((Tuple2d) (p2dt)).y;
+                line2XYZ[3] = (float)p2dt.x;
+                line2XYZ[4] = (float)p2dt.y;
                 line2XYZ[5] = 0.0F;
                 Render.drawBeginLines(-1);
                 Render.drawLines(line2XYZ, 2, 1.25F, k, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
                 Render.drawEnd();
             }
-            if(Actor.isValid(actortrigger.getLink()) && Plugin.builder.project2d(((Actor) (actortrigger)).pos.getAbsPoint(), p2d) && Plugin.builder.project2d(actortrigger.getLink().pos.getAbsPoint(), p2dt) && p2d.distance(p2dt) > 4D)
+            if(Actor.isValid(actortrigger.getLink()) && Plugin.builder.project2d(actortrigger.pos.getAbsPoint(), p2d) && Plugin.builder.project2d(actortrigger.getLink().pos.getAbsPoint(), p2dt) && p2d.distance(p2dt) > 4D)
             {
                 int k = 0xff00ffff;
-                line2XYZ[0] = (float)((Tuple2d) (p2d)).x;
-                line2XYZ[1] = (float)((Tuple2d) (p2d)).y;
+                line2XYZ[0] = (float)p2d.x;
+                line2XYZ[1] = (float)p2d.y;
                 line2XYZ[2] = 0.0F;
-                line2XYZ[3] = (float)((Tuple2d) (p2dt)).x;
-                line2XYZ[4] = (float)((Tuple2d) (p2dt)).y;
+                line2XYZ[3] = (float)p2dt.x;
+                line2XYZ[4] = (float)p2dt.y;
                 line2XYZ[5] = 0.0F;
                 Render.drawBeginLines(-1);
                 Render.drawLines(line2XYZ, 2, 1.25F, k, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
@@ -116,20 +114,20 @@ public class PlMisTrigger extends Plugin
         for(int j = 0; j < allActors.size(); j++)
         {
             ActorTrigger actortrigger = (ActorTrigger)allActors.get(j);
-            if(Plugin.builder.project2d(((Actor) (actortrigger)).pos.getAbsPoint(), p2d))
+            if(Plugin.builder.project2d(actortrigger.pos.getAbsPoint(), p2d))
             {
                 int k = TriggerColor(actortrigger == actor);
                 IconDraw.setColor(k);
                 if(Actor.isValid(actortrigger.getTrigger()) && Plugin.builder.project2d(actortrigger.getTrigger().pos.getAbsPoint(), p2dt) && p2d.distance(p2dt) > 4D)
-                    Render.drawTile((float)(((Tuple2d) (p2dt)).x - (double)(Plugin.builder.conf.iconSize / 2)), (float)(((Tuple2d) (p2dt)).y - (double)(Plugin.builder.conf.iconSize / 2)), Plugin.builder.conf.iconSize, Plugin.builder.conf.iconSize, 0.0F, Plugin.targetIcon, k, 0.0F, 1.0F, 1.0F, -1F);
-                IconDraw.render(actortrigger, ((Tuple2d) (p2d)).x, ((Tuple2d) (p2d)).y);
-                ((Actor) (actortrigger)).pos.getAbs(p3d);
+                    Render.drawTile((float)(p2dt.x - (Plugin.builder.conf.iconSize / 2)), (float)(p2dt.y - (Plugin.builder.conf.iconSize / 2)), Plugin.builder.conf.iconSize, Plugin.builder.conf.iconSize, 0.0F, Plugin.targetIcon, k, 0.0F, 1.0F, 1.0F, -1F);
+                IconDraw.render(actortrigger, p2d.x, p2d.y);
+                actortrigger.pos.getAbs(p3d);
                 p3d.x += actortrigger.r;
                 if(Plugin.builder.project2d(p3d, p2dt))
                 {
-                    double d = ((Tuple2d) (p2dt)).x - ((Tuple2d) (p2d)).x;
-                    if(d > (double)(Plugin.builder.conf.iconSize / 3))
-                        drawCircle(((Tuple2d) (p2d)).x, ((Tuple2d) (p2d)).y, d, k);
+                    double d = p2dt.x - p2d.x;
+                    if(d > (Plugin.builder.conf.iconSize / 3))
+                        drawCircle(p2d.x, p2d.y, d, k);
                 }
             }
         }
@@ -139,7 +137,7 @@ public class PlMisTrigger extends Plugin
     private void drawCircle(double d, double d1, double d2, int i)
     {
         int j = 48;
-        double d3 = 6.2831853071795862D / (double)j;
+        double d3 = Math.PI * 2D / j;
         double d4 = 0.0D;
         for(int k = 0; k < j; k++)
         {
@@ -160,7 +158,7 @@ public class PlMisTrigger extends Plugin
         if(i == 0)
             return true;
         int j = sectfile.sectionAdd("Trigger");
-        sectfile.lineAdd(j, "Version 12");
+        sectfile.lineAdd(j, "Version " + Trigger.VERSION);
         for(int k = 0; k < i; k++)
         {
             ActorTrigger actortrigger = (ActorTrigger)allActors.get(k);
@@ -185,7 +183,22 @@ public class PlMisTrigger extends Plugin
                 bLink = true;
             }
             String s3 = actortrigger.textDisplay;
-            sectfile.lineAdd(j, actortrigger.name(), actortrigger.type + " " + actortrigger.army + " " + (actortrigger.bTimeout ? "1 " : "0 ") + actortrigger.timeout + " " + (int)((Tuple3d) (((Actor) (actortrigger)).pos.getAbsPoint())).x + " " + (int)((Tuple3d) (((Actor) (actortrigger)).pos.getAbsPoint())).y + " " + actortrigger.r + " " + actortrigger.altiMin + " " + actortrigger.altiMax + (actortrigger.type == 3 ? "" : " " + s) + " " + actortrigger.iaHumans + " " + (actortrigger.bTSortie ? "1" : "0") + " " + actortrigger.avionMin + " " + actortrigger.proba + (actortrigger.type != 2 ? "" : " " + actortrigger.altiDiff) + (bLink ? " 1 " + s2 : " 0") + (s3 == null || s3.length() <= 0 ? "" : " " + actortrigger.textDuree + " " + s3));
+            sectfile.lineAdd(j,
+                    actortrigger.name(),
+                    actortrigger.type + " " + 
+                    actortrigger.army + " " + 
+                    (actortrigger.bTimeout ? "1 " : "0 ") + actortrigger.timeout + " " + 
+                    (int)actortrigger.pos.getAbsPoint().x + " " + 
+                    (int)actortrigger.pos.getAbsPoint().y + " " + 
+                    actortrigger.r + " " + 
+                    actortrigger.altiMin + " " + 
+                    actortrigger.altiMax + (actortrigger.type == 3 ? "" : " " + s) + " " + 
+                    actortrigger.iaHumans + " " + (actortrigger.bTSortie ? "1" : "0") + " " + 
+                    actortrigger.avionMin + " " + 
+                    actortrigger.proba + (actortrigger.type != 2 ? "" : " " + 
+                    actortrigger.altiDiff) + (bLink ? " 1 " + s2 : " 0") + (s3 == null || s3.length() <= 0 ? "" : " " + 
+                    actortrigger.textDuree + " " + 
+                    s3));
         }
 
         return true;
@@ -478,14 +491,14 @@ public class PlMisTrigger extends Plugin
         fillComboBox2(startComboBox1);
         Plugin.builder.wSelect.comboBox2.setSelected(actortrigger.type, true, false);
         Plugin.builder.wSelect.tabsClient.addTab(1, tabTrigger);
-        ((GWindowDialogControl) (wType)).cap.set(Plugin.i18n(item[actortrigger.type].name));
+        wType.cap.set(Plugin.i18n(item[actortrigger.type].name));
         wBTimeout.setChecked(actortrigger.bTimeout, false);
         wTimeoutH.setEnable(actortrigger.bTimeout);
         wTimeoutM.setEnable(actortrigger.bTimeout);
         wTimeoutH.setValue("" + (actortrigger.timeout / 60) % 24, false);
         wTimeoutM.setValue("" + actortrigger.timeout % 60, false);
         wR.setPos(actortrigger.r / 500, false);
-        ((GWindowDialogControl) (wRLabel)).cap.set(Plugin.i18n("Rayon") + " : " + actortrigger.r + " m");
+        wRLabel.cap.set(Plugin.i18n("Rayon") + " : " + actortrigger.r + " m");
         wProba.setValue("" + actortrigger.proba, false);
         wAMin.setValue("" + actortrigger.altiMin, false);
         wAMax.setValue("" + actortrigger.altiMax, false);
@@ -522,23 +535,23 @@ public class PlMisTrigger extends Plugin
             if(actortrigger.trigger != null)
             {
                 if(actortrigger.trigger instanceof PPoint)
-                    ((GWindowDialogControl) (wTriggerCibleLabel)).cap.set(actortrigger.trigger.getOwner().name());
+                    wTriggerCibleLabel.cap.set(actortrigger.trigger.getOwner().name());
                 else
-                    ((GWindowDialogControl) (wTriggerCibleLabel)).cap.set(actortrigger.trigger.name());
+                    wTriggerCibleLabel.cap.set(actortrigger.trigger.name());
             } else
             {
-                ((GWindowDialogControl) (wTriggerCibleLabel)).cap.set(Plugin.i18n("NoObject"));
+                wTriggerCibleLabel.cap.set(Plugin.i18n("NoObject"));
             }
         }
         if(actortrigger.link != null)
         {
             if(actortrigger.link instanceof PPoint)
-                ((GWindowDialogControl) (wTriggerLinkLabel)).cap.set(actortrigger.link.getOwner().name());
+                wTriggerLinkLabel.cap.set(actortrigger.link.getOwner().name());
             else
-                ((GWindowDialogControl) (wTriggerLinkLabel)).cap.set(actortrigger.link.name());
+                wTriggerLinkLabel.cap.set(actortrigger.link.name());
         } else
         {
-            ((GWindowDialogControl) (wTriggerLinkLabel)).cap.set(Plugin.i18n("NoLink"));
+            wTriggerLinkLabel.cap.set(Plugin.i18n("NoLink"));
         }
         if(actortrigger.type == 2)
         {
@@ -710,7 +723,7 @@ public class PlMisTrigger extends Plugin
                 if(actortrigger.r < 2)
                     actortrigger.r = 2;
                 PlMission.setChanged();
-                ((GWindowDialogControl) (wRLabel)).cap.set(Plugin.i18n("Rayon") + " : " + actortrigger.r + " m");
+                wRLabel.cap.set(Plugin.i18n("Rayon") + " : " + actortrigger.r + " m");
                 return false;
             }
 
@@ -740,7 +753,7 @@ public class PlMisTrigger extends Plugin
                 {
                     ActorTrigger actortrigger = (ActorTrigger)Plugin.builder.selectedActor();
                     actortrigger.setLink(null);
-                    ((GWindowDialogControl) (wTriggerLinkLabel)).cap.set(Plugin.i18n("NotSet"));
+                    wTriggerLinkLabel.cap.set(Plugin.i18n("NotSet"));
                     PlMission.setChanged();
                 }
                 return false;
@@ -986,7 +999,7 @@ public class PlMisTrigger extends Plugin
                 {
                     ActorTrigger actortrigger = (ActorTrigger)Plugin.builder.selectedActor();
                     actortrigger.setTrigger(null);
-                    ((GWindowDialogControl) (wTriggerCibleLabel)).cap.set(Plugin.i18n("NotSet"));
+                    wTriggerCibleLabel.cap.set(Plugin.i18n("NotSet"));
                     PlMission.setChanged();
 //                    return true;
                 }

@@ -3,18 +3,20 @@ package com.maddox.il2.engine;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.ground.TgtFlak;
+import com.maddox.il2.ai.ground.TgtInfantry;
 import com.maddox.il2.ai.ground.TgtTank;
 import com.maddox.il2.ai.ground.TgtTrain;
 import com.maddox.il2.ai.ground.TgtVehicle;
+import com.maddox.il2.builder.ActorTrigger;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
-import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.trains.Wagon;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.artillery.SArtillery;
@@ -46,10 +48,10 @@ public class CollideEnvXY extends CollideEnv
             default:
                 break;
 
-            case 0: // '\0'
+            case 0:
                 switch(k)
                 {
-                case 0: // '\0'
+                case 0:
                     x[1] = l - 1;
                     y[1] = j1;
                     x[2] = l - 1;
@@ -59,13 +61,13 @@ public class CollideEnvXY extends CollideEnv
                     count = 4;
                     break;
 
-                case 1: // '\001'
+                case 1:
                     x[1] = l;
                     y[1] = j1 - 1;
                     count = 2;
                     break;
 
-                case 2: // '\002'
+                case 2:
                     x[1] = l + 1;
                     y[1] = j1;
                     x[2] = l + 1;
@@ -77,20 +79,20 @@ public class CollideEnvXY extends CollideEnv
                 }
                 break;
 
-            case 1: // '\001'
+            case 1:
                 switch(k)
                 {
-                case 0: // '\0'
+                case 0:
                     x[1] = l - 1;
                     y[1] = j1;
                     count = 2;
                     break;
 
-                case 1: // '\001'
+                case 1:
                     count = 1;
                     break;
 
-                case 2: // '\002'
+                case 2:
                     x[1] = l + 1;
                     y[1] = j1;
                     count = 2;
@@ -98,10 +100,10 @@ public class CollideEnvXY extends CollideEnv
                 }
                 break;
 
-            case 2: // '\002'
+            case 2:
                 switch(k)
                 {
-                case 0: // '\0'
+                case 0:
                     x[1] = l - 1;
                     y[1] = j1;
                     x[2] = l - 1;
@@ -111,13 +113,13 @@ public class CollideEnvXY extends CollideEnv
                     count = 4;
                     break;
 
-                case 1: // '\001'
+                case 1:
                     x[1] = l;
                     y[1] = j1 + 1;
                     count = 2;
                     break;
 
-                case 2: // '\002'
+                case 2:
                     x[1] = l + 1;
                     y[1] = j1;
                     x[2] = l + 1;
@@ -133,10 +135,10 @@ public class CollideEnvXY extends CollideEnv
 
         public void make(Point3d point3d, float f)
         {
-            int i = (int)((point3d.x - (double)f - 96D) / 96D);
-            int j = (int)((point3d.x + (double)f + 96D) / 96D);
-            int k = (int)((point3d.y - (double)f - 96D) / 96D);
-            int l = (int)((point3d.y + (double)f + 96D) / 96D);
+            int i = (int)((point3d.x - f - 96D) / 96D);
+            int j = (int)((point3d.x + f + 96D) / 96D);
+            int k = (int)((point3d.y - f - 96D) / 96D);
+            int l = (int)((point3d.y + f + 96D) / 96D);
             int i1 = (j - i) + 1;
             int j1 = (l - k) + 1;
             count = i1 * j1;
@@ -191,7 +193,7 @@ public class CollideEnvXY extends CollideEnv
         double d12 = d4 - d1;
         double d13 = d5 - d2;
         double d14 = d11 * d11 + d12 * d12 + d13 * d13;
-        if(d14 < 9.9999999999999995E-007D)
+        if(d14 < 0.000001D)
             return d10 < (d - d6) * (d - d6) + (d1 - d7) * (d1 - d7) + (d2 - d8) * (d2 - d8) ? -1D : 0.0D;
         double d15 = ((d6 - d) * d11 + (d7 - d1) * d12 + (d8 - d2) * d13) / d14;
         if(d15 >= 0.0D && d15 <= 1.0D)
@@ -280,7 +282,7 @@ public class CollideEnvXY extends CollideEnv
                     p0.x += point3d.x - point3d1.x;
                 p0.y += point3d.y - point3d1.y;
                 p0.z += point3d.z - point3d1.z;
-                flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 9.9999999999999995E-007D;
+                flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 0.000001D;
                 if(flag)
                     d1 = intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
                 else
@@ -318,7 +320,7 @@ public class CollideEnvXY extends CollideEnv
     {
         _currentP = _current.pos.getCurrentPoint();
         _p = _current.pos.getAbsPoint();
-        if((_currentP.x - _p.x) * (_currentP.x - _p.x) + (_currentP.y - _p.y) * (_currentP.y - _p.y) + (_currentP.z - _p.z) * (_currentP.z - _p.z) < 9.9999999999999995E-007D)
+        if((_currentP.x - _p.x) * (_currentP.x - _p.x) + (_currentP.y - _p.y) * (_currentP.y - _p.y) + (_currentP.z - _p.z) * (_currentP.z - _p.z) < 0.000001D)
         {
             collidePoint();
             return;
@@ -397,7 +399,7 @@ public class CollideEnvXY extends CollideEnv
                     p0.x += point3d.x - point3d1.x;
                     p0.y += point3d.y - point3d1.y;
                     p0.z += point3d.z - point3d1.z;
-                    flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 9.9999999999999995E-007D;
+                    flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 0.000001D;
                     if(flag)
                         d1 = intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
                     else
@@ -973,7 +975,7 @@ public class CollideEnvXY extends CollideEnv
                     p0.x += point3d.x - point3d1.x;
                     p0.y += point3d.y - point3d1.y;
                     p0.z += point3d.z - point3d1.z;
-                    flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 9.9999999999999995E-007D;
+                    flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 0.000001D;
                     if(flag)
                         d1 = intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
                     else
@@ -1041,7 +1043,7 @@ public class CollideEnvXY extends CollideEnv
         _bulletArcade = (bulletgeneric.flags & 0x40000000) != 0;
         _currentP = bulletgeneric.p0;
         _p = bulletgeneric.p1;
-        if((_currentP.x - _p.x) * (_currentP.x - _p.x) + (_currentP.y - _p.y) * (_currentP.y - _p.y) + (_currentP.z - _p.z) * (_currentP.z - _p.z) < 9.9999999999999995E-007D)
+        if((_currentP.x - _p.x) * (_currentP.x - _p.x) + (_currentP.y - _p.y) * (_currentP.y - _p.y) + (_currentP.z - _p.z) * (_currentP.z - _p.z) < 0.000001D)
             return false;
         Actor actor = bulletgeneric.gunOwnerBody();
         makeBoundBox(_currentP.x, _currentP.y, _currentP.z, _p.x, _p.y, _p.z);
@@ -1218,7 +1220,7 @@ public class CollideEnvXY extends CollideEnv
 
     public Actor getLine(Point3d point3d, Point3d point3d1, boolean flag, Actor actor, Point3d point3d2)
     {
-        if((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z) < 9.9999999999999995E-007D)
+        if((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z) < 0.000001D)
             return null;
         _getLineP1.set(point3d1);
         point3d1 = _getLineP1;
@@ -1307,7 +1309,7 @@ public class CollideEnvXY extends CollideEnv
 
     public Actor getLine(Point3d point3d, Point3d point3d1, boolean flag, ActorFilter actorfilter, Point3d point3d2)
     {
-        if((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z) < 9.9999999999999995E-007D)
+        if((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z) < 0.000001D)
             return null;
         _getLineP1.set(point3d1);
         point3d1 = _getLineP1;
@@ -1649,85 +1651,100 @@ public class CollideEnvXY extends CollideEnv
         current.clear();
     }
 
-    public ResultTrigger getEnemiesInCyl(Point2d point2d, double d, double d1, double d2, 
-            int i, int typeActivate, int avionMin)
+    public ResultTrigger getEnemiesInCyl(Point2d triggerPoint, double radius, double altMin, double altMax, 
+            int triggerArmy, int typeActivate, int actorsMin)
     {
         int count = 0;
-        double moySea = 0.0D;
-        ArrayList listPass = new ArrayList();
-        int j = (int)(point2d.x - d) / 96;
-        int k = (int)(point2d.y - d) / 96;
-        int l = (int)(point2d.x + d) / 96;
-        int l1 = (int)(point2d.y + d) / 96;
-        for(int j1 = k; j1 <= l1; j1++)
+        double asl = 0.0D;
+        ArrayList listActorsAlreadyProcessed = new ArrayList();
+        int mapGridXMin = (int)(triggerPoint.x - radius) / 96;
+        int mapGridYMin = (int)(triggerPoint.y - radius) / 96;
+        int mapGridXMax = (int)(triggerPoint.x + radius) / 96;
+        int mapGripYMax = (int)(triggerPoint.y + radius) / 96;
+        for(int mapGridY = mapGridYMin; mapGridY <= mapGripYMax; mapGridY++)
         {
-            for(int k1 = j; k1 <= l; k1++)
+            for(int mapGridX = mapGridXMin; mapGridX <= mapGridXMax; mapGridX++)
             {
-                if(typeActivate != 5)
-                {
-                    HashMapExt hashmapext = mapXY.get(j1, k1);
-                    if(hashmapext != null)
+                if(typeActivate != ActorTrigger.TYPE_STATIC_AIRCRAFTS_ONLY)
+                { // We are not searching for static aircraft, so let's check all actors on the map.
+                    HashMapExt mapGridActorList = mapXY.get(mapGridY, mapGridX);
+                    if(mapGridActorList != null)
                     {
-                        for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                        for(Map.Entry mapGridActorEntry = mapGridActorList.nextEntry(null); mapGridActorEntry != null; mapGridActorEntry = mapGridActorList.nextEntry(mapGridActorEntry))
                         {
-                            Actor actor = (Actor)entry.getKey();
-                            int i2 = actor.getArmy();
-                            if(i2 == 0 || i2 == i || !actor.isAlive() || listPass.contains(actor))
+                            Actor actor = (Actor)mapGridActorEntry.getKey();
+                            int army = actor.getArmy();
+                            if(army == 0 || army == triggerArmy || !actor.isAlive() || listActorsAlreadyProcessed.contains(actor))
                                 continue;
-                            if(typeActivate == 1 || typeActivate == 2 || typeActivate == 4)
+                            if(typeActivate == ActorTrigger.TYPE_AI_AIRCRAFT_ONLY
+                                    || typeActivate == ActorTrigger.TYPE_HUMAN_AIRCRAFT_ONLY
+                                    || typeActivate == ActorTrigger.TYPE_MOVING_AIRCRAFTS_ONLY)
                             {
                                 if(!(actor instanceof Aircraft))
                                     continue;
-                                if(typeActivate != 4)
+                                if(typeActivate != ActorTrigger.TYPE_MOVING_AIRCRAFTS_ONLY)
                                 {
-                                    boolean flag = ((SndAircraft) ((Aircraft)actor)).FM.isPlayers() || ((Aircraft)actor).isNetPlayer();
-                                    if(typeActivate == 1 && flag || typeActivate == 2 && !flag)
+                                    boolean flag = ((Aircraft)actor).FM.isPlayers() || ((Aircraft)actor).isNetPlayer();
+                                    if(typeActivate == ActorTrigger.TYPE_AI_AIRCRAFT_ONLY && flag
+                                            || typeActivate == ActorTrigger.TYPE_HUMAN_AIRCRAFT_ONLY && !flag)
                                         continue;
                                 }
                             } else
-                            if(typeActivate == 3 && (actor instanceof Aircraft) || typeActivate == 6 && !(actor instanceof TankGeneric) && !(actor instanceof STank) && !(actor instanceof TgtTank) || typeActivate == 7 && (!(actor instanceof ArtilleryGeneric) && !(actor instanceof SArtillery) && !(actor instanceof TgtFlak)/* || (actor instanceof TgtInfantry)*/) || typeActivate == 8/* && !(actor instanceof TgtInfantry)*/ || typeActivate == 9 && !(actor instanceof BigshipGeneric) && !(actor instanceof ShipGeneric) || typeActivate == 10 && !(actor instanceof Wagon) && !(actor instanceof SWagon) && !(actor instanceof TgtTrain) || typeActivate == 11 && (!(actor instanceof CarGeneric) && !(actor instanceof TgtVehicle)/* || (actor instanceof TgtInfantry)*/))
+                            if(typeActivate == ActorTrigger.TYPE_GROUND_OBJECTS_ONLY && (actor instanceof Aircraft)
+                                || typeActivate == ActorTrigger.TYPE_ARMOUR_ONLY && !(actor instanceof TankGeneric) && !(actor instanceof STank) && !(actor instanceof TgtTank)
+                                || typeActivate == ActorTrigger.TYPE_ARTILLERY_ONLY && ((!(actor instanceof ArtilleryGeneric) && !(actor instanceof SArtillery) && !(actor instanceof TgtFlak)) || (actor instanceof TgtInfantry))
+                                || typeActivate == ActorTrigger.TYPE_INFANTRY_ONLY && !(actor instanceof TgtInfantry)
+                                || typeActivate == ActorTrigger.TYPE_SHIPS_ONLY && !(actor instanceof BigshipGeneric) && !(actor instanceof ShipGeneric)
+                                || typeActivate == ActorTrigger.TYPE_TRAINS_ONLY && !(actor instanceof Wagon) && !(actor instanceof SWagon) && !(actor instanceof TgtTrain)
+                                || typeActivate == ActorTrigger.TYPE_VEHICLES_ONLY && ((!(actor instanceof CarGeneric) && !(actor instanceof TgtVehicle)) || (actor instanceof TgtInfantry)))
                                 continue;
-                            Point3d point3d1 = actor.pos.getAbsPoint();
-                            if(point2d.distance(new Point2d(point3d1.x, point3d1.y)) < d && point3d1.z <= d2 && point3d1.z >= d1)
+                            Point3d actorPoint = actor.pos.getAbsPoint();
+                            if(triggerPoint.distance(new Point2d(actorPoint.x, actorPoint.y)) < radius && actorPoint.z <= altMax && actorPoint.z >= altMin)
                             {
                                 count++;
-                                listPass.add(actor);
-                                moySea += point3d1.z;
-                                if(count >= avionMin)
-                                    return new CollideEnv.ResultTrigger(true, moySea / (double)count);
+                                listActorsAlreadyProcessed.add(actor);
+                                asl += actorPoint.z;
+                                if(count >= actorsMin)
+                                    return new CollideEnv.ResultTrigger(true, asl / (double)count);
                             }
                         }
 
                     }
                 }
-                if(typeActivate != 1 && typeActivate != 2 && typeActivate != 4)
-                {
-                    List list = lstXY.get(j1, k1);
-                    if(list != null)
+                if(typeActivate != ActorTrigger.TYPE_AI_AIRCRAFT_ONLY && typeActivate != ActorTrigger.TYPE_HUMAN_AIRCRAFT_ONLY && typeActivate != ActorTrigger.TYPE_MOVING_AIRCRAFTS_ONLY)
+                { // We are searching for things that could be static, let's walk through the list of statics.
+                    List staticActorsList = lstXY.get(mapGridY, mapGridX);
+                    if(staticActorsList != null)
                     {
-                        int l10 = list.size();
-                        for(int j2 = 0; j2 < l10; j2++)
+                        for(int staticActorsIndex = 0; staticActorsIndex < staticActorsList.size(); staticActorsIndex++)
                         {
-                            Actor actor = (Actor)list.get(j2);
-                            int i2 = actor.getArmy();
-                            if(i2 != 0 && i2 != i && actor.isAlive() && !listPass.contains(actor) && (typeActivate != 5 || (actor instanceof PlaneGeneric)) && (typeActivate != 6 || (actor instanceof TankGeneric) || (actor instanceof STank) || (actor instanceof TgtTank)) && (typeActivate != 7 || ((actor instanceof ArtilleryGeneric) || (actor instanceof SArtillery) || (actor instanceof TgtFlak))/* && !(actor instanceof TgtInfantry)*/) && (typeActivate != 8/* || (actor instanceof TgtInfantry)*/) && (typeActivate != 9 || (actor instanceof BigshipGeneric) || (actor instanceof ShipGeneric)) && (typeActivate != 10 || (actor instanceof Wagon) || (actor instanceof SWagon) || (actor instanceof TgtTrain)) && (typeActivate != 11 || ((actor instanceof CarGeneric) || (actor instanceof TgtVehicle))/* && !(actor instanceof TgtInfantry)*/))
+                            Actor actor = (Actor)staticActorsList.get(staticActorsIndex);
+                            int army = actor.getArmy();
+                            
+                            if(army == 0 || army == triggerArmy || !actor.isAlive() || listActorsAlreadyProcessed.contains(actor))
+                                continue;
+
+                            if(typeActivate == ActorTrigger.TYPE_STATIC_AIRCRAFTS_ONLY && !(actor instanceof PlaneGeneric)
+                                    || typeActivate == ActorTrigger.TYPE_ARMOUR_ONLY && !(actor instanceof TankGeneric) && !(actor instanceof STank) && !(actor instanceof TgtTank)
+                                    || typeActivate == ActorTrigger.TYPE_ARTILLERY_ONLY && ((!(actor instanceof ArtilleryGeneric) && !(actor instanceof SArtillery) && !(actor instanceof TgtFlak)) || (actor instanceof TgtInfantry))
+                                    || typeActivate == ActorTrigger.TYPE_INFANTRY_ONLY && !(actor instanceof TgtInfantry)
+                                    || typeActivate == ActorTrigger.TYPE_SHIPS_ONLY && !(actor instanceof BigshipGeneric) && !(actor instanceof ShipGeneric)
+                                    || typeActivate == ActorTrigger.TYPE_TRAINS_ONLY && !(actor instanceof Wagon) && !(actor instanceof SWagon) && !(actor instanceof TgtTrain)
+                                    || typeActivate == ActorTrigger.TYPE_VEHICLES_ONLY && ((!(actor instanceof CarGeneric) && !(actor instanceof TgtVehicle)) || (actor instanceof TgtInfantry)))
+                                continue;
+                            Point3d actorPoint = actor.pos.getAbsPoint();
+                            if(triggerPoint.distance(new Point2d(actorPoint.x, actorPoint.y)) < radius && actorPoint.z <= altMax && actorPoint.z >= altMin)
                             {
-                                Point3d point3d1 = actor.pos.getAbsPoint();
-                                if(point2d.distance(new Point2d(point3d1.x, point3d1.y)) < d && point3d1.z <= d2 && point3d1.z >= d1)
-                                {
-                                    count++;
-                                    listPass.add(actor);
-                                    moySea += point3d1.z;
-                                    if(count >= avionMin)
-                                        return new CollideEnv.ResultTrigger(true, moySea / (double)count);
-                                }
+                                count++;
+                                listActorsAlreadyProcessed.add(actor);
+                                asl += actorPoint.z;
+                                if(count >= actorsMin)
+                                    return new CollideEnv.ResultTrigger(true, asl / (double)count);
                             }
                         }
-
                     }
                 }
             }
-
         }
 
         return new CollideEnv.ResultTrigger(false);
