@@ -1230,9 +1230,9 @@ public class EventLog {
         if(!Mission.isPlaying())
             return;
         if(obj_triggered == null)
-            type(TRIGGER_MESSAGE, World.getTimeofDay(), trigger.name, "", 0, (float)trigger.posTigger.x, (float)trigger.posTigger.y, true);
+            type(TRIGGER_MESSAGE, World.getTimeofDay(), trigger.getTriggerName(), "", 0, (float)trigger.getPosTigger().x, (float)trigger.getPosTigger().y, true);
         else
-            type(TRIGGER, World.getTimeofDay(), trigger.name, obj_triggered.name(), obj_triggered.getArmy(), (float)trigger.posTigger.x, (float)trigger.posTigger.y, true);
+            type(TRIGGER, World.getTimeofDay(), trigger.getTriggerName(), obj_triggered.name(), obj_triggered.getArmy(), (float)trigger.getPosTigger().x, (float)trigger.getPosTigger().y, true);
     }
 
     public static void onTriggerActivateLink(Actor obj_triggered, Trigger trigger)
@@ -1241,9 +1241,9 @@ public class EventLog {
             return;
         com.maddox.JGP.Point2d pos = trigger.getPosLink();
         if(obj_triggered == null)
-            type(TRIGGER_MESSAGE_LINK, World.getTimeofDay(), trigger.sLink, "", trigger.name, 0, (float)((Tuple2d) (pos)).x, (float)((Tuple2d) (pos)).y, true);
+            type(TRIGGER_MESSAGE_LINK, World.getTimeofDay(), trigger.getLinkActorName(), "", trigger.getTriggerName(), 0, (float)((Tuple2d) (pos)).x, (float)((Tuple2d) (pos)).y, true);
         else
-            type(TRIGGER_LINK, World.getTimeofDay(), trigger.sLink, obj_triggered.name(), trigger.name, obj_triggered.getArmy(), (float)((Tuple2d) (pos)).x, (float)((Tuple2d) (pos)).y, true);
+            type(TRIGGER_LINK, World.getTimeofDay(), trigger.getLinkActorName(), obj_triggered.name(), trigger.getTriggerName(), obj_triggered.getArmy(), (float)((Tuple2d) (pos)).x, (float)((Tuple2d) (pos)).y, true);
     }
     // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
     

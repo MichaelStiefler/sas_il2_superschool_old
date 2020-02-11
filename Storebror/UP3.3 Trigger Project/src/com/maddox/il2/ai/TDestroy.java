@@ -16,7 +16,7 @@ class TDestroy extends Target
     {
         if(actor != null && alive > 0)
             return true;
-        if(World.cur().triggersGuard.listTriggerAvionAppar.contains(nameTarget) || World.cur().triggersGuard.listTriggerChiefAppar.contains(nameTarget) || World.cur().triggersGuard.listTriggerStaticAppar.contains(nameTarget))
+        if(World.cur().triggersGuard.getListTriggerAircraftSpawn().contains(nameTarget) || World.cur().triggersGuard.getListTriggerChiefSpawn().contains(nameTarget) || World.cur().triggersGuard.getListTriggerStaticSpawn().contains(nameTarget))
             return true;
         actor = Actor.getByName(nameTarget);
         if(actor != null && alive == -1)

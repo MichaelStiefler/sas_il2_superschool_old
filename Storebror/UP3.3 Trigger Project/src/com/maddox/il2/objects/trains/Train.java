@@ -121,7 +121,7 @@ public class Train extends Chief {
             this.recomputeSpeedRequirements(this.road.get(this.headSeg).length2Dallprev + this.headAlong - this.trainLength);
             // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
 //            if (!this.interpEnd("move"))
-            if(!interpEnd("move") && !World.cur().triggersGuard.listTriggerChiefSol.contains(string))
+            if(!interpEnd("move") && !World.cur().triggersGuard.getListTriggerChiefActivate().contains(string))
                 // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
                 this.interpPut(new Move(), "move", Time.current(), null);
         } catch (Exception exception) {

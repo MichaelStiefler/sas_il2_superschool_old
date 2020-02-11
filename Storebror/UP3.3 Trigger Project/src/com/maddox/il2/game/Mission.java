@@ -1108,7 +1108,7 @@ public class Mission implements Destroy {
                 }
             } else 
                 // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-                if(!World.cur().triggersGuard.listTriggerAvionAppar.contains(string)) 
+                if(!World.cur().triggersGuard.getListTriggerAircraftSpawn().contains(string)) 
                     // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
                 {
                 NetAircraft.loadingCoopPlane = Main.cur().netServerParams != null && Main.cur().netServerParams.isCoop();
@@ -1436,7 +1436,7 @@ public class Mission implements Destroy {
                 NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, i_71_));
                 String string = numbertokenizer.next();
                 // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-                if(!flagTrigger && World.cur().triggersGuard.listTriggerChiefAppar.contains(string) || flagTrigger && !string.equals(s))
+                if(!flagTrigger && World.cur().triggersGuard.getListTriggerChiefSpawn().contains(string) || flagTrigger && !string.equals(s))
                     continue;
                 // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
                 String string_72_ = numbertokenizer.next();
@@ -1658,7 +1658,7 @@ public class Mission implements Destroy {
 //                    this.loadStationaryActor(numbertokenizer.next(""), numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F),
 //                            numbertokenizer.next((String) null), numbertokenizer.next((String) null), numbertokenizer.next((String) null));
                     String curName = numbertokenizer.next("");
-                    if(!World.cur().triggersGuard.listTriggerStaticAppar.contains(curName))
+                    if(!World.cur().triggersGuard.getListTriggerStaticSpawn().contains(curName))
                       this.loadStationaryActor(curName, numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0), numbertokenizer.next(0.0), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F),
                                               numbertokenizer.next((String) null), numbertokenizer.next((String) null), numbertokenizer.next((String) null));
                     // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
@@ -2289,6 +2289,10 @@ public class Mission implements Destroy {
         }
         EventLog.type(true, "Mission: " + this.name() + " is Playing");
         EventLog.type("Mission BEGIN");
+        
+        // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
+        HUD.clearWaitingList();
+        // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
 
         // TODO: Added by |ZUTI|: reset server time!
         if (Main.cur().netServerParams != null) ZutiSupportMethods_Net.resetServerTime(Main.cur().netServerParams);
@@ -2330,6 +2334,10 @@ public class Mission implements Destroy {
         try {
             if (this.bPlaying) {
                 EventLog.type("Mission END");
+                // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
+                HUD.clearWaitingList();
+                // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
+
                 // TODO: +++ Auto NTRK recording Mod by SAS~Storebror +++
                 NetMissionTrack.stopRecording();
                 // TODO: --- Auto NTRK recording Mod by SAS~Storebror ---

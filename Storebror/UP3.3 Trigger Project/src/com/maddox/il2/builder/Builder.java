@@ -1444,7 +1444,7 @@ public class Builder {
         ActorTrigger actortrigger = (ActorTrigger)selectedActor();
         if(!Actor.isValid(actor))
             return;
-        actortrigger.setTrigger(actor);
+        actortrigger.setTriggerActor(actor);
         setSelected(actortrigger);
         Plugin plugin = (Plugin)Property.value(actortrigger, "builderPlugin");
         if(plugin != null)
@@ -1489,7 +1489,7 @@ public class Builder {
         ActorTrigger actortrigger = (ActorTrigger)selectedActor();
         if(!Actor.isValid(actor))
             return;
-        actortrigger.setLink(actor);
+        actortrigger.setLinkActor(actor);
         setSelected(actortrigger);
         Plugin plugin = (Plugin)Property.value(actortrigger, "builderPlugin");
         if(plugin != null)

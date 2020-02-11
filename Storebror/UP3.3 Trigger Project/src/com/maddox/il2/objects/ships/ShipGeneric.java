@@ -902,7 +902,7 @@ public class ShipGeneric extends ActorHMesh implements MsgCollisionRequestListen
             if (!this.isNetMirror() && this.prop.nGuns > 0 && this.DELAY_WAKEUP > 0.0F) this.wakeupTmr = -SecsToTicks(Rnd(2.0F, 7.0F));
             // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
 //            if (!this.interpEnd("move"))
-            if(!World.cur().triggersGuard.listTriggerChiefSol.contains(string) && !interpEnd("move"))
+            if(!World.cur().triggersGuard.getListTriggerChiefActivate().contains(string) && !interpEnd("move"))
                 // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
                 this.interpPut(new Move(), "move", Time.current(), null);
         } catch (Exception exception) {
