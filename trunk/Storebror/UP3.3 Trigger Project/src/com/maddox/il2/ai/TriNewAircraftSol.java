@@ -1,3 +1,7 @@
+// TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
+// This class is completely new to Triggers
+// Rewritten and refactored by SAS~Storebror
+
 package com.maddox.il2.ai;
 
 import java.util.Random;
@@ -7,97 +11,75 @@ import com.maddox.il2.ai.ground.ChiefGround;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.net.NetUser;
+import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
-import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.trains.Train;
 import com.maddox.il2.objects.vehicles.artillery.RocketryGeneric;
 import com.maddox.rts.NetEnv;
 
-public class TriNewAircraftSol extends Trigger
-{
+public class TriNewAircraftSol extends Trigger {
 
-    public TriNewAircraftSol(String zname, int i, int j, int posx, int posy, int r, String s, 
-            int zmin, int zmax, int ziaHumans, boolean bSortie, int zAvionMin, int zProba, String zsLink, 
-            String sTextDisplay, int zTextDuree)
-    {
-        super(zname, i, j, posx, posy, r, zmin, zmax, ziaHumans, bSortie, zAvionMin, zProba, zsLink, sTextDisplay, zTextDuree);
-        nameTarget = s;
-        if(nameTarget == "" || nameTarget == null)
-            destroy();
-        if(nameTarget.indexOf("Chief") >= 0 || nameTarget.indexOf("Rocket") >= 0)
-            World.cur().triggersGuard.listTriggerChiefSol.add(nameTarget);
-        else
-            World.cur().triggersGuard.listTriggerAvionSol.add(nameTarget);
+    public TriNewAircraftSol(String triggerName, int triggeredByArmy, int timeout, int posX, int posY, int radius, String targetActorName, int altitudeMin, int altitudeMax, int triggeredBy, boolean hasTriggerActor, int noObjectsMin, int probability,
+            String linkActorName, String displayMessage, int displayTime) {
+        super(triggerName, triggeredByArmy, timeout, posX, posY, radius, altitudeMin, altitudeMax, triggeredBy, hasTriggerActor, noObjectsMin, probability, linkActorName, displayMessage, displayTime);
+        this.setTargetActorName(targetActorName);
+        if (this.getTargetActorName() == "" || this.getTargetActorName() == null) this.destroy();
+        if (this.getTargetActorName().indexOf("Chief") >= 0 || this.getTargetActorName().indexOf("Rocket") >= 0) World.cur().triggersGuard.getListTriggerChiefActivate().add(this.getTargetActorName());
+        else World.cur().triggersGuard.getListTriggerAircraftActivate().add(this.getTargetActorName());
     }
 
-    protected void execute()
-    {
-        Random r = new Random();
-        float f = r.nextFloat() * 100F + 1.0F;
-        if(f <= (float)super.proba)
-        {
-            super.declanche = true;
-            if(nameTarget != null)
-            {
-                if(nameTarget.indexOf("Chief") >= 0 || nameTarget.indexOf("Rocket") >= 0)
-                {
-                    if(Main.cur().netServerParams.isMaster())
-                        ((NetUser)NetEnv.host()).replicateTriggerStartGround(nameTarget);
-                    startGround(nameTarget);
-                } else
-                {
-                    Wing wing = (Wing)Actor.getByName(nameTarget);
-                    for(int i = 0; i < 4; i++)
-                        if(wing.airc[i] != null)
-                        {
-                            com.maddox.il2.objects.air.Aircraft aircraft = wing.airc[i];
-                            if(((SndAircraft) (aircraft)).FM instanceof Maneuver)
-                                ((Maneuver)((SndAircraft) (aircraft)).FM).triggerTakeOff = true;
+    protected void execute() {
+        if (new Random().nextFloat() * 100F + 1.0F <= this.getProbability()) {
+            this.setTriggered(true);
+            if (this.getTargetActorName() != null) {
+                if (this.getTargetActorName().indexOf("Chief") >= 0 || this.getTargetActorName().indexOf("Rocket") >= 0) {
+                    if (Main.cur().netServerParams.isMaster()) ((NetUser) NetEnv.host()).replicateTriggerStartGround(this.getTargetActorName());
+                    startGround(this.getTargetActorName());
+                } else {
+                    Wing wing = (Wing) Actor.getByName(this.getTargetActorName());
+                    for (int i = 0; i < 4; i++)
+                        if (wing.airc[i] != null) {
+                            Aircraft aircraft = wing.airc[i];
+                            if (aircraft.FM instanceof Maneuver) ((Maneuver) aircraft.FM).triggerTakeOff = true;
                         }
 
                 }
-                if(super.sLink == "" || super.sLink == null)
-                {
-                    EventLog.onTriggerActivate(Actor.getByName(nameTarget), this);
-                    doSendMsg(false);
-                } else
-                {
-                    EventLog.onTriggerActivateLink(Actor.getByName(nameTarget), this);
-                    doSendMsg(true);
+                if (this.getLinkActorName() == "" || this.getLinkActorName() == null) {
+                    EventLog.onTriggerActivate(Actor.getByName(this.getTargetActorName()), this);
+                    this.doSendMsg(false);
+                } else {
+                    EventLog.onTriggerActivateLink(Actor.getByName(this.getTargetActorName()), this);
+                    this.doSendMsg(true);
                 }
             }
         }
         super.execute();
     }
 
-    public void destroy()
-    {
+    public void destroy() {
         super.destroy();
-        if(nameTarget.indexOf("Chief") >= 0 || nameTarget.indexOf("Rocket") >= 0)
-            World.cur().triggersGuard.listTriggerChiefSol.remove(World.cur().triggersGuard.listTriggerChiefSol.indexOf(nameTarget));
-        else
-            World.cur().triggersGuard.listTriggerAvionSol.remove(World.cur().triggersGuard.listTriggerAvionSol.indexOf(nameTarget));
+        if (this.getTargetActorName().indexOf("Chief") >= 0 || this.getTargetActorName().indexOf("Rocket") >= 0)
+            World.cur().triggersGuard.getListTriggerChiefActivate().remove(World.cur().triggersGuard.getListTriggerChiefActivate().indexOf(this.getTargetActorName()));
+        else World.cur().triggersGuard.getListTriggerAircraftActivate().remove(World.cur().triggersGuard.getListTriggerAircraftActivate().indexOf(this.getTargetActorName()));
     }
 
-    public static void startGround(String nameUnit)
-    {
+    public static void startGround(String nameUnit) {
         Actor actor = Actor.getByName(nameUnit);
-        if(actor instanceof RocketryGeneric)
-            ((RocketryGeneric)actor).startMove();
-        else
-        if(actor instanceof Train)
-            ((Train)actor).startMove();
-        else
-        if(actor instanceof BigshipGeneric)
-            ((BigshipGeneric)actor).startMove();
-        else
-        if(actor instanceof ShipGeneric)
-            ((ShipGeneric)actor).startMove();
-        else
-        if(actor instanceof ChiefGround)
-            ((ChiefGround)actor).startMove();
+        if (actor instanceof RocketryGeneric) ((RocketryGeneric) actor).startMove();
+        else if (actor instanceof Train) ((Train) actor).startMove();
+        else if (actor instanceof BigshipGeneric) ((BigshipGeneric) actor).startMove();
+        else if (actor instanceof ShipGeneric) ((ShipGeneric) actor).startMove();
+        else if (actor instanceof ChiefGround) ((ChiefGround) actor).startMove();
     }
 
-    String nameTarget;
+    public String getTargetActorName() {
+        return this.targetActorName;
+    }
+
+    public void setTargetActorName(String targetActorName) {
+        this.targetActorName = targetActorName;
+    }
+
+    private String targetActorName;
 }

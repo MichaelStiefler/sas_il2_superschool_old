@@ -2068,7 +2068,7 @@ public class BigshipGeneric extends ActorHMesh implements MsgCollisionRequestLis
 
             // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
 //            if (!this.interpEnd("move"))
-            if(!World.cur().triggersGuard.listTriggerChiefSol.contains(string) && !interpEnd("move"))
+            if(!World.cur().triggersGuard.getListTriggerChiefActivate().contains(string) && !interpEnd("move"))
                 // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
             {
                 this.interpPut(new Move(), "move", Time.current(), null);

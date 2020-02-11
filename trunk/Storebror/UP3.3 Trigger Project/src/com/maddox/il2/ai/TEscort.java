@@ -16,7 +16,7 @@ class TEscort extends Target
     {
         if(actor != null && alive > 0)
             return true;
-        if(World.cur().triggersGuard.listTriggerAvionAppar.contains(nameTarget))
+        if(World.cur().triggersGuard.getListTriggerAircraftSpawn().contains(nameTarget))
             return false;
         actor = Actor.getByName(nameTarget);
         if(actor != null && alive == -1)

@@ -976,6 +976,7 @@ public class HUD {
         if(msgWaitingList.size() > 0)
             if(logTriggerTime != 0L && l > logTriggerTime + (long)((MsgWaiting)msgWaitingList.get(0)).getLast())
             {
+                System.out.println("HUD removing \"" + ((MsgWaiting)msgWaitingList.get(0)).getMsg() + "\" (" + ((MsgWaiting)msgWaitingList.get(0)).getLast() + "ms)");
                 msgWaitingList.remove(0);
                 logTriggerTime = 0L;
             } else
@@ -1497,7 +1498,13 @@ public class HUD {
     // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
     public static void addMsgToWaitingList(String s, int i)
     {
+        System.out.println("addMsgToWaitingList (" + s + ", " + i + ")");
         msgWaitingList.add(new MsgWaiting(s, i));
+    }
+    public static void clearWaitingList()
+    {
+        System.out.println("clearWaitingList");
+        msgWaitingList.clear();
     }
     // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
 

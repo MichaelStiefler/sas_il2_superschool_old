@@ -613,7 +613,7 @@ public class RocketryGeneric extends ActorMesh implements MsgCollisionListener, 
         this.actionTimeMS = 9223372036854775807L;
         this.createNetObject(netchannel, i_44_);
         // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-        if(!World.cur().triggersGuard.listTriggerChiefSol.contains(string))
+        if(!World.cur().triggersGuard.getListTriggerChiefActivate().contains(string))
         {
             // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
             if (this.targetPos != null) if (this.isNetMaster()) {

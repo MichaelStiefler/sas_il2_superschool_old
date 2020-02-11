@@ -186,8 +186,8 @@ public class Way {
         // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
         double altiTrigger = -1D;
         double diffAltiFist = -999999D;
-        if(World.cur().triggersGuard.listTriggerAvionAirLevel.contains(string.substring(0, string.length() - 4)))
-            altiTrigger = World.cur().triggersGuard.getTriggerCible(string.substring(0, string.length() - 4)).getAlti();
+        if(World.cur().triggersGuard.getListTriggerAircraftAirSpawnRelativeAltitude().contains(string.substring(0, string.length() - 4)))
+            altiTrigger = World.cur().triggersGuard.getTriggerTarget(string.substring(0, string.length() - 4)).getAltitude();
         // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
         for (int k = 0; k < j; k++) {
             String s1 = sectfile.var(i, k);

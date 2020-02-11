@@ -1665,7 +1665,7 @@ public class CollideEnvXY extends CollideEnv
         {
             for(int mapGridX = mapGridXMin; mapGridX <= mapGridXMax; mapGridX++)
             {
-                if(typeActivate != ActorTrigger.TYPE_STATIC_AIRCRAFTS_ONLY)
+                if(typeActivate != ActorTrigger.TRIGGERED_BY_STATIC_AIRCRAFTS_ONLY)
                 { // We are not searching for static aircraft, so let's check all actors on the map.
                     HashMapExt mapGridActorList = mapXY.get(mapGridY, mapGridX);
                     if(mapGridActorList != null)
@@ -1676,27 +1676,27 @@ public class CollideEnvXY extends CollideEnv
                             int army = actor.getArmy();
                             if(army == 0 || army == triggerArmy || !actor.isAlive() || listActorsAlreadyProcessed.contains(actor))
                                 continue;
-                            if(typeActivate == ActorTrigger.TYPE_AI_AIRCRAFT_ONLY
-                                    || typeActivate == ActorTrigger.TYPE_HUMAN_AIRCRAFT_ONLY
-                                    || typeActivate == ActorTrigger.TYPE_MOVING_AIRCRAFTS_ONLY)
+                            if(typeActivate == ActorTrigger.TRIGGERED_BY_AI_AIRCRAFT_ONLY
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_HUMAN_AIRCRAFT_ONLY
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_MOVING_AIRCRAFTS_ONLY)
                             {
                                 if(!(actor instanceof Aircraft))
                                     continue;
-                                if(typeActivate != ActorTrigger.TYPE_MOVING_AIRCRAFTS_ONLY)
+                                if(typeActivate != ActorTrigger.TRIGGERED_BY_MOVING_AIRCRAFTS_ONLY)
                                 {
                                     boolean flag = ((Aircraft)actor).FM.isPlayers() || ((Aircraft)actor).isNetPlayer();
-                                    if(typeActivate == ActorTrigger.TYPE_AI_AIRCRAFT_ONLY && flag
-                                            || typeActivate == ActorTrigger.TYPE_HUMAN_AIRCRAFT_ONLY && !flag)
+                                    if(typeActivate == ActorTrigger.TRIGGERED_BY_AI_AIRCRAFT_ONLY && flag
+                                            || typeActivate == ActorTrigger.TRIGGERED_BY_HUMAN_AIRCRAFT_ONLY && !flag)
                                         continue;
                                 }
                             } else
-                            if(typeActivate == ActorTrigger.TYPE_GROUND_OBJECTS_ONLY && (actor instanceof Aircraft)
-                                || typeActivate == ActorTrigger.TYPE_ARMOUR_ONLY && !(actor instanceof TankGeneric) && !(actor instanceof STank) && !(actor instanceof TgtTank)
-                                || typeActivate == ActorTrigger.TYPE_ARTILLERY_ONLY && ((!(actor instanceof ArtilleryGeneric) && !(actor instanceof SArtillery) && !(actor instanceof TgtFlak)) || (actor instanceof TgtInfantry))
-                                || typeActivate == ActorTrigger.TYPE_INFANTRY_ONLY && !(actor instanceof TgtInfantry)
-                                || typeActivate == ActorTrigger.TYPE_SHIPS_ONLY && !(actor instanceof BigshipGeneric) && !(actor instanceof ShipGeneric)
-                                || typeActivate == ActorTrigger.TYPE_TRAINS_ONLY && !(actor instanceof Wagon) && !(actor instanceof SWagon) && !(actor instanceof TgtTrain)
-                                || typeActivate == ActorTrigger.TYPE_VEHICLES_ONLY && ((!(actor instanceof CarGeneric) && !(actor instanceof TgtVehicle)) || (actor instanceof TgtInfantry)))
+                            if(typeActivate == ActorTrigger.TRIGGERED_BY_GROUND_OBJECTS_ONLY && (actor instanceof Aircraft)
+                                || typeActivate == ActorTrigger.TRIGGERED_BY_ARMOUR_ONLY && !(actor instanceof TankGeneric) && !(actor instanceof STank) && !(actor instanceof TgtTank)
+                                || typeActivate == ActorTrigger.TRIGGERED_BY_ARTILLERY_ONLY && ((!(actor instanceof ArtilleryGeneric) && !(actor instanceof SArtillery) && !(actor instanceof TgtFlak)) || (actor instanceof TgtInfantry))
+                                || typeActivate == ActorTrigger.TRIGGERED_BY_INFANTRY_ONLY && !(actor instanceof TgtInfantry)
+                                || typeActivate == ActorTrigger.TRIGGERED_BY_SHIPS_ONLY && !(actor instanceof BigshipGeneric) && !(actor instanceof ShipGeneric)
+                                || typeActivate == ActorTrigger.TRIGGERED_BY_TRAINS_ONLY && !(actor instanceof Wagon) && !(actor instanceof SWagon) && !(actor instanceof TgtTrain)
+                                || typeActivate == ActorTrigger.TRIGGERED_BY_VEHICLES_ONLY && ((!(actor instanceof CarGeneric) && !(actor instanceof TgtVehicle)) || (actor instanceof TgtInfantry)))
                                 continue;
                             Point3d actorPoint = actor.pos.getAbsPoint();
                             if(triggerPoint.distance(new Point2d(actorPoint.x, actorPoint.y)) < radius && actorPoint.z <= altMax && actorPoint.z >= altMin)
@@ -1711,7 +1711,7 @@ public class CollideEnvXY extends CollideEnv
 
                     }
                 }
-                if(typeActivate != ActorTrigger.TYPE_AI_AIRCRAFT_ONLY && typeActivate != ActorTrigger.TYPE_HUMAN_AIRCRAFT_ONLY && typeActivate != ActorTrigger.TYPE_MOVING_AIRCRAFTS_ONLY)
+                if(typeActivate != ActorTrigger.TRIGGERED_BY_AI_AIRCRAFT_ONLY && typeActivate != ActorTrigger.TRIGGERED_BY_HUMAN_AIRCRAFT_ONLY && typeActivate != ActorTrigger.TRIGGERED_BY_MOVING_AIRCRAFTS_ONLY)
                 { // We are searching for things that could be static, let's walk through the list of statics.
                     List staticActorsList = lstXY.get(mapGridY, mapGridX);
                     if(staticActorsList != null)
@@ -1724,13 +1724,13 @@ public class CollideEnvXY extends CollideEnv
                             if(army == 0 || army == triggerArmy || !actor.isAlive() || listActorsAlreadyProcessed.contains(actor))
                                 continue;
 
-                            if(typeActivate == ActorTrigger.TYPE_STATIC_AIRCRAFTS_ONLY && !(actor instanceof PlaneGeneric)
-                                    || typeActivate == ActorTrigger.TYPE_ARMOUR_ONLY && !(actor instanceof TankGeneric) && !(actor instanceof STank) && !(actor instanceof TgtTank)
-                                    || typeActivate == ActorTrigger.TYPE_ARTILLERY_ONLY && ((!(actor instanceof ArtilleryGeneric) && !(actor instanceof SArtillery) && !(actor instanceof TgtFlak)) || (actor instanceof TgtInfantry))
-                                    || typeActivate == ActorTrigger.TYPE_INFANTRY_ONLY && !(actor instanceof TgtInfantry)
-                                    || typeActivate == ActorTrigger.TYPE_SHIPS_ONLY && !(actor instanceof BigshipGeneric) && !(actor instanceof ShipGeneric)
-                                    || typeActivate == ActorTrigger.TYPE_TRAINS_ONLY && !(actor instanceof Wagon) && !(actor instanceof SWagon) && !(actor instanceof TgtTrain)
-                                    || typeActivate == ActorTrigger.TYPE_VEHICLES_ONLY && ((!(actor instanceof CarGeneric) && !(actor instanceof TgtVehicle)) || (actor instanceof TgtInfantry)))
+                            if(typeActivate == ActorTrigger.TRIGGERED_BY_STATIC_AIRCRAFTS_ONLY && !(actor instanceof PlaneGeneric)
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_ARMOUR_ONLY && !(actor instanceof TankGeneric) && !(actor instanceof STank) && !(actor instanceof TgtTank)
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_ARTILLERY_ONLY && ((!(actor instanceof ArtilleryGeneric) && !(actor instanceof SArtillery) && !(actor instanceof TgtFlak)) || (actor instanceof TgtInfantry))
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_INFANTRY_ONLY && !(actor instanceof TgtInfantry)
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_SHIPS_ONLY && !(actor instanceof BigshipGeneric) && !(actor instanceof ShipGeneric)
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_TRAINS_ONLY && !(actor instanceof Wagon) && !(actor instanceof SWagon) && !(actor instanceof TgtTrain)
+                                    || typeActivate == ActorTrigger.TRIGGERED_BY_VEHICLES_ONLY && ((!(actor instanceof CarGeneric) && !(actor instanceof TgtVehicle)) || (actor instanceof TgtInfantry)))
                                 continue;
                             Point3d actorPoint = actor.pos.getAbsPoint();
                             if(triggerPoint.distance(new Point2d(actorPoint.x, actorPoint.y)) < radius && actorPoint.z <= altMax && actorPoint.z >= altMin)

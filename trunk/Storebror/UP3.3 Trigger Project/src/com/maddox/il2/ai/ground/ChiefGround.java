@@ -557,7 +557,7 @@ public class ChiefGround extends Chief implements MsgDreamListener {
                     actor.pos.setAbs(orient);
                     actor.pos.reset();
                     // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-                    if(!World.cur().triggersGuard.listTriggerChiefSol.contains(name()))
+                    if(!World.cur().triggersGuard.getListTriggerChiefActivate().contains(name()))
                         // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
                         ((UnitInterface) objects[i_50_]).startMove();
                     i_50_++;

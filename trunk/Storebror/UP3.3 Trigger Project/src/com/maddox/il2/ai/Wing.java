@@ -174,7 +174,7 @@ public class Wing extends Chief implements MsgOwnerListener {
                 this.airc[i_4_].prepareCamouflage();
                 this.setPosAndSpeed(this.airc[i_4_], this.way);
                 // TODO: +++ Trigger backport from HSFX 7.0.3 by SAS~Storebror +++
-                if(World.cur().triggersGuard.listTriggerAvionSol.contains(string) && (airc[i_4_].FM instanceof Maneuver))
+                if(World.cur().triggersGuard.getListTriggerAircraftActivate().contains(string) && (airc[i_4_].FM instanceof Maneuver))
                     ((Maneuver)airc[i_4_].FM).triggerTakeOff = false;
                 // TODO: --- Trigger backport from HSFX 7.0.3 by SAS~Storebror ---
             }
