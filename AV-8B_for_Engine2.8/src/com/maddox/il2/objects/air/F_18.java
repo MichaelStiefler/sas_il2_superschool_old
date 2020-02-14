@@ -133,6 +133,7 @@ public class F_18 extends Scheme2
         isHydraulicAlive = false;
         isGeneratorAlive = false;
         isBatteryOn = false;
+        lastUpdateTime = -1L;
         arrestor = 0.0F;
         stockCy0_0 = 0.05F;
         stockCy0_1 = 0.40F;
@@ -2494,122 +2495,131 @@ public class F_18 extends Scheme2
 
     public void update(float f)
     {
-        if(bNeedSetup)
-            checkAsDrone();
-        guidedMissileUtils.update();
         if(FM.CT.getFlap() < FM.CT.FlapsControl)
             FM.CT.forceFlaps(flapsMovement(f, FM.CT.FlapsControl, FM.CT.getFlap(), 999F, Aircraft.cvt(FM.getSpeedKMH(), 0.0F, 500F, 0.5F, 0.08F)));
         else
             FM.CT.forceFlaps(flapsMovement(f, FM.CT.FlapsControl, FM.CT.getFlap(), 999F, Aircraft.cvt(FM.getSpeedKMH(), 0.0F, 500F, 0.5F, 0.7F)));
-        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
+        if(lastUpdateTime != Time.current())
         {
-            overrideBailout = true;
-            FM.AS.bIsAboutToBailout = false;
-            if(FM.crew > 1)
+            if(bNeedSetup)
+                checkAsDrone();
+            guidedMissileUtils.update();
+            if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
             {
-                if(Time.current() > lTimeNextEject)
-                    bailout();
-            }
-            else
-            {
-                bailout();
-            }
-        }
-        if(FM.AS.isMaster() && Config.isUSE_RENDER())
-        {
-            for(int en = 0; en < 2; en++)
-            {
-                if(FM.EI.engines[en].getPowerOutput() > 1.001F && FM.EI.engines[en].getStage() == 6)
+                overrideBailout = true;
+                FM.AS.bIsAboutToBailout = false;
+                if(FM.crew > 1)
                 {
-                    if(World.getTimeofDay() >= 18F || World.getTimeofDay() <= 6F)
-                        FM.AS.setSootState(this, en, 5);
-                    else
-                        FM.AS.setSootState(this, en, 3);
+                    if(Time.current() > lTimeNextEject)
+                        bailout();
                 }
                 else
                 {
-                    FM.AS.setSootState(this, en, 0);
+                    bailout();
                 }
-                setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), en);
+            }
+            if(FM.AS.isMaster() && Config.isUSE_RENDER())
+            {
+                for(int en = 0; en < 2; en++)
+                {
+                    if(FM.EI.engines[en].getPowerOutput() > 1.001F && FM.EI.engines[en].getStage() == 6)
+                    {
+                        if(World.getTimeofDay() >= 18F || World.getTimeofDay() <= 6F)
+                            FM.AS.setSootState(this, en, 5);
+                        else
+                            FM.AS.setSootState(this, en, 3);
+                    }
+                    else
+                    {
+                        FM.AS.setSootState(this, en, 0);
+                    }
+                    setExhaustFlame(Math.round(Aircraft.cvt(FM.EI.engines[en].getThrustOutput(), 0.7F, 0.87F, 0.0F, 12F)), en);
+                }
+            }
+            if(bHasLaser && this == World.getPlayerAircraft())
+            {
+                if(FLIR)
+                    laser(getLaserSpot());
+                updatecontrollaser();
+            }
+            if(bHasLaser && this != World.getPlayerAircraft() && (FM instanceof Maneuver))
+                AILaserControl();
+            typeFighterAceMakerRangeFinder();
+            soundbarier();
+            rwrUtils.update();
+            backfire = rwrUtils.getBackfire();
+            bRadarWarning = rwrUtils.getRadarLockedWarning();
+            bMissileWarning = rwrUtils.getMissileWarning();
+            if(backfire)
+                backFire();
+            if(FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
+            {
+                if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
+                    obsMove += 0.3F * f;
+                else
+                if(obsMove < 0.1F || obsMove > obsMoveTot - 0.1F)
+                    obsMove += 0.15F;
+                else
+                    obsMove += 1.2F * f;
+                obsLookAzimuth = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsAzimuthOld, obsAzimuth);
+                obsLookElevation = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsElevationOld, obsElevation);
+                hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
+            }
+            gearlimit();
+            if(needUpdateHook)
+            {
+                updateHook();
+                needUpdateHook = false;
             }
         }
-        if(bHasLaser && this == World.getPlayerAircraft())
-        {
-            if(FLIR)
-                laser(getLaserSpot());
-            updatecontrollaser();
-        }
-        if(bHasLaser && this != World.getPlayerAircraft() && (FM instanceof Maneuver))
-            AILaserControl();
 
         engineSurge(f);
-        typeFighterAceMakerRangeFinder();
-        soundbarier();
-        rwrUtils.update();
-        backfire = rwrUtils.getBackfire();
-        bRadarWarning = rwrUtils.getRadarLockedWarning();
-        bMissileWarning = rwrUtils.getMissileWarning();
-        if(FM.crew > 1 && obsMove < obsMoveTot && !bObserverKilled && !FM.AS.isPilotParatrooper(1))
-        {
-            if(obsMove < 0.2F || obsMove > obsMoveTot - 0.2F)
-                obsMove += 0.3F * f;
-            else
-            if(obsMove < 0.1F || obsMove > obsMoveTot - 0.1F)
-                obsMove += 0.15F;
-            else
-                obsMove += 1.2F * f;
-            obsLookAzimuth = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsAzimuthOld, obsAzimuth);
-            obsLookElevation = Aircraft.cvt(obsMove, 0.0F, obsMoveTot, obsElevationOld, obsElevation);
-            hierMesh().chunkSetAngles("Head2_D0", 0.0F, obsLookAzimuth, obsLookElevation);
-        }
-        gearlimit();
-        if(needUpdateHook)
-        {
-            updateHook();
-            needUpdateHook = false;
-        }
         if(FM.CT.getArrestor() > 0.2F)
             calculateArrestor();
         if(super.FM instanceof Maneuver)
             receivingRefuel(f);
+
         super.update(f);
-        for(int i = 1; i < 33; i++)
-        {
-            fNozzleOpenL = FM.EI.engines[0].getPowerOutput() > 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.0F, -9F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, -9F, 0.0F);
-            hierMesh().chunkSetAngles("Eflap" + i, fNozzleOpenL, 0.0F, 0.0F);
-        }
 
-        for(int j = 33; j > 32 && j < 65; j++)
+        if(lastUpdateTime != Time.current())
         {
-            fNozzleOpenR = FM.EI.engines[1].getPowerOutput() > 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.0F, -9F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, -9F, 0.0F);
-            hierMesh().chunkSetAngles("Eflap" + j, fNozzleOpenR, 0.0F, 0.0F);
-        }
+            for(int i = 1; i < 33; i++)
+            {
+                fNozzleOpenL = FM.EI.engines[0].getPowerOutput() > 0.92F ? cvt(FM.EI.engines[0].getPowerOutput(), 0.92F, 1.1F, 0.0F, -9F) : cvt(FM.EI.engines[0].getPowerOutput(), 0.0F, 0.92F, -9F, 0.0F);
+                hierMesh().chunkSetAngles("Eflap" + i, fNozzleOpenL, 0.0F, 0.0F);
+            }
 
-        float f1 = cvt(FM.getSpeedKMH(), 500F, 1000F, 0.999F, 0.601F);
-        if(FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
-        {
-            if(FM.getOverload() > 5.7F)
+            for(int j = 33; j > 32 && j < 65; j++)
             {
-                pull01 = Eff3DActor.New(this, findHook("_Pull01"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
-                pull02 = Eff3DActor.New(this, findHook("_Pull02"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+                fNozzleOpenR = FM.EI.engines[1].getPowerOutput() > 0.92F ? cvt(FM.EI.engines[1].getPowerOutput(), 0.92F, 1.1F, 0.0F, -9F) : cvt(FM.EI.engines[1].getPowerOutput(), 0.0F, 0.92F, -9F, 0.0F);
+                hierMesh().chunkSetAngles("Eflap" + j, fNozzleOpenR, 0.0F, 0.0F);
             }
-            if(FM.getOverload() <= 5.7F)
+
+            float f1 = cvt(FM.getSpeedKMH(), 500F, 1000F, 0.999F, 0.601F);
+            if(FM.getSpeed() > 7F && World.Rnd().nextFloat() < getAirDensityFactor(FM.getAltitude()))
             {
-                Eff3DActor.finish(pull01);
-                Eff3DActor.finish(pull02);
+                if(FM.getOverload() > 5.7F)
+                {
+                    pull01 = Eff3DActor.New(this, findHook("_Pull01"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+                    pull02 = Eff3DActor.New(this, findHook("_Pull02"), null, f1, "3DO/Effects/Aircraft/Pullingvapor.eff", -1F);
+                }
+                else
+                {
+                    Eff3DActor.finish(pull01);
+                    Eff3DActor.finish(pull02);
+                }
             }
+            if(FM.getSpeedKMH() > 300F)
+                FM.CT.cockpitDoorControl = 0.0F;
+            updateSlatsVisual();
+            FlapAssistTakeoff();
+            updateDragChute();
+            computeLift();
+            lastUpdateTime = Time.current();
         }
-        if(FM.getSpeedKMH() > 300F)
-            FM.CT.cockpitDoorControl = 0.0F;
-        updateSlatsVisual();
         computeFlightmodel();
         computeElevators();
-        computeLift();
         computeSupersonicLimiter();
-        FlapAssistTakeoff();
-        updateDragChute();
-        if(backfire)
-            backFire();
     }
 
     private void computeFlightmodel()
@@ -3442,6 +3452,7 @@ public class F_18 extends Scheme2
     private float stockSqliftStab;
     private float stockSqElevators;
     private static float fSqFlaperon = 2.646F;
+    private long lastUpdateTime;
 
     // TypeDockable and Refuel values
     private Actor queen_last;
