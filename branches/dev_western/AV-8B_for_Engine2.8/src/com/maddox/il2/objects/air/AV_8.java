@@ -83,6 +83,7 @@ public class AV_8 extends Scheme1
         isBatteryOn = false;
         vtolSlipX = 0;
         vtolSlipY = 0;
+        lastUpdateTime = -1L;
     }
 
     private static final float toMeters(float f)
@@ -1073,84 +1074,93 @@ public class AV_8 extends Scheme1
             FM.CT.forceFlaps(flapsMovement(f, FM.CT.FlapsControl, FM.CT.getFlap(), 999F, Aircraft.cvt(FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.08F)));
         else
             FM.CT.forceFlaps(flapsMovement(f, FM.CT.FlapsControl, FM.CT.getFlap(), 999F, Aircraft.cvt(FM.getSpeedKMH(), 0.0F, 700F, 0.5F, 0.7F)));
-        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
+        if(lastUpdateTime != Time.current())
         {
-            overrideBailout = true;
-            FM.AS.bIsAboutToBailout = false;
-            bailout();
-        }
-        float f2 = FM.getSpeedKMH() - 1000F;
-        if(f2 < 0.0F)
-            f2 = 0.0F;
-        FM.CT.dvGear = 0.2F - f2 / 1000F;
-        if(FM.CT.dvGear < 0.0F)
-            FM.CT.dvGear = 0.0F;
-        if((!FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver))
-        {
-            if(FM.AP.way.isLanding() && FM.Gears.onGround() && FM.getSpeed() > 40F)
+            if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete && FM.getSpeedKMH() > 15F)
             {
-                FM.CT.AirBrakeControl = 1.0F;
+                overrideBailout = true;
+                FM.AS.bIsAboutToBailout = false;
+                bailout();
             }
-            if(FM.AP.way.isLanding() && FM.Gears.onGround() && FM.getSpeed() < 40F)
+            float f2 = FM.getSpeedKMH() - 1000F;
+            if(f2 < 0.0F)
+                f2 = 0.0F;
+            FM.CT.dvGear = 0.2F - f2 / 1000F;
+            if(FM.CT.dvGear < 0.0F)
+                FM.CT.dvGear = 0.0F;
+            if((!FM.isPlayers() || !(super.FM instanceof RealFlightModel) || !((RealFlightModel)super.FM).isRealMode()) && (super.FM instanceof Maneuver))
             {
-                FM.CT.AirBrakeControl = 0.0F;
-            }
-        }
-        if(FM.AS.isMaster() && Config.isUSE_RENDER())
-        {
-            for(int i = 0; i < 1; i++)
-                if(FM.EI.engines[i].getPowerOutput() > 0.25F && FM.EI.engines[i].getStage() == 6)
+                if(FM.AP.way.isLanding() && FM.Gears.onGround() && FM.getSpeed() > 40F)
                 {
-                    if(FM.EI.engines[i].getPowerOutput() > 0.85F)
+                    FM.CT.AirBrakeControl = 1.0F;
+                }
+                if(FM.AP.way.isLanding() && FM.Gears.onGround() && FM.getSpeed() < 40F)
+                {
+                    FM.CT.AirBrakeControl = 0.0F;
+                }
+            }
+            if(FM.AS.isMaster() && Config.isUSE_RENDER())
+            {
+                for(int i = 0; i < 1; i++)
+                    if(FM.EI.engines[i].getPowerOutput() > 0.25F && FM.EI.engines[i].getStage() == 6)
                     {
-                        if(nozzlemode == 1)
-                            FM.AS.setSootState(this, i, 5);
+                        if(FM.EI.engines[i].getPowerOutput() > 0.85F)
+                        {
+                            if(nozzlemode == 1)
+                                FM.AS.setSootState(this, i, 5);
+                            else
+                                FM.AS.setSootState(this, i, 6);
+                        }
+                        else if(FM.EI.engines[i].getPowerOutput() > 0.55F && FM.EI.engines[i].getPowerOutput() < 0.85F)
+                        {
+                            if(nozzlemode == 1)
+                                FM.AS.setSootState(this, i, 3);
+                            else
+                                FM.AS.setSootState(this, i, 4);
+                        }
                         else
-                            FM.AS.setSootState(this, i, 6);
-                    }
-                    else if(FM.EI.engines[i].getPowerOutput() > 0.55F && FM.EI.engines[i].getPowerOutput() < 0.85F)
-                    {
-                        if(nozzlemode == 1)
-                            FM.AS.setSootState(this, i, 3);
-                        else
-                            FM.AS.setSootState(this, i, 4);
+                        {
+                            FM.AS.setSootState(this, i, 2);
+                        }
                     }
                     else
                     {
-                        FM.AS.setSootState(this, i, 2);
+                        FM.AS.setSootState(this, i, 0);
                     }
-                }
-                else
-                {
-                    FM.AS.setSootState(this, i, 0);
-                }
+            }
+            typeFighterAceMakerRangeFinder();
+            checkHydraulicStatus();
+            soundbarier();
+            computeLift();
         }
         engineSurge(f);
-        typeFighterAceMakerRangeFinder();
-        checkHydraulicStatus();
         moveHydraulics(f);
-        soundbarier();
-        computeLift();
         computeLimiter();
         computeVerticalThrust();
+
         super.update(f);
-        pullingvapor();
-        VTOL();
-        if(FM.getSpeed() > 300F)
-            FM.CT.cockpitDoorControl = 0.0F;
-        for(int i = 1; i < 15; i++)
+
+        if(lastUpdateTime != Time.current())
         {
-            if(FM.EI.engines[0].getStage() > 0)
-                hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(150F - FM.getSpeedKMH(), -200F, 0.0F, 0.0F, 30F));
-            else
-                hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, 0.0F);
+            pullingvapor();
+            if(FM.getSpeed() > 300F)
+                FM.CT.cockpitDoorControl = 0.0F;
+            for(int i = 1; i < 15; i++)
+            {
+                if(FM.EI.engines[0].getStage() > 0)
+                    hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, Aircraft.cvt(150F - FM.getSpeedKMH(), -200F, 0.0F, 0.0F, 30F));
+                else
+                    hierMesh().chunkSetAngles("Eflap" + i, 0.0F, 0.0F, 0.0F);
+            }
+            formationlights();
+            if(!FM.isPlayers())
+                FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
+            anticollights();
+            lastUpdateTime = Time.current();
         }
 
+        VTOL();
         computeflightmodel();
-        formationlights();
-        if(!FM.isPlayers())
-            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
-        anticollights();
     }
 
     private void computeflightmodel()
@@ -1395,7 +1405,7 @@ public class AV_8 extends Scheme1
                         FM.Or.increment(0.0F, 3F, 0.0F);
                     if(hierMesh().isChunkVisible("Nose_CAP"))
                         FM.Or.increment(0.0F, -3F, 0.0F);
-                    FM.getW().scale(0.79999999999999993D);
+                    FM.getW().scale(0.80D);
                     if(FM.Gears.nOfGearsOnGr < 1)
                     {
                         FM.producedAF.x += (double)vtolSlipX * 200D;
@@ -1413,7 +1423,7 @@ public class AV_8 extends Scheme1
                     float f1 = FM.getAltitude() - (float)World.land().HQ(((Tuple3d) (point3d)).x, ((Tuple3d) (point3d)).y);
                     if(f1 < 10F && FM.getSpeedKMH() < 60F && ((Tuple3d) (vector3d)).z < -1D)
                     {
-                        vector3d.z *= 0.70000000000000007D;
+                        vector3d.z *= 0.70D;
                         setSpeed(vector3d);
                     }
                 }
@@ -1428,7 +1438,7 @@ public class AV_8 extends Scheme1
                 FM.EI.engines[0].setVector(eVect);
                 FM.CT.FlapsControl = 0.6F;
                 FM.producedAF.z += 2000D;
-                FM.getW().scale(0.69999999999999996D);
+                FM.getW().scale(0.70D);
                 flapswitch = true;
             }
         }
@@ -1837,6 +1847,7 @@ public class AV_8 extends Scheme1
     public boolean isHydraulicAlive;
     public boolean isGeneratorAlive;
     public boolean isBatteryOn;
+    private long lastUpdateTime;
 
     // TypeFuelDump setup values
     public static float FlowRate = 10F;
