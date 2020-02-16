@@ -125,6 +125,7 @@ public class F_14 extends Scheme2
         bHasUnderTank = false;
         bTakeoffFlapAssist = false;
         bSpawnedAsAI = false;
+        bLandedAI = false;
         bTakeoffAIAssist = false;
         bStableAIGround = false;
         autoEng = false;
@@ -2576,7 +2577,8 @@ public class F_14 extends Scheme2
                     Eff3DActor.finish(pull04);
                 }
             }
-            if(!FM.Gears.onGround() && FM.getSpeedKMH() < 550F)
+            // flap effect plus only for players without Autopilot
+            if(!FM.Gears.onGround() && FM.getSpeedKMH() < 550F && (FM instanceof RealFlightModel) && ((RealFlightModel) FM).isRealMode())
             {
                 if(FM.CT.getFlap() > 0.99F)
                 {
@@ -3172,6 +3174,8 @@ public class F_14 extends Scheme2
                     FM.CT.setTrimElevatorControl(0.10F);
                 }
             }
+            else if(bLandedAI && ((Maneuver)FM).get_maneuver() == 1)
+                FM.CT.VarWingControlSwitch = 3;
             else if(((Maneuver)FM).get_maneuver() == 26)
             {
                 FM.CT.VarWingControlSwitch = 1;
@@ -3461,6 +3465,7 @@ public class F_14 extends Scheme2
                 FM.CT.AirBrakeControl = 1.0F;
             else
                 FM.CT.AirBrakeControl = 0.0F;
+            bLandedAI = true;
         }
         else if(((Maneuver)super.FM).get_maneuver() == 66)
         {
@@ -3686,6 +3691,7 @@ public class F_14 extends Scheme2
     private float dragPylons;
     public boolean bHasUnderTank;
     private boolean bSpawnedAsAI;
+    private boolean bLandedAI;
     public int freq;
     public float Timer1;
     public float Timer2;
