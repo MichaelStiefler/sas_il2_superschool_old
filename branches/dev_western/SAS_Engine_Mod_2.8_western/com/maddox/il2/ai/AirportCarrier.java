@@ -187,6 +187,7 @@ public class AirportCarrier extends Airport {
 				} else if (i == 4) {
 					if (vtmp > flightmodel.Vmin + 25F) vtmp = flightmodel.Vmin + 25F;
 				}
+				if (i > 2 && flightmodel.VminAI > 0F && vtmp < flightmodel.VminAI) vtmp = flightmodel.VminAI;
 				waypoint.set(Math.min(vtmp, 300F * 0.36F)); // 300F=Mach1 , instead of Vmax
 			} else if (flightmodel.EI.engines[0].getType() == 2) {
 				float vtmp = vJ[i] * 0.278F;
