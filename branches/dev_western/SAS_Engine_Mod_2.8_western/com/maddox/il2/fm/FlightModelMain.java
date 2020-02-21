@@ -10,6 +10,7 @@
 /*By western, add Scheme=10 case for 10x engines aircrafts on 23rd/Jun./2018*/
 /*By western, add AI landing process control values on 10th/Jul./2018*/
 /*By western, add AI skip ground_attack flag on 30th/Jul./2018*/
+/*By western, add AI Formation Default on 20th/Deb./2020*/
 package com.maddox.il2.fm;
 
 import java.io.BufferedWriter;
@@ -27,6 +28,7 @@ import com.maddox.JGP.Point3f;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.EventLog;
+import com.maddox.il2.ai.Formation;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
@@ -211,6 +213,7 @@ public class FlightModelMain extends FMMath {
 	private float CyBlownFlapsOff;
 	private double ThrustBlownFlaps;
 	public float WingspanFolded;
+	public byte formationDefault;
 	public float Vlanding;
 	public float VtakeoffRot;
 	public float VminAI;
@@ -330,6 +333,15 @@ public class FlightModelMain extends FMMath {
 		if (Wingspan == 0.0F) throw new RuntimeException(s1);
 		// TODO: New folded wingspan parameter
 		WingspanFolded = sectfile.get(s2, "WingspanFolded", 0.0F);
+		String s3 = sectfile.get(s2, "FormationDefault", "None");
+		if (s3.equals("EchelonRight")) formationDefault = com.maddox.il2.ai.Formation.F_ECHELONRIGHT;
+		else if (s3.equals("EchelonLeft")) formationDefault = com.maddox.il2.ai.Formation.F_ECHELONLEFT;
+		else if (s3.equals("LineAbreast")) formationDefault = com.maddox.il2.ai.Formation.F_LINEABREAST;
+		else if (s3.equals("LineAstern")) formationDefault = com.maddox.il2.ai.Formation.F_LINEASTERN;
+		else if (s3.equals("Vic")) formationDefault = com.maddox.il2.ai.Formation.F_VIC;
+		else if (s3.equals("FingerFour")) formationDefault = com.maddox.il2.ai.Formation.F_FINGERFOUR;
+		else if (s3.equals("Diamond")) formationDefault = com.maddox.il2.ai.Formation.F_DIAMOND;
+		else formationDefault = com.maddox.il2.ai.Formation.F_DEFAULT;
 		Length = sectfile.get(s2, "Length", 0.0F);
 		if (Length == 0.0F) throw new RuntimeException(s1);
 		Scheme = sectfile.get(s2, "Type", -1);
@@ -1112,6 +1124,7 @@ public class FlightModelMain extends FMMath {
 		bOnGoingOverHeadApproach = false;
 		bNoDiveBombing = false;
 		bSkipGroundAttack = false;
+		formationDefault = 0;
 		// --------------------------------------------------------
 		Arms = new Arm();
 		Gears = new Gear();

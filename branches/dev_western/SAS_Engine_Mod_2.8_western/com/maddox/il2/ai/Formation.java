@@ -54,29 +54,43 @@ public class Formation
 
     private static final float scaleCoeff(Aircraft aircraft)
     {
+        // TODO: Changed by western0221, "Straight In Landing" space wider, other Landing a bit wide.
+        float fsi = 1.0F;
+        aircraft.FM.AP.way.next();
+        if(aircraft.FM.AP.way.curr().Action == 2)
+        {
+            if(aircraft.FM.AP.way.curr().waypointType == 104) fsi = 2.5F;  // Straight In
+            else if(aircraft.FM.EI.getNum() > 4) fsi = 1.8F;
+            else if(aircraft.FM.EI.engines[0].getType() == 2) fsi = 1.4F;  // Jet engine
+            else fsi = 1.2F;
+        }
+        aircraft.FM.AP.way.prev();
+
         if(aircraft instanceof ME_323)
-            return 5F;
+            return 5F * fsi;
         if((aircraft instanceof PE_8xyz) || (aircraft instanceof TB_3) || (aircraft instanceof B_17) || (aircraft instanceof B_29))
-            return 3.5F;
+            return 3.5F * fsi;
         if(aircraft instanceof TA_152H1)
-            return 2.0F;
+            return 2.0F * fsi;
         if(aircraft instanceof SBD)
-            return 1.8F;
+            return 1.8F * fsi;
         if(aircraft instanceof TBF)
-            return 1.9F;
+            return 1.9F * fsi;
         if(aircraft instanceof FW_190)
-            return 1.4F;
+            return 1.4F * fsi;
 
         // TODO: Changed by SAS~Storebror, increase distance in formation depending on number of engines
         // TODO: Changed by western0221, make a bit narrow with many engines from Storebror's code
 //        return (aircraft instanceof Scheme1) ? 1.2F : 2.2F;
+        if(aircraft.FM.EI.getNum() == 0)
+            return 2.2F * fsi;
         if(aircraft.FM.EI.getNum() < 2)
-            return 1.2F;
+            return 1.2F * fsi;
         if(aircraft.FM.EI.getNum() < 4)
-            return 1.1F * (float) aircraft.FM.EI.getNum();
+            return 1.1F * (float) aircraft.FM.EI.getNum() * fsi;
         if(aircraft.FM.EI.getNum() < 8)
-            return 1.0F * (float) aircraft.FM.EI.getNum();
-        return 0.9F * (float) aircraft.FM.EI.getNum();
+            return 1.0F * (float) aircraft.FM.EI.getNum() * fsi;
+        return 0.9F * (float) aircraft.FM.EI.getNum() * fsi;
     }
 
     public static final void gather(FlightModel flightmodel, byte formationType)
@@ -100,6 +114,12 @@ public class Formation
             break;
 
         case F_DEFAULT:
+            // TODO: Changed by western0221, insert ".fmd FormationDefault" decision
+            if(F_ECHELONRIGHT <= flightmodel.formationDefault && flightmodel.formationDefault <= F_LINEUPSTACKED)
+            {
+                gather(flightmodel, flightmodel.formationDefault, vector3d);
+                return;
+            }
             if((aircraft instanceof BF_109) || (aircraft instanceof BF_110) || (aircraft instanceof FW_190) || (aircraft instanceof SPITFIRE) && year > 1941 || (aircraft instanceof Hurricane) && year > 1941 || (aircraft instanceof P_38) || (aircraft instanceof P_47) || (aircraft instanceof P_51) || (aircraft instanceof TEMPEST))
             {
                 gather(flightmodel, F_FINGERFOUR, vector3d);
