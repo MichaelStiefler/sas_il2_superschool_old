@@ -11,7 +11,7 @@
   CrewFunction0 1
   CrewFunction1 10
 [Mass]
-  Empty 6340.0
+  Empty 6590.0
   TakeOff 9480.0
   Oil 160.0
   Fuel 1358 // 1636 litres
@@ -49,7 +49,7 @@
   Flap 2.76
   Stabilizer 5.00
   Elevator 2.10
-  Keel 3.55
+  Keel 3.85
   Rudder 1.98
   Wing_In 6.1
   Wing_Mid 6.1
@@ -115,21 +115,21 @@
   Engine0SubModel Merlin-134 //left handed
   Engine1Family Merlin-133_134:DH103-F20_FM
   Engine1SubModel Merlin-133 //right handed
-  Position0x 3.825
-  Position0y 0.000
-  Position0z -0.089
-  PropPosition0x 5.294
-  PropPosition0y 0.000
-  PropPosition0z 0.000
+  Position0x 1.66
+  Position0y 2.122
+  Position0z -0.414
+  PropPosition0x 2.66
+  PropPosition0y 2.122
+  PropPosition0z -0.414
   Vector0x 1.0
   Vector0y 0.0
   Vector0z 0.0
-  Position1x -2.569
-  Position1y 0.000
-  Position1z 0.428
-  PropPosition1x -7.332
-  PropPosition1y 0.000
-  PropPosition1z 0.589
+  Position1x 1.66
+  Position1y -2.122
+  Position1z -0.414
+  PropPosition1x 2.66
+  PropPosition1y -2.122
+  PropPosition1z -0.414
   Vector1x 1.0
   Vector1y 0.0
   Vector1z 0.0
@@ -137,8 +137,11 @@
   H 1.8
   Pitch 11.8
   SinkFactor 1500.0
-  SpringsStiffness 0.3
-  TailStiffness 0.4
+  SpringsStiffness 0.27
+  TailStiffness 0.36
+  WheelDiameterLR 0.80
+  WheelDiameterC 0.31
+  CatGearMesh 3DO/Arms/CatHook/CableHook_DH103.sim
 [Params]
   CriticalAOA 16.00
   CriticalCy 01.52
@@ -149,7 +152,7 @@
   SpinTailAlpha 17.00
   SpinCxLoss 0.09
   SpinCyLoss 0.05
-  Vmin 180.0
+  Vmin 195.0
   Vmax 784.0
   VmaxAllowed 900.0
   VmaxH 800.0
@@ -166,7 +169,7 @@
   FlapsAngSh 6.0
   Range 2800.0
   CruiseSpeed 500.0
-  SensYaw 0.3
+  SensYaw 0.29
   SensPitch 0.5
   SensRoll 0.2
 [Polares]
@@ -179,7 +182,7 @@
   CyCritL_0 -0.7
   CxMin_0 0.0163
   parabCxCoeff_0 5.0E-4
-  Cy0_1 0.75
+  Cy0_1 0.76
   AOACritH_1 15.0
   AOACritL_1 -22.0
   CyCritH_1 1.65
