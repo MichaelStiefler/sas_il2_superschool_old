@@ -443,6 +443,7 @@ public class Maneuver extends AIFlightModel {
 	private float of52 = 0.0F;
 	private boolean bTouchingDown = false;
 	private long brakingtimer = 0L;
+	private long catchocktimer = -1L;
 //	private boolean bLogDetail = true;
 	private float maxThrottleAITakeoffavoidOH = 0.0F;
 	private float fRunwayHeight = 0.0F;
@@ -3608,7 +3609,7 @@ public class Maneuver extends AIFlightModel {
 				fAlt -= ((AirportCarrier) AP.way.takeoffAirport).height();
 				if (Alt < 9F && Vwld.z < 0.0D) Vwld.z *= 0.850D;
 				// +++ Engine2.7 use afterburner enough in taking-off
-				fPowThresReleaseBrake = ((EI.engines[0].getBoostFactor() > 1.0F) ? 1.0599F : 0.97F);
+				fPowThresReleaseBrake = ((EI.engines[0].getBoostFactor() > 1.0F) ? ((EI.engines[0].getType()) == 2 ? 1.06F : 1.01F) : 0.97F);
 				if (maxThrottleAITakeoffavoidOH > 0.1F && fPowThresReleaseBrake > maxThrottleAITakeoffavoidOH * 0.98F) fPowThresReleaseBrake = maxThrottleAITakeoffavoidOH * 0.98F;
 				if (bHeli) fPowThresReleaseBrake = 0.3F;
 				// --- Engine2.7
@@ -3659,6 +3660,14 @@ public class Maneuver extends AIFlightModel {
 						break;
 					}
 				} else {
+					// TODO By western: set Chocks on / off reflecting stage3's result
+					if (catchocktimer > 0L) {
+						if (!brakeShoe && Time.current() > catchocktimer) {
+							brakeShoe = true;
+							catchocktimer = -1L;
+						}
+						if (brakeShoe && Time.current() < catchocktimer) brakeShoe = false;
+					}
 					Po.set(Loc);
 					// TODO: +++ CTO Mod 4.12 +++
 					if (!bAlreadyCheckedStage7) {
@@ -3667,6 +3676,9 @@ public class Maneuver extends AIFlightModel {
 							// TODO: Edited to make use of new Catapults.ini
 							Gears.setCatapultOffset(bigshipgeneric, new SectFile("com/maddox/il2/objects/Catapults.ini"));
 							bCatapultAI = Gears.getCatapultAI();
+							// TODO By western: get rid of Chocks for suspensions weighted and shorten
+							if (bCatapultAI)
+								catchocktimer = Time.current() + 600L;  // wait 0.6 sec for setting Chocks again
 						} else {
 							bStage7 = true;
 							// TODO By western: get rid of Chocks, close Canopy
@@ -3801,7 +3813,7 @@ public class Maneuver extends AIFlightModel {
 				else if (CT.FlapStageMax > 0F && CT.FlapStage != null) CT.FlapsControl = CT.FlapStage[CT.nFlapStages -1];
 				else CT.FlapsControl = 0.33F;
 			}
-			if (EI.engines[0].getStage() == 6 && CT.getPower() > fPowThresReleaseBrake) {
+			if (EI.engines[0].getStage() == 6 && CT.getPower() > fPowThresReleaseBrake && (!CT.bHasWingControl || CT.getWing() < 0.01F)) {
 				CT.BrakeControl = 0.0F;
 				brakeShoe = false;
 				spawnedWithChocks = false;

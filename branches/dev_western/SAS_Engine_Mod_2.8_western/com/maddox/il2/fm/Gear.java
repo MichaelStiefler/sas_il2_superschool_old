@@ -6,6 +6,7 @@
 /*By western, catapult Z force retouch on 12th/Feb./2019*/
 /*By western, add historical wheel parameters on 29th/Sep./2019*/
 /*By western, Helicopters or V/STOL planes don't use catapult on 07th/Oct./2019*/
+/*By western, add historical wheel parameters and catapult cable hook msh-sim values on 26th/Feb./2020*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 package com.maddox.il2.fm;
@@ -213,6 +214,7 @@ public class Gear {
 
 	//By western, set Chock Offset and Special msh
 	private double gChockLOffset[] = { -100.0D, -100.0D };
+	private double gChockROffset[] = { -100.0D, -100.0D };
 	private double gChockCOffset[] = { -100.0D, -100.0D };
 	private String gChockLMeshName = null;
 	private String gChockCMeshName = null;
@@ -768,7 +770,7 @@ public class Gear {
 					if (bCatapultArmed && flightmodel.canChangeBrakeShoe && flightmodel.brakeShoe)
 						lCatapultStartTime = System.currentTimeMillis();
 				} else {
-				//By PAL, this block is else if(flightmodel.brakeShoe)
+				//By PAL, this block is else if (flightmodel.brakeShoe)
 					if (nOfGearsOnGr == 3 && nP == 3 && flightmodel.Vrel.lengthSquared() < 1.0D) {
 						flightmodel.brakeShoeLoc.set(flightmodel.actor.pos.getCurrent());
 						flightmodel.brakeShoeLoc.sub(flightmodel.brakeShoeLastCarrier.pos.getCurrent());
@@ -1796,6 +1798,8 @@ public class Gear {
 		// By western: set Chock Offset and Special msh
 		gChockLOffset[0] = (double) sectfile.get("Gear", "ChockLOffsetX", -100.0F);
 		gChockLOffset[1] = (double) sectfile.get("Gear", "ChockLOffsetY", -100.0F);
+		gChockROffset[0] = (double) sectfile.get("Gear", "ChockROffsetX", -100.0F);
+		gChockROffset[1] = (double) sectfile.get("Gear", "ChockROffsetY", -100.0F);
 		gChockCOffset[0] = (double) sectfile.get("Gear", "ChockCOffsetX", -100.0F);
 		gChockCOffset[1] = (double) sectfile.get("Gear", "ChockCOffsetY", -100.0F);
 		gChockLMeshName = getS(sectfile, "Gear", "ChockLMesh", null);
@@ -2190,7 +2194,7 @@ public class Gear {
 						ori = FM.brakeShoeLastCarrier.pos.getAbsOrient();
 						ori.setYaw(ori.getYaw() + (float)dCatapultYaw[getCatapultNumber()]);
 						locCatH.set(Pship, ori);
-						if(gCatGearMeshName != null)
+						if (gCatGearMeshName != null)
 							CatH = new ActorSimpleMesh(gCatGearMeshName);
 						else
 							CatH = new ActorSimpleMesh("3DO/Arms/CatHook/CableHook.sim");
@@ -2333,7 +2337,7 @@ public class Gear {
 						locL.add(tempP);
 					}
 					locL.add(FM.actor.pos.getCurrent());
-					if(!Engine.cur.land.isWater(locL.getX(), locL.getY()) || bUnderDeck)
+					if (!Engine.cur.land.isWater(locL.getX(), locL.getY()) || bUnderDeck)
 					{
 						ChL = getChockMesh();
 						ChL.pos.setBase(FM.actor, hookl, false);
@@ -2363,7 +2367,11 @@ public class Gear {
 					pRgr.add(tempP);
 					locR.set(pRgr);
 					locR.set(new Orient(0F, -Pitch, 0F));
-					if (gChockLOffset[0] != -100.0D) {
+					if (gChockROffset[0] != -100.0D) {
+						tempP.set(gChockROffset[0], 0D, -gChockROffset[0] * Math.tan(Math.toRadians(Pitch)));
+						locR.add(tempP);
+					}
+					else if (gChockLOffset[0] != -100.0D) {
 						tempP.set(gChockLOffset[0], 0D, -gChockLOffset[0] * Math.tan(Math.toRadians(Pitch)));
 						locR.add(tempP);
 					}
@@ -2371,12 +2379,16 @@ public class Gear {
 						tempP.set(-Pitch * 0.006D, 0D, Pitch * 0.006D * Math.tan(Math.toRadians(Pitch)));
 						locR.add(tempP);
 					}
-					if (gChockLOffset[1] != -100.0D) {
+					if (gChockROffset[1] != -100.0D) {
+						tempP.set(0D, gChockROffset[1], 0D);
+						locR.add(tempP);
+					}
+					else if (gChockLOffset[1] != -100.0D) {
 						tempP.set(0D, -gChockLOffset[1], 0D);
 						locR.add(tempP);
 					}
 					locR.add(FM.actor.pos.getCurrent());
-					if(!Engine.cur.land.isWater(locR.getX(), locR.getY()) || bUnderDeck)
+					if (!Engine.cur.land.isWater(locR.getX(), locR.getY()) || bUnderDeck)
 					{
 						ChR = getChockMesh();
 						ChR.pos.setBase(FM.actor, hookr, false);
@@ -2415,7 +2427,7 @@ public class Gear {
 							locC.add(tempP);
 						}
 						locC.add(FM.actor.pos.getCurrent());
-						if(!Engine.cur.land.isWater(locC.getX(), locC.getY()) || bUnderDeck)
+						if (!Engine.cur.land.isWater(locC.getX(), locC.getY()) || bUnderDeck)
 						{
 							ChC = new ActorSimpleMesh(gChockCMeshName);
 							ChC.pos.setBase(FM.actor, hookc, false);
@@ -2498,11 +2510,9 @@ public class Gear {
 			gWheelRadius[2] = 0.459D;					// aux Tire Diameter 36.15"
 			gChockLOffset[0] = -0.17D;
 		}
-		else if (aircraft instanceof F6F) {
-			gWheelRadius[0] = gWheelRadius[1] = 0.389D;  // main Tire Diameter 30.69"
-			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
-			gChockLOffset[0] = -0.05D;
-			gChockLOffset[1] = 0.16D;
+		else if (aircraft instanceof C_47) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.567D;  // main Tire Diameter 44.71"
+			gWheelRadius[2] = 0.278D;					// aux Tire Diameter 21.86"
 		}
 		else if (aircraft instanceof P_38) {
 			gWheelRadius[0] = gWheelRadius[1] = 0.459D;  // main Tire Diameter 36.15"
@@ -2526,13 +2536,76 @@ public class Gear {
 			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
 			gChockLOffset[0] = -0.17D;
 		}
+		else if (aircraft instanceof P_80) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.323D;  // main Tire Diameter 25.4"
+			gWheelRadius[2] = 0.280D;					// aux Tire Diameter 22.0"
+		}
+		else if (aircraft instanceof F2A) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.375D;  // main Tire Diameter 29.5"
+			gWheelRadius[2] = 0.148D;					// aux Tire Diameter 11.65"
+			gChockLOffset[0] = -0.10D;
+		}
+		else if (aircraft instanceof F4F) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.377D;  // main Tire Diameter 29.66"
+			gWheelRadius[2] = 0.152D;					// aux Tire Diameter 12"
+		}
+		else if (aircraft instanceof F6F) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_F6F.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.389D;  // main Tire Diameter 30.69"
+			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
+			gChockLOffset[0] = -0.05D;
+			gChockLOffset[1] = 0.16D;
+		}
+		else if (aircraft instanceof F4U) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_F4U.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.389D;  // main Tire Diameter 30.69"
+			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
+			gChockLOffset[0] = -0.08D;
+			gChockLOffset[1] = -0.03D;
+		}
+		else if (aircraft instanceof SBD) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_SBD.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.371D;  // main Tire Diameter 29.2"
+			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
+			gChockLOffset[0] = -0.13D;
+		}
+		else if (aircraft instanceof TBD) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.398D;  // main Tire Diameter 31.3"
+			gWheelRadius[2] = 0.092D;					// aux Tire Diameter 7.2"
+			gChockLOffset[0] = -0.11D;
+			gChockLOffset[1] = 0.04D;
+			gChockROffset[1] = -0.35D;
+		}
+		else if (aircraft instanceof TBF) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_TBF.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.438D;  // main Tire Diameter 34.5"
+			gWheelRadius[2] = 0.147D;					// aux Tire Diameter 11.56"
+			gChockLOffset[0] = -0.16D;
+			gChockLOffset[1] = 0.03D;
+		}
 		else if ((aircraft instanceof JU_88) || (aircraft instanceof JU_88NEW)) {
 			gWheelRadius[0] = gWheelRadius[1] = 0.570D;  // main Tire Diameter 44.94"
 			gWheelRadius[2] = 0.260D;					// aux Tire Diameter 20.48"
 		}
+		else if (aircraft instanceof BEAU) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.531D;  // main Tire Diameter 41.8"
+			gWheelRadius[2] = 0.232D;					// aux Tire Diameter 18.25"
+		}
+		else if (aircraft instanceof Hurricane) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.323D;  // main Tire Diameter 25.4"
+			gWheelRadius[2] = 0.149D;					// aux Tire Diameter 10.75"
+		}
 		else if (aircraft instanceof MOSQUITO) {
 			gWheelRadius[0] = gWheelRadius[1] = 0.546D;  // main Tire Diameter 43"
 			gWheelRadius[2] = 0.239D;					// aux Tire Diameter 18.85"
+		}
+		else if (aircraft instanceof TEMPEST) {
+			gWheelRadius[0] = gWheelRadius[1] = 0.381D;  // main Tire Diameter 30.0"
+			gWheelRadius[2] = 0.191D;					// aux Tire Diameter 15.0"
 		}
 		else if (aircraft instanceof Wellington) {
 			gWheelRadius[0] = gWheelRadius[1] = 0.648D;  // main Tire Diameter 51"
