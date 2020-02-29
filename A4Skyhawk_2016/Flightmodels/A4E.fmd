@@ -129,6 +129,7 @@
   ShockAbsorber 0.9
   WheelDiameterLR 0.60
   WheelDiameterC 0.46
+  CatGearMesh 3DO/Arms/CatHook/CableHook_Skyhawk.sim
 [Params]
   CriticalAOA 18.00
   CriticalCy 01.52
