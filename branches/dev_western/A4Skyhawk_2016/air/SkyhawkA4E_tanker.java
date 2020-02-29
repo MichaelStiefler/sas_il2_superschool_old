@@ -35,6 +35,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
         waitRefuelTimer = 0L;
         ratdeg = 0F;
         bEmpty = false;
+        lastUpdateTime = -1L;
     }
 
     public boolean isDrogueExtended()
@@ -143,14 +144,21 @@ public class SkyhawkA4E_tanker extends Skyhawk
 
     public void update(float f)
     {
-        drogueRefuel();
+        if(lastUpdateTime != Time.current())
+        {
+            drogueRefuel();
 
-        if(FM.getSpeedKMH() > 185F)
-            RATrot();
+            if(FM.getSpeedKMH() > 185F)
+                RATrot();
+        }
 
         super.update(f);
-        if(super.backfire)
-            backFire();
+        if(lastUpdateTime != Time.current())
+        {
+            if(super.backfire)
+                backFire();
+            lastUpdateTime = Time.current();
+        }
     }
 
     public void missionStarting()
@@ -502,6 +510,7 @@ public class SkyhawkA4E_tanker extends Skyhawk
     private long waitRefuelTimer;
     private float ratdeg;
     private boolean bEmpty;
+    private long lastUpdateTime;
 
     static 
     {
@@ -545,40 +554,5 @@ public class SkyhawkA4E_tanker extends Skyhawk
             "_ExternalRock39",  "_ExternalRock39",  "_ExternalRock40",  "_ExternalRock40",  "_Rock41",          "_Rock42",          "_Bomb19",          "_Bomb20",          "_ExternalBomb21",  "_ExternalBomb22",
             "_Bomb23",          "_ExternalBomb24",  "_ExternalBomb25",  "_Bomb26",          "_ExternalBomb27",  "_ExternalBomb28",  "_Flare01"
         });
-        String s = "";
-        try
-        {
-            ArrayList arraylist = new ArrayList();
-            Property.set(class1, "weaponsList", arraylist);
-            HashMapInt hashmapint = new HashMapInt();
-            Property.set(class1, "weaponsMap", hashmapint);
-            byte byte0 = 117;
-            Aircraft._WeaponSlot a_lweaponslot[] = new Aircraft._WeaponSlot[byte0];
-            s = "default";
-            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
-            arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "2x300Dt";
-            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            a_lweaponslot[0] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
-            a_lweaponslot[1] = new Aircraft._WeaponSlot(0, "MGunColtMk12ki", 100);
-            a_lweaponslot[5] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[6] = new Aircraft._WeaponSlot(3, "FuelTankGun_TankSkyhawk_gn16", 1);
-            a_lweaponslot[116] = new Aircraft._WeaponSlot(8, "RocketGunChaff_gn16", 30);
-            arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);
-            s = "none";
-            a_lweaponslot = new Aircraft._WeaponSlot[byte0];
-            arraylist.add(s);
-            hashmapint.put(Finger.Int(s), a_lweaponslot);
-        }
-        catch(Exception exception) {
-            System.out.println("Weapon register error - SkyhawkA4E_tanker : " + s);
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
-        }
     }
 }

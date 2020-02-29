@@ -428,6 +428,8 @@ public class Skyhawk extends Scheme1
 
     public Skyhawk()
     {
+        lastUpdateTime = -1L;
+        lastRareActionTime = -1L;
         critSpeed = 0.0F;
         lTimeNextEject = 0L;
         obsLookTime = 0;
@@ -545,72 +547,76 @@ public class Skyhawk extends Scheme1
     public void rareAction(float f, boolean flag)
     {
         super.rareAction(f, flag);
-        if(bTwoSeat)
-            if(!bObserverKilled)
-                if(obsLookTime == 0)
-                {
-                    obsLookTime = 2 + World.Rnd().nextInt(1, 3);
-                    obsMoveTot = 1.0F + World.Rnd().nextFloat() * 1.5F;
-                    obsMove = 0.0F;
-                    obsAzimuthOld = obsAzimuth;
-                    obsElevationOld = obsElevation;
-                    if(World.Rnd().nextFloat() > 0.80F)
+        if(lastRareActionTime != Time.current())
+        {
+            if(bTwoSeat)
+                if(!bObserverKilled)
+                    if(obsLookTime == 0)
                     {
-                        obsAzimuth = 0.0F;
-                        obsElevation = 0.0F;
+                        obsLookTime = 2 + World.Rnd().nextInt(1, 3);
+                        obsMoveTot = 1.0F + World.Rnd().nextFloat() * 1.5F;
+                        obsMove = 0.0F;
+                        obsAzimuthOld = obsAzimuth;
+                        obsElevationOld = obsElevation;
+                        if(World.Rnd().nextFloat() > 0.80F)
+                        {
+                            obsAzimuth = 0.0F;
+                            obsElevation = 0.0F;
+                        } else
+                        {
+                            obsAzimuth = World.Rnd().nextFloat() * 140F - 70F;
+                            obsElevation = World.Rnd().nextFloat() * 50F - 20F;
+                        }
                     } else
                     {
-                        obsAzimuth = World.Rnd().nextFloat() * 140F - 70F;
-                        obsElevation = World.Rnd().nextFloat() * 50F - 20F;
+                        obsLookTime--;
                     }
-                } else
-                {
-                    obsLookTime--;
-                }
 
-        if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
-            if (FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)
-            {
-                if (FM.CT.AirBrakeControl != 1.0F)
-                    FM.CT.AirBrakeControl = 1.0F;
-            }
-            else if (((Maneuver) FM).get_maneuver() == 25 && FM.AP.way.isLanding() && FM.getSpeed() < FM.VminFLAPS * 1.16F)
-            {
-                if (FM.getSpeed() > FM.VminFLAPS * 0.5F && FM.Gears.onGround())
+            if ((!FM.isPlayers() || !(FM instanceof RealFlightModel) || !((RealFlightModel) FM).isRealMode()) && (FM instanceof Maneuver))
+                if (FM.AP.way.isLanding() && FM.getSpeed() > FM.VmaxFLAPS && FM.getSpeed() > FM.AP.way.curr().getV() * 1.4F)
+                {
+                    if (FM.CT.AirBrakeControl != 1.0F)
+                        FM.CT.AirBrakeControl = 1.0F;
+                }
+                else if (((Maneuver) FM).get_maneuver() == 25 && FM.AP.way.isLanding() && FM.getSpeed() < FM.VminFLAPS * 1.16F)
+                {
+                    if (FM.getSpeed() > FM.VminFLAPS * 0.5F && FM.Gears.onGround())
+                    {
+                        if (FM.CT.AirBrakeControl != 1.0F)
+                            FM.CT.AirBrakeControl = 1.0F;
+                    }
+                    else if (FM.CT.AirBrakeControl != 0.0F)
+                        FM.CT.AirBrakeControl = 0.0F;
+                }
+                else if (((Maneuver) FM).get_maneuver() == 66)
+                {
+                    if (FM.CT.AirBrakeControl != 0.0F)
+                        FM.CT.AirBrakeControl = 0.0F;
+                }
+                else if (((Maneuver) FM).get_maneuver() == 7)
                 {
                     if (FM.CT.AirBrakeControl != 1.0F)
                         FM.CT.AirBrakeControl = 1.0F;
                 }
                 else if (FM.CT.AirBrakeControl != 0.0F)
                     FM.CT.AirBrakeControl = 0.0F;
-            }
-            else if (((Maneuver) FM).get_maneuver() == 66)
+            if((FM.Gears.nearGround() || FM.Gears.onGround()) && FM.CT.getCockpitDoor() == 1.0F)
             {
-                if (FM.CT.AirBrakeControl != 0.0F)
-                    FM.CT.AirBrakeControl = 0.0F;
+                hierMesh().chunkVisible("HMask1_D0", false);
+                if(bTwoSeat)
+                    hierMesh().chunkVisible("HMask2_D0", false);
             }
-            else if (((Maneuver) FM).get_maneuver() == 7)
+            else
             {
-                if (FM.CT.AirBrakeControl != 1.0F)
-                    FM.CT.AirBrakeControl = 1.0F;
+                hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
+                if(bTwoSeat)
+                    hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
             }
-            else if (FM.CT.AirBrakeControl != 0.0F)
-                FM.CT.AirBrakeControl = 0.0F;
-        if((FM.Gears.nearGround() || FM.Gears.onGround()) && FM.CT.getCockpitDoor() == 1.0F)
-        {
-            hierMesh().chunkVisible("HMask1_D0", false);
-            if(bTwoSeat)
-                hierMesh().chunkVisible("HMask2_D0", false);
+            if(!FM.isPlayers())
+                FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
+            anticollights();
+            lastRareActionTime = Time.current();
         }
-        else
-        {
-            hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
-            if(bTwoSeat)
-                hierMesh().chunkVisible("HMask2_D0", hierMesh().isChunkVisible("Pilot2_D0"));
-        }
-        if(!FM.isPlayers())
-            FM.CT.bAntiColLights = FM.AS.bNavLightsOn;
-        anticollights();
     }
 
     public void doMurderPilot(int i)
@@ -1296,44 +1302,48 @@ public class Skyhawk extends Scheme1
 
     public void update(float f)
     {
-        computeLift();
         computeEngine();
         computeSlat();
         if(!bNoSpoiler)
             checkSpolers(f);
-        if(Config.isUSE_RENDER() && FM.AS.isMaster())
-            if(FM.EI.engines[0].getPowerOutput() > 0.8F && FM.EI.engines[0].getStage() == 6)
+        if(lastUpdateTime != Time.current())
+        {
+            computeLift();
+            if(Config.isUSE_RENDER() && FM.AS.isMaster())
+                if(FM.EI.engines[0].getPowerOutput() > 0.8F && FM.EI.engines[0].getStage() == 6)
+                {
+                    if(FM.EI.engines[0].getPowerOutput() > 0.95F)
+                        FM.AS.setSootState(this, 0, 3);
+                    else
+                        FM.AS.setSootState(this, 0, 2);
+                } else
+                {
+                    FM.AS.setSootState(this, 0, 0);
+                }
+            if(calculateMach() < 0.780F)
+                critSpeed = 0.0F;
+            if(FM.getAltitude() > 0.0F && calculateMach() >= 0.935F && FM.isTick(44, 0))  //  speed limiter, added by Vega
+                FM.Sq.dragParasiteCx += 0.002F;
+            if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete)
             {
-                if(FM.EI.engines[0].getPowerOutput() > 0.95F)
-                    FM.AS.setSootState(this, 0, 3);
-                else
-                    FM.AS.setSootState(this, 0, 2);
-            } else
-            {
-                FM.AS.setSootState(this, 0, 0);
+                overrideBailout = true;
+                FM.AS.bIsAboutToBailout = false;
+                if(Time.current() > lTimeNextEject)
+                    bailout();
             }
-        if(calculateMach() < 0.780F)
-            critSpeed = 0.0F;
-        if(FM.getAltitude() > 0.0F && calculateMach() >= 0.935F && FM.isTick(44, 0))  //  speed limiter, added by Vega
-            FM.Sq.dragParasiteCx += 0.002F;
-        if((FM.AS.bIsAboutToBailout || overrideBailout) && !ejectComplete)
-        {
-            overrideBailout = true;
-            FM.AS.bIsAboutToBailout = false;
-            if(Time.current() > lTimeNextEject)
-                bailout();
-        }
-        soundbarier();
-        if(bHasRWR)
-        {
-            rwrUtils.update();
-            backfire = rwrUtils.getBackfire();
-            bRadarWarning = rwrUtils.getRadarLockedWarning();
-            bMissileWarning = rwrUtils.getMissileWarning();
+            soundbarier();
+            if(bHasRWR)
+            {
+                rwrUtils.update();
+                backfire = rwrUtils.getBackfire();
+                bRadarWarning = rwrUtils.getRadarLockedWarning();
+                bMissileWarning = rwrUtils.getMissileWarning();
+            }
+            if(FM.CT.getArrestor() > 0.2F)
+                calculateArrestor();
+            lastUpdateTime = Time.current();
         }
         HydroGearCounter(f);
-        if(FM.CT.getArrestor() > 0.2F)
-            calculateArrestor();
         super.update(f);
     }
 
@@ -1707,6 +1717,8 @@ public class Skyhawk extends Scheme1
     public boolean isBatteryOn;
     private long lLastHydraulicLost;
     private long lLastHydraulicGot;
+    private long lastUpdateTime;
+    private long lastRareActionTime;
 
     private float critSpeed;
 

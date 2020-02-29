@@ -132,6 +132,7 @@
   WheelDiameterLR 0.60
   WheelDiameterC 0.46
   NoseGearMaxSteer 45.0
+  CatGearMesh 3DO/Arms/CatHook/CableHook_Skyhawk.sim
 [Params]
   CriticalAOA 18.00
   CriticalCy 01.52
