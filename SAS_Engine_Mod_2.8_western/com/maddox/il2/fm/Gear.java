@@ -2587,6 +2587,26 @@ public class Gear {
 			gChockLOffset[0] = -0.16D;
 			gChockLOffset[1] = 0.03D;
 		}
+		else if (aircraft instanceof BF_109) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Bf109.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.323D;  // main Tire Diameter 25.4"
+			gWheelRadius[2] = 0.156D;					// aux Tire Diameter 12.35"
+			gChockLOffset[0] = -0.12D;
+		}
+		else if (aircraft instanceof FW_190) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Fw190A.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.336D;  // main Tire Diameter 26.5"
+			gWheelRadius[2] = 0.181D;					// aux Tire Diameter 14.25"
+			gChockLOffset[0] = -0.13F;
+		}
+		else if (aircraft instanceof JU_87) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_F4U.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.412D;  // main Tire Diameter 32.44"
+			gWheelRadius[2] = 0.153D;					// aux Tire Diameter 12.05"
+		}
 		else if ((aircraft instanceof JU_88) || (aircraft instanceof JU_88NEW)) {
 			gWheelRadius[0] = gWheelRadius[1] = 0.570D;  // main Tire Diameter 44.94"
 			gWheelRadius[2] = 0.260D;					// aux Tire Diameter 20.48"
@@ -2595,13 +2615,39 @@ public class Gear {
 			gWheelRadius[0] = gWheelRadius[1] = 0.531D;  // main Tire Diameter 41.8"
 			gWheelRadius[2] = 0.232D;					// aux Tire Diameter 18.25"
 		}
+		else if (aircraft instanceof Fulmar) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Fulmar.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.404D;  // main Tire Diameter 31.5"
+			gWheelRadius[2] = 0.134D;					// aux Tire Diameter 10.55"
+		}
+		else if (aircraft instanceof GLADIATOR) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Gladiator.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.404D;  // main Tire Diameter 31.5"
+			gWheelRadius[2] = 0.161D;					// aux Tire Diameter 12.67"
+		}
 		else if (aircraft instanceof Hurricane) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Hurricane.sim";
 			gWheelRadius[0] = gWheelRadius[1] = 0.323D;  // main Tire Diameter 25.4"
 			gWheelRadius[2] = 0.149D;					// aux Tire Diameter 10.75"
 		}
 		else if (aircraft instanceof MOSQUITO) {
 			gWheelRadius[0] = gWheelRadius[1] = 0.546D;  // main Tire Diameter 43"
 			gWheelRadius[2] = 0.239D;					// aux Tire Diameter 18.85"
+		}
+		else if (aircraft instanceof SPITFIRE) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Seafire.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.308D;  // main Tire Diameter 28.2"
+			gWheelRadius[2] = 0.128D;					// aux Tire Diameter 10.1"
+		}
+		else if (aircraft instanceof Swordfish) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Swordfish.sim";
+			gWheelRadius[0] = gWheelRadius[1] = 0.36D;  // main Tire Diameter 28.35"
+			gWheelRadius[2] = 0.136D;					// aux Tire Diameter 10.7"
 		}
 		else if (aircraft instanceof TEMPEST) {
 			gWheelRadius[0] = gWheelRadius[1] = 0.381D;  // main Tire Diameter 30.0"
@@ -2616,10 +2662,14 @@ public class Gear {
 			gWheelRadius[2] = 0.128D;					// aux Tire Diameter measured by 3d shape
 		}
 		else if (aircraft instanceof G50) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_SBD.sim";
 			gWheelRadius[0] = gWheelRadius[1] = 0.315D;  // main Tire Diameter measured by 3d shape
 			gWheelRadius[2] = 0.140D;					// aux Tire Diameter measured by 3d shape
 		}
 		else if (aircraft instanceof G_55xyz) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_G55.sim";
 			gWheelRadius[0] = gWheelRadius[1] = 0.286D;  // main Tire Diameter measured by 3d shape
 			gWheelRadius[2] = 0.150D;					// aux Tire Diameter measured by 3d shape
 		}
@@ -2627,13 +2677,17 @@ public class Gear {
 			gWheelRadius[0] = gWheelRadius[1] = 0.310D;  // main Tire Diameter measured by 3d shape
 			gWheelRadius[2] = 0.145D;					// aux Tire Diameter measured by 3d shape
 		}
-		else if (aircraft instanceof RE_2000) {
+		else if (aircraft instanceof RE_2000xyz) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Re2002.sim";
 			gWheelRadius[0] = gWheelRadius[1] = 0.336D;  // main Tire Diameter measured by 3d shape
 			gWheelRadius[2] = 0.287D;					// aux Tire Diameter measured by 3d shape
 			gChockLOffset[0] = 0.13D;
 			gChockLOffset[1] = 0.20D;
 		}
-		else if (aircraft instanceof RE_2002) {
+		else if (aircraft instanceof RE_2002xyz) {
+			if (gCatGearMeshName == null)
+				gCatGearMeshName = "3DO/Arms/CatHook/CableHook_Re2002.sim";
 			gWheelRadius[0] = gWheelRadius[1] = 0.336D;  // main Tire Diameter measured by 3d shape
 			gWheelRadius[2] = 0.166D;					// aux Tire Diameter measured by 3d shape
 			gChockLOffset[0] = 0.13D;
