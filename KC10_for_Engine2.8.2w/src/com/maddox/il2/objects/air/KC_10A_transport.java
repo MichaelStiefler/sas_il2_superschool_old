@@ -6,7 +6,6 @@ import com.maddox.il2.ai.*;
 import com.maddox.il2.ai.air.*;
 import com.maddox.il2.engine.*;
 import com.maddox.il2.fm.*;
-import com.maddox.il2.game.*;
 import com.maddox.rts.*;
 import com.maddox.util.HashMapInt;
 import java.io.IOException;
@@ -203,24 +202,6 @@ public class KC_10A_transport extends KC_10
         }
     }
 
-    public void msgShot(Shot shot)
-    {
-        setShot(shot);
-        if(shot.chunkName.startsWith("WingLIn") && World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-            FM.AS.hitTank(shot.initiator, 0, 1);
-        if(shot.chunkName.startsWith("WingRIn") && World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-            FM.AS.hitTank(shot.initiator, 1, 1);
-        if(shot.chunkName.startsWith("Engine1") && World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-            FM.AS.hitEngine(shot.initiator, 0, 1);
-        if(shot.chunkName.startsWith("Engine2") && World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-            FM.AS.hitEngine(shot.initiator, 1, 1);
-        if(shot.chunkName.startsWith("Engine3") && World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-            FM.AS.hitEngine(shot.initiator, 2, 1);
-        if(FM.AS.astateEngineStates[0] > 2 && FM.AS.astateEngineStates[1] > 2 && FM.AS.astateEngineStates[2] > 2)
-            FM.setCapableOfBMP(false, shot.initiator);
-        super.msgShot(shot);
-    }
-
     private void receivingRefuel(float f)
     {
         int i = aircIndex();
@@ -287,20 +268,14 @@ public class KC_10A_transport extends KC_10
     private int dockport_;
 
 
-    static 
+    static
     {
-        Class class1 = com.maddox.il2.objects.air.KC_10A_transport.class;
+        Class class1 = KC_10A_transport.class;
         new NetAircraft.SPAWN(class1);
-        Property.set(class1, "FlightModel", "FlightModels/KC10fake.fmd:KC10fakeFM");
         Property.set(class1, "meshName", "3do/plane/KC-10(Multi1)/hier.him");
-        Property.set(class1, "iconFar_shortClassName", "KC-10");
-        Property.set(class1, "PaintScheme", new PaintSchemeBMPar05());
-        Property.set(class1, "yearService", 1981F);
-        Property.set(class1, "yearExpired", 2022F);
         Property.set(class1, "cockpitClass", new Class[] {
             com.maddox.il2.objects.air.CockpitKC_10.class
         });
-        Property.set(class1, "LOSElevation", 0.965F);
         Aircraft.weaponTriggersRegister(class1, new int[] {
             3
         });
@@ -326,9 +301,6 @@ public class KC_10A_transport extends KC_10
             hashmapint.put(Finger.Int(s), a_lweaponslot);
         }
         catch(Exception exception) {
-            System.out.println("Weapon register error - KC_10A_transport : " + s);
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
         }
     }
 }
