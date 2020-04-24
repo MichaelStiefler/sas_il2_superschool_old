@@ -2,9 +2,10 @@
 
 /*
  * Changelog:
- * 2016.04.11: reading Pylons' mass property
- * 2016.08.22: bFuelTanksDropped
- * 2017.11.18: No-Jettison fueltank
+ * 2016.Apr.11: reading Pylons' mass property
+ * 2016.Aug.22: bFuelTanksDropped
+ * 2017.Nov.18: No-Jettison fueltank
+ * 2020.Apr.25: reflecting external fuel tank's fuel consumed weight at parasiteMass
  */
 
 package com.maddox.il2.fm;
@@ -139,6 +140,12 @@ public class Mass {
 				if ((abulletemitter[i][j] instanceof BombGun) || (abulletemitter[i][j] instanceof RocketGun) || (abulletemitter[i][j] instanceof RocketBombGun)) {
 					int l = abulletemitter[i][j].countBullets();
 					float f1 = abulletemitter[i][j].bulletMassa() * (float)(l < 0 ? 1 : l);
+		// +++ Engine MOD reflecting external fuel tank's fuel consumed weight at parasiteMass
+					if ((abulletemitter[i][j] instanceof FuelTankGun) && f1 > 0) {
+						FuelTank tmpFT = ((FuelTankGun) abulletemitter[i][j]).getFuelTank();
+						if (tmpFT != null) f1 -= tmpFT.checkFreeTankSpace();
+					}
+		// --- Engine MOD reflecting external fuel tank's fuel consumed weight at parasiteMass
 					float f4 = 0.0F;
 					float f7 = 2.0F;
 					if (l > 0)
