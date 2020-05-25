@@ -25,6 +25,7 @@ import com.maddox.util.HashMapInt;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import com.maddox.sas1946.il2.util.Reflection;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            Dirigeable, PaintSchemeBMPar00, Aircraft, NetAircraft

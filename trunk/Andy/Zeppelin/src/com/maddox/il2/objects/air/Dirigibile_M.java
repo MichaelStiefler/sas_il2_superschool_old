@@ -22,6 +22,7 @@ import com.maddox.rts.NetMsgOutput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 import java.util.Random;
+import com.maddox.sas1946.il2.util.Reflection;
 
 // Referenced classes of package com.maddox.il2.objects.air:
 //            TB_3xx, PaintSchemeBMPar00, Aircraft, AircraftLH, 
@@ -380,6 +381,12 @@ public class Dirigibile_M extends com.maddox.il2.objects.air.TB_3xx
         super.update(f);
         hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -((com.maddox.il2.fm.FlightModelMain) (super.FM)).Gears.gWheelAngles[0], 0.0F);
         hierMesh().chunkSetAngles("GearR3_D0", 0.0F, -((com.maddox.il2.fm.FlightModelMain) (super.FM)).Gears.gWheelAngles[1], 0.0F);
+                this.FM.M.mass = this.FM.M.massEmpty;
+Reflection.setFloat(this.FM.M, "parasiteMass", 0F);
+Reflection.setFloat(this.FM.M, "parasiteJx", 0F);
+Reflection.setFloat(this.FM.M, "pylonCoeff", 0F);
+Reflection.setFloat(this.FM.M, "pylonCoeffB", 0F);
+Reflection.setFloat(this.FM.M, "pylonCoeffR", 0F);
     }
 
     public boolean typeBomberToggleAutomation()
