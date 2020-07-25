@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 21th/Feb./2019
+// Edit:	western0221 on 25th/Jul./2020
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -1427,6 +1427,7 @@ public class Missile extends Rocket
 	}
 
 	private void setMissileVictim() {
+		if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - setMissileVictim(){}");
 		this.victim = null;
 		this.lockingVictim = false;
 
@@ -1450,6 +1451,7 @@ public class Missile extends Rocket
 				this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				this.targetPoint3d.set(this.targetPoint3dAbs);
 				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
+				if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - setMissileVictim() - bLaserHoming - laserOwner=" + actorString(this.laserOwner) + ", targetPoint3dAbs=" + this.targetPoint3dAbs);
 			}
 			return;
 		}
@@ -1897,14 +1899,18 @@ public class Missile extends Rocket
 	}
 
 	public boolean stepTargetHoming() {
+		if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming(){}");
 		float missileSpeed = this.computeMissileAccelleration();
 		if (missileSpeed == -1F) return false;
 
 		if (Time.current() < this.startTime + this.trackDelay) {
+			if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - 1st if()");
 			this.computeNoTrackPath();
 		} else if (this.victim != null && !this.lockingVictim) {
+			if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - 2nd else if()");
 			this.computeNoTrackPath();
 		} else if (this.victim != null) {
+			if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - 3rd else if(victim!=null)");
 			this.checkChaffFlareLock();
 			// System.out.println("stepTargetHoming victim=" + this.victim.getClass().getName());
 			this.victim.pos.getAbs(this.targetPoint3d, this.victimOffsetOrient);
@@ -1960,6 +1966,7 @@ public class Missile extends Rocket
 
 			this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
 		} else if (bLaserHoming) {
+			if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - 4th else if(bLaserHoming), laserOwner=" + laserOwner);
 			double targetDistance = 0.0D;
 			float targetAngle = 0.0F;
 			float targetBait = 0.0F;
@@ -1982,6 +1989,7 @@ public class Missile extends Rocket
 					if (targetAngle > this.maxFOVfrom)
 						break;
 					laserOwner = this.getOwner();
+					if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - catch the new laserOwner=" + actorString(laserOwner) + " =missile's owner");
 					break;
 				}
 				if (laserOwner == null) {
@@ -1989,25 +1997,26 @@ public class Missile extends Rocket
 					int i = list.size();
 					for (int j = 0; j < i; j++) {
 						Actor theOwner1 = (Actor)list.get(j);
-						if ((theOwner1 instanceof TypeLaserDesignator) && ((TypeLaserDesignator) theOwner1).getLaserOn() && theOwner1.getArmy() == this.getOwner().getArmy()) {
+						if (theOwner1 != this.getOwner() && (theOwner1 instanceof TypeLaserDesignator) && ((TypeLaserDesignator) theOwner1).getLaserOn() && theOwner1.getArmy() == this.getOwner().getArmy()) {
 							Point3d point3d = new Point3d();
 							point3d = ((TypeLaserDesignator)theOwner1).getLaserSpot();
 							if (point3d == null)
-								break;
+								continue;
 							// Not target about objects behind of clouds from the missile's seeker.
 							if (Main.cur().clouds != null &&
-								(   Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F)
-								 || Main.cur().clouds.getVisibility(point3d, theOwner1.pos.getAbsPoint()) < 1.0F)
+								(   Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 0.96F)
+								 || Main.cur().clouds.getVisibility(point3d, theOwner1.pos.getAbsPoint()) < 0.98F)
 								continue;
 							targetDistance = theOwner1.pos.getAbsPoint().distance(point3d);
 							if (targetDistance > attackMaxDistance)
 								continue;
-							targetAngle = GuidedMissileUtils.angleBetween(theOwner1, point3d);
+							if (this.pos.getAbsPoint().distance(point3d) > attackMaxDistance)
+								continue;
+							targetAngle = GuidedMissileUtils.angleBetween(this, point3d);
 							if (targetAngle > maxFOVfrom)
 								continue;
 
 							targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
-
 							if (targetBait <= maxTargetBait)
 								continue;
 
@@ -2015,6 +2024,7 @@ public class Missile extends Rocket
 							laserOwner = theOwner1;
 						}
 					}
+					if ( bLogDetail && laserOwner != null) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - catch the new laserOwner=" + actorString(laserOwner) + " from outside");
 				}
 			}
 			if (laserOwner != null) {
@@ -2023,6 +2033,7 @@ public class Missile extends Rocket
 					point3d.set(((TypeLaserDesignator) laserOwner).getLaserSpot());
 
 					if (point3d != null) {
+						point3d.z += 0.8D; // target 0.8 meters higher from the ground level
 						this.targetPoint3d.set(point3d);
 						this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
 						this.missileOrient.transformInv(this.targetPoint3d); // set coordinate system according to A/C POV
@@ -2043,14 +2054,17 @@ public class Missile extends Rocket
 						}
 
 						if (Main.cur().clouds == null ||
-							(   Main.cur().clouds.getVisibility(this.targetPoint3d, this.pos.getAbsPoint()) >= 0.99F)
-							 && Main.cur().clouds.getVisibility(this.targetPoint3d, laserOwner.pos.getAbsPoint()) >= 0.99F) {
+							(   Main.cur().clouds.getVisibility(this.targetPoint3d, this.pos.getAbsPoint()) >= 0.96F)
+							 && Main.cur().clouds.getVisibility(this.targetPoint3d, laserOwner.pos.getAbsPoint()) >= 0.98F) {
 							this.computeMissilePath(missileSpeed, 0.0F, 0.0F, angleAzimuth, angleTangage);
+							if ( bLogDetail )
+								System.out.println("Missile(" + actorString(this) + ") goes to the laser pos " + point3d + " designated by " + actorString(laserOwner));
 						}
 					}
 				}
 			}
 		} else if (bSACLOSHoming) {
+			if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - 5th else if(bSACLOSHoming)");
 			double targetDistance = 0.0D;
 			float targetAngle = 0.0F;
 			float targetBait = 0.0F;
