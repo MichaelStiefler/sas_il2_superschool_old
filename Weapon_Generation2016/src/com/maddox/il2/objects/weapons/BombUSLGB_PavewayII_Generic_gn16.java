@@ -24,7 +24,9 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
     {
         popped = false;
         laseron = false;
-        bOnceCatchLaser = false;
+        bCatchCarrier = false;
+        bCatchExternal = false;
+        actorLaserDesig = null;
         t1 = -1L;
         meshopen = (String) null;
     }
@@ -58,7 +60,6 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
                 v.scale(speedms);
                 if(laseron)
                 {
-                    bOnceCatchLaser = true;
                     setSpeed(v);
                     p.x += ((Tuple3d) (v)).x * (double)tlfs;
                     p.y += ((Tuple3d) (v)).y * (double)tlfs;
@@ -71,13 +72,13 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
                     float f2 = 0.05F;
                     if(p.distance(pT) > 0.0D)
                     {
-                        if(((Tuple3d) (pT)).y > 0.10000000000000001D)
+                        if(((Tuple3d) (pT)).y > 0.10D)
                             deltaAzimuth = -f2;
-                        if(((Tuple3d) (pT)).y < -0.10000000000000001D)
+                        if(((Tuple3d) (pT)).y < -0.10D)
                             deltaAzimuth = f2;
-                        if(((Tuple3d) (pT)).z < -0.10000000000000001D)
+                        if(((Tuple3d) (pT)).z < -0.10D)
                             deltaTangage = -f2;
-                        if(((Tuple3d) (pT)).z > 0.10000000000000001D)
+                        if(((Tuple3d) (pT)).z > 0.10D)
                             deltaTangage = f2;
                         or.increment(70F * f2 * deltaAzimuth, 70F * f2 * deltaTangage, 0.0F);
                         deltaAzimuth = deltaTangage = 0.0F;
@@ -90,7 +91,7 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
                     double pitch = or.getPitch();
                     for(;pitch > 180.0D; pitch -= 360.0D) ;
                     for(;pitch < -180.0D; pitch += 360.0D) ;
-                    if(bOnceCatchLaser || pitch < -8.0D)
+                    if(bCatchCarrier || bCatchExternal || pitch < -8.0D)
                     {
                         setSpeed(v);
                         p.x += ((Tuple3d) (v)).x * (double)tlfs;
@@ -120,54 +121,103 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
         float maxTargetBait = 0.0F;
         Aircraft aircraft = (Aircraft) getOwner();
         // superior the Laser spot of this Paveway's owner than others'
-        while((aircraft instanceof TypeLaserDesignator) && ((TypeLaserDesignator) aircraft).getLaserOn())
+        // but ignoring owner's laser after once catch external designator's
+        while(!bCatchExternal && (aircraft instanceof TypeLaserDesignator) && ((TypeLaserDesignator) aircraft).getLaserOn())
         {
             Point3d point3d = new Point3d();
             point3d = ((TypeLaserDesignator)aircraft).getLaserSpot();
-            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, aircraft.pos.getAbsPoint()) < 1.0F)
+            if(point3d == null)
+                break;
+            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, aircraft.pos.getAbsPoint()) < 0.98F)
+                break;
+            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 0.96F)
                 break;
             targetDistance = aircraft.pos.getAbsPoint().distance(point3d);
-            if (targetDistance > maxDistance)
+            if(targetDistance > maxDistance)
                 break;
-            targetAngle = angleBetween(aircraft, point3d);
-            if (targetAngle > maxFOVfrom)
+            if(this.pos.getAbsPoint().distance(point3d) > maxDistance)
+                break;
+            targetAngle = angleBetween(this, point3d);
+            if(targetAngle > maxFOVfrom)
                 break;
 
             pT.set(point3d);
             laseron = true;
+            bCatchCarrier = true;
+            actorLaserDesig = (Actor) aircraft;
+            if(bLogDetail) System.out.println("BombUSLGB_(" + actorString(this) + ") - Carrier's LaserOn, laserSpotPos=" + point3d);
             break;
         }
+        if(bCatchCarrier) return;
+
+        // after once catch external designator's , follow only its laser
+        while(bCatchExternal && actorLaserDesig != null && (actorLaserDesig instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actorLaserDesig).getLaserOn())
+        {
+            Point3d point3d = new Point3d();
+            point3d = ((TypeLaserDesignator)actorLaserDesig).getLaserSpot();
+            if(point3d == null)
+                break;
+            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, actorLaserDesig.pos.getAbsPoint()) < 0.98F)
+                break;
+            if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 0.96F)
+                break;
+            targetDistance = actorLaserDesig.pos.getAbsPoint().distance(point3d);
+            if(targetDistance > maxDistance)
+                break;
+            if(this.pos.getAbsPoint().distance(point3d) > maxDistance)
+                break;
+            targetAngle = angleBetween(this, point3d);
+            if(targetAngle > maxFOVfrom)
+                break;
+
+            pT.set(point3d);
+            laseron = true;
+            if(bLogDetail) System.out.println("BombUSLGB_(" + actorString(this) + ") - get external " + actorString(actorLaserDesig) + "'s laser, laserSpotPos=" + point3d);
+            break;
+        }
+        if(bCatchExternal) return;
+
         // seak other Laser designator spots when Paveway's owner doesn't spot Laser
         if(!laseron)
         {
+            Actor actor = null;
+            Point3d point3d = new Point3d();
             List list = Engine.targets();
             int i = list.size();
             for(int j = 0; j < i; j++)
             {
-                Actor actor = (Actor)list.get(j);
-                if((actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn() && actor.getArmy() == aircraft.getArmy())
+                actor = (Actor)list.get(j);
+                if(actor != aircraft && (actor instanceof TypeLaserDesignator) && ((TypeLaserDesignator) actor).getLaserOn() && actor.getArmy() == aircraft.getArmy())
                 {
-                    Point3d point3d = new Point3d();
                     point3d = ((TypeLaserDesignator)actor).getLaserSpot();
+                    if(point3d == null)
+                        continue;
                     // Not target about objects behind of clouds from the Paveway's seaker.
-                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, aircraft.pos.getAbsPoint()) < 1.0F)
+                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, actor.pos.getAbsPoint()) < 0.98F)
                         continue;
-                    targetDistance = aircraft.pos.getAbsPoint().distance(point3d);
-                    if (targetDistance > maxDistance)
+                    if(Main.cur().clouds != null && Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 0.96F)
                         continue;
-                    targetAngle = angleBetween(aircraft, point3d);
-                    if (targetAngle > maxFOVfrom)
+                    targetDistance = actor.pos.getAbsPoint().distance(point3d);
+                    if(targetDistance > maxDistance)
+                        continue;
+                    if(this.pos.getAbsPoint().distance(point3d) > maxDistance)
+                        continue;
+                    targetAngle = angleBetween(this, point3d);
+                    if(targetAngle > maxFOVfrom)
                         continue;
 
                     targetBait = 1 / targetAngle / (float) (targetDistance * targetDistance);
-                    if (targetBait <= maxTargetBait)
+                    if(targetBait <= maxTargetBait)
                         continue;
 
                     maxTargetBait = targetBait;
                     pT.set(point3d);
                     laseron = true;
+                    bCatchExternal = true;
+                    actorLaserDesig = actor;
                 }
             }
+            if(bLogDetail && laseron) System.out.println("BombUSLGB_(" + actorString(this) + ") - get external " + actorString(actor) + "'s laser, laserSpotPos=" + point3d + " as First!");
         }
     }
 
@@ -190,6 +240,21 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
         return angleRetVal;
     }
 
+    private static String actorString(Actor actor) {
+        if(!Actor.isValid(actor)) return "(InvalidActor)";
+        String s;
+        try {
+            s = actor.getClass().getName();
+        } catch(Exception e) {
+            System.out.println("LaserDesignatorGeneric - actorString(): Cannot resolve class name of " + actor);
+            return "(NoClassnameActor)";
+        }
+        int i = s.lastIndexOf('.');
+        String strSection = s.substring(i + 1);
+        strSection = strSection + '@' + Integer.toHexString(actor.hashCode());
+        return strSection;
+    }
+
     private Orient or = new Orient();
     private Point3d p = new Point3d();
     private Point3d pT = new Point3d();
@@ -200,9 +265,12 @@ public class BombUSLGB_PavewayII_Generic_gn16 extends Bomb
     private long t1;
     private boolean popped;
     private boolean laseron;
-    private boolean bOnceCatchLaser;
+    private boolean bCatchCarrier;
+    private boolean bCatchExternal;
+    private Actor actorLaserDesig;
     public String meshopen;
     private static float maxFOVfrom = 45.0F;
     private static double maxDistance = 20000D;
 
+    private static boolean bLogDetail = false;
 }
