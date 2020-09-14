@@ -281,7 +281,7 @@ public class KC_10A_boom extends KC_10
                 hierMesh().chunkSetAngles("RefuelBoom1", 0.0F, 40.0F, 0.0F);
                 hierMesh().chunkSetAngles("RefuelBoom_WingC", 0.0F, -40.0F, 0.0F);
                 resetYPRmodifier();
-                Aircraft.xyz[0] = -7.3F;
+                Aircraft.xyz[0] = -6.8693F;
                 hierMesh().chunkSetLocate("RefuelBoom2", Aircraft.xyz, Aircraft.ypr);
                 bBoomExtended = true;
                 waitRefuelTimer = Time.current() + 8000L;
@@ -324,6 +324,9 @@ public class KC_10A_boom extends KC_10
         Class class1 = KC_10A_boom.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "meshName", "3do/plane/KC-10(Multi1)/hier_boom.him");
+        Property.set(class1, "cockpitClass", new Class[] {
+            com.maddox.il2.objects.air.CockpitKC_10.class
+        });
         Aircraft.weaponTriggersRegister(class1, new int[] {
             3
         });

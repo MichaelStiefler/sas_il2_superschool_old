@@ -1,20 +1,19 @@
 [Aircraft]
   Type 6
-  Crew 4
-  Wingspan 50.41
-  Length 55.35
+  Crew 3
+  Wingspan 47.35
+  Length 55.55
   Seaplane 0
   Canard 0
   Jet 1
   JetHiV 1
   CrewFunction1 2
   CrewFunction2 8
-  CrewFunction3 11
 [Mass]
-  Empty 109328.0
-  TakeOff 267620.0
+  Empty 100028.0
+  TakeOff 200980.0
   Oil 400.0
-  Fuel 161480.0
+  Fuel 65320.0
 [Controls]
   CAileron 3
   CAileronTrim 1
@@ -47,16 +46,16 @@
   DefaultElevatorTrim 0.000
   DefaultRudderTrim 0.000
 [Squares]
-  Wing 367.71
+  Wing 358.16
   Aileron 35.5
-  Flap 80.8
+  Flap 79.0
   Stabilizer 81.61
   Elevator 40.04
   Keel 26.2
   Rudder 9.16
   Wing_In 20.0
   Wing_Mid 60.0
-  Wing_Out 103.852
+  Wing_Out 99.08
   FuselageCxS 0.001
   AirbrakeCxS 0.80
 [Toughness]
@@ -114,11 +113,11 @@
   GC_Gear_Shift 0.00
 [Engine]
   Engine0Family GE_CF6:KC10FM
-  Engine0SubModel CF6-50C2
+  Engine0SubModel CF6-6D
   Engine1Family GE_CF6:KC10FM
-  Engine1SubModel CF6-50C2
+  Engine1SubModel CF6-6D
   Engine2Family GE_CF6:KC10FM
-  Engine2SubModel CF6-50C2
+  Engine2SubModel CF6-6D
   Position0x -1.0
   Position0y 8.376
   Position0z -2.247
@@ -188,7 +187,7 @@
   FlapsAngSh 5.0
   G_class_coeff 12.0
   G_class 6.0
-  Range 18000.0
+  Range 12000.0
   CruiseSpeed 850.0
   SensYaw 0.18
   SensPitch 0.20

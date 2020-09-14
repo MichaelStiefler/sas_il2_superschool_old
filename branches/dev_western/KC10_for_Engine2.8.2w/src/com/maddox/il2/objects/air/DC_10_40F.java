@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class DC_10_30F extends DC_10family
+public class DC_10_40F extends DC_10family
 {
     public static String getSkinPrefix(String s, Regiment regiment)
     {
-        return "DC30F_";
+        return "DC40F_";
     }
 
     public void onAircraftLoaded()
@@ -32,10 +32,10 @@ public class DC_10_30F extends DC_10family
 
     static
     {
-        Class class1 = DC_10_30F.class;
+        Class class1 = DC_10_40F.class;
         new NetAircraft.SPAWN(class1);
-        Property.set(class1, "FlightModel", "FlightModels/DC10-30fake.fmd:KC10fakeFM");
-        Property.set(class1, "meshName", "3do/plane/KC-10(Multi1)/hierDC1030F.him");
+        Property.set(class1, "FlightModel", "FlightModels/DC10-40JLfake.fmd:KC10fakeFM");
+        Property.set(class1, "meshName", "3do/plane/KC-10(Multi1)/hierDC1040F.him");
         Property.set(class1, "iconFar_shortClassName", "DC-10");
         Property.set(class1, "PaintScheme", new PaintSchemeBMPar05());
         Property.set(class1, "yearService", 1984F);

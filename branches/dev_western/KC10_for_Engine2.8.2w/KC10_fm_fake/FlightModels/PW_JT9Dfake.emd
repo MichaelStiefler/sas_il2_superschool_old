@@ -33,19 +33,19 @@
   TOILMIN 0
   SoundName J-47
   StartStopName J-47
-[CF6-6D]
+[JT9D-20]
   HorsePowers 1.0
   BoostFactor 1.0
   TowFactor 1.0
-  Thrust 4480.0
+  Thrust 4780.0
   EngineI 10.0
   EngineAcceleration 1.0
   PropMass 1000.0
   Extinguishers 2
   RPMMin 0
-  RPMNom 3480
-  RPMMax 3810
-  RPMMaxAllowed 6480
+  RPMNom 3400
+  RPMMax 3650
+  RPMMaxAllowed 6400
   Reductor 1.0
   PropDiameter 43.65
   PropAnglerType 0
@@ -78,21 +78,21 @@
   TOILMIN 0
   FuelConsumptionP0 0.008
   FuelConsumptionP05 0.008
-  FuelConsumptionP1 0.009
-  FuelConsumptionPMAX 0.0108
-[CF6-50C2]
+  FuelConsumptionP1 0.009013
+  FuelConsumptionPMAX 0.010667
+[JT9D-59A]
   HorsePowers 1.0
   BoostFactor 1.0
   TowFactor 1.0
-  Thrust 5600.0
+  Thrust 5560.0
   EngineI 10.0
   EngineAcceleration 1.0
   PropMass 1000.0
   Extinguishers 2
   RPMMin 0
-  RPMNom 3600
-  RPMMax 4100
-  RPMMaxAllowed 6480
+  RPMNom 3400
+  RPMMax 3780
+  RPMMaxAllowed 6450
   Reductor 1.0
   PropDiameter 43.65
   PropAnglerType 0
@@ -125,5 +125,5 @@
   TOILMIN 0
   FuelConsumptionP0 0.008
   FuelConsumptionP05 0.008
-  FuelConsumptionP1 0.010
-  FuelConsumptionPMAX 0.012
+  FuelConsumptionP1 0.0096
+  FuelConsumptionPMAX 0.0112
