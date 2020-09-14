@@ -357,6 +357,9 @@ public class KC_10A_drogue extends KC_10
         Class class1 = KC_10A_drogue.class;
         new NetAircraft.SPAWN(class1);
         Property.set(class1, "meshName", "3do/plane/KC-10(Multi1)/hier_drogue.him");
+        Property.set(class1, "cockpitClass", new Class[] {
+            com.maddox.il2.objects.air.CockpitKC_10.class
+        });
         Aircraft.weaponTriggersRegister(class1, new int[] {
             3
         });

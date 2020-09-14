@@ -1,20 +1,19 @@
 [Aircraft]
   Type 6
-  Crew 4
+  Crew 3
   Wingspan 50.41
-  Length 55.35
+  Length 55.54
   Seaplane 0
   Canard 0
   Jet 1
   JetHiV 1
   CrewFunction1 2
   CrewFunction2 8
-  CrewFunction3 11
 [Mass]
-  Empty 109328.0
-  TakeOff 267620.0
-  Oil 400.0
-  Fuel 161480.0
+  Empty 28032.0
+  TakeOff 66905.0
+  Oil 100.0
+  Fuel 27500.0
 [Controls]
   CAileron 3
   CAileronTrim 1
@@ -47,18 +46,18 @@
   DefaultElevatorTrim 0.000
   DefaultRudderTrim 0.000
 [Squares]
-  Wing 367.71
-  Aileron 35.5
-  Flap 80.8
-  Stabilizer 81.61
-  Elevator 40.04
-  Keel 26.2
-  Rudder 9.16
-  Wing_In 20.0
-  Wing_Mid 60.0
-  Wing_Out 103.852
-  FuselageCxS 0.001
-  AirbrakeCxS 0.80
+  Wing 91.92
+  Aileron 8.88
+  Flap 20.2
+  Stabilizer 20.40
+  Elevator 10.01
+  Keel 6.55
+  Rudder 2.29
+  Wing_In 5.0
+  Wing_Mid 15.0
+  Wing_Out 25.96
+  FuselageCxS 0.0004
+  AirbrakeCxS 0.50
 [Toughness]
   AroneL 100
   AroneR 100
@@ -107,18 +106,18 @@
   Wing_In 2.0
   Wing_Mid 5.8
   Wing_Out 13.5
-  GCenter 0.00   //1.15
+  GCenter 0.00  //0.90  //1.50  //2.50
   GCenterZ 0.00
   GC_AOA_Shift 0.60
   GC_Flaps_Shift 0.20
   GC_Gear_Shift 0.00
 [Engine]
-  Engine0Family GE_CF6:KC10FM
-  Engine0SubModel CF6-50C2
-  Engine1Family GE_CF6:KC10FM
-  Engine1SubModel CF6-50C2
-  Engine2Family GE_CF6:KC10FM
-  Engine2SubModel CF6-50C2
+  Engine0Family PW_JT9Dfake:KC10fakeFM
+  Engine0SubModel JT9D-59A
+  Engine1Family PW_JT9Dfake:KC10fakeFM
+  Engine1SubModel JT9D-59A
+  Engine2Family PW_JT9Dfake:KC10fakeFM
+  Engine2SubModel JT9D-59A
   Position0x -1.0
   Position0y 8.376
   Position0z -2.247
@@ -188,7 +187,7 @@
   FlapsAngSh 5.0
   G_class_coeff 12.0
   G_class 6.0
-  Range 18000.0
+  Range 17300.0
   CruiseSpeed 850.0
   SensYaw 0.18
   SensPitch 0.20
@@ -196,12 +195,12 @@
 [Polares]
   lineCyCoeff 0.09
   AOAMinCx_Shift 1.5
-  Cy0_0 0.07
+  Cy0_0 0.04
   AOACritH_0 16.0
   AOACritL_0 -16.0
   CyCritH_0 1.3
   CyCritL_0 -0.7
-  CxMin_0 0.031
+  CxMin_0 0.025
   parabCxCoeff_0 8.0E-4
   Cy0_1 0.69
   AOACritH_1 14.0

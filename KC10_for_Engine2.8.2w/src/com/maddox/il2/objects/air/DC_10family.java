@@ -36,6 +36,7 @@ public abstract class DC_10family extends Scheme6
         isGeneratorAlive = false;
         lastUpdateTime = -1L;
         lastThrustReverser = false;
+        bHasCenterGear = true;
     }
 
     private static final float toMeters(float f)
@@ -380,26 +381,12 @@ public abstract class DC_10family extends Scheme6
 
     public void doMurderPilot(int i)
     {
-        switch(i)
-        {
-        case 0: // '\0'
-            hierMesh().chunkVisible("Pilot1_D0", false);
-            hierMesh().chunkVisible("Head1_D0", false);
-            hierMesh().chunkVisible("Pilot1_D1", true);
-            break;
-
-        case 1: // '\001'
-            hierMesh().chunkVisible("Pilot2_D0", false);
-            hierMesh().chunkVisible("Head2_D0", false);
-            hierMesh().chunkVisible("Pilot2_D1", true);
-            break;
-
-        case 2: // '\002'
-            hierMesh().chunkVisible("Pilot3_D0", false);
-            hierMesh().chunkVisible("Head3_D0", false);
-            hierMesh().chunkVisible("Pilot3_D1", true);
-            break;
-        }
+        if(i > 3)
+            return;
+        hierMesh().chunkVisible("Pilot" + (i + 1) + "_D0", false);
+        hierMesh().chunkVisible("Pilot" + (i + 1) + "_D1", true);
+        if(i == 0)
+            hierMesh().chunkVisible("Head" + (i + 1) + "_D0", false);
     }
 
     public void update(float f)
@@ -493,9 +480,9 @@ public abstract class DC_10family extends Scheme6
 
             if(Config.isUSE_RENDER())
                 if(this == World.getPlayerAircraft() && Main3D.cur3D().viewActor() == World.getPlayerAircraft() && !Main3D.cur3D().isViewOutside())
-                    hierMesh().chunkVisible("Cockpit_WindowClmn", false);
+                    hierMesh().chunkVisible("WindSheild", false);
                 else
-                    hierMesh().chunkVisible("Cockpit_WindowClmn", true);
+                    hierMesh().chunkVisible("WindSheild", true);
         }
         lastUpdateTime = Time.current();
     }
@@ -511,11 +498,11 @@ public abstract class DC_10family extends Scheme6
             resetYPRmodifier();
             if(f < 0.05F)
             {
-                Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, -0.2F);
+                Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.04F, 0.0F, -0.1882F);
             } else
             {
-                Aircraft.xyz[1] = Aircraft.cvt(f, 0.06F, 0.99F, -0.2F, -2.1F);
-                Aircraft.xyz[2] = Aircraft.cvt(f, 0.06F, 0.99F, 0.0F, 0.973F);
+                Aircraft.xyz[1] = Aircraft.cvt(f, 0.06F, 0.99F, -0.1882F, -1.9761F);
+                Aircraft.xyz[2] = Aircraft.cvt(f, 0.06F, 0.99F, 0.0F, 0.915593F);
                 Aircraft.ypr[2] = Aircraft.cvt(f, 0.06F, 0.99F, 0.0F, -44.3F);
             }
             hierMesh().chunkSetLocate("DoorNL", Aircraft.xyz, Aircraft.ypr);
@@ -528,130 +515,84 @@ public abstract class DC_10family extends Scheme6
         }
     }
 
-    public static void moveGear(HierMesh hiermesh, float f, float f1, float f2)
+    public static void moveGear(HierMesh hiermesh, float fL, float fR, float fC)
     {
-        hiermesh.chunkSetAngles("GearC_CoverL2", 0.0F, 0.0F, Aircraft.cvt(f2, 0.01F, 0.08F, 0.0F, -85F));
-        hiermesh.chunkSetAngles("GearC_CoverR2", 0.0F, 0.0F, Aircraft.cvt(f2, 0.01F, 0.08F, 0.0F, 85F));
-        if(f2 < 0.10F)
+        hiermesh.chunkSetAngles("GearC_CoverL2", 0.0F, 0.0F, Aircraft.cvt(fC, 0.01F, 0.08F, 0.0F, -85F));
+        hiermesh.chunkSetAngles("GearC_CoverR2", 0.0F, 0.0F, Aircraft.cvt(fC, 0.01F, 0.08F, 0.0F, 85F));
+        if(fC < 0.10F)
         {
-            hiermesh.chunkSetAngles("GearC_CoverL1", 0.0F, 0.0F, Aircraft.cvt(f2, 0.01F, 0.08F, 0.0F, -85F));
-            hiermesh.chunkSetAngles("GearC_CoverR1", 0.0F, 0.0F, Aircraft.cvt(f2, 0.01F, 0.08F, 0.0F, 85F));
+            hiermesh.chunkSetAngles("GearC_CoverL1", 0.0F, 0.0F, Aircraft.cvt(fC, 0.01F, 0.08F, 0.0F, -85F));
+            hiermesh.chunkSetAngles("GearC_CoverR1", 0.0F, 0.0F, Aircraft.cvt(fC, 0.01F, 0.08F, 0.0F, 85F));
         }
-        if(f2 > 0.90F)
+        if(fC > 0.90F)
         {
-            hiermesh.chunkSetAngles("GearC_CoverL1", 0.0F, 0.0F, Aircraft.cvt(f2, 0.91F, 0.98F, -85F, 0.0F));
-            hiermesh.chunkSetAngles("GearC_CoverR1", 0.0F, 0.0F, Aircraft.cvt(f2, 0.91F, 0.98F, 85F, 0.0F));
-        }
-
-        if(f < 0.10F)
-            hiermesh.chunkSetAngles("GearL_CoverC", 0.0F, 0.0F, Aircraft.cvt(f, 0.02F, 0.09F, 0.0F, 88F));
-        if(f > 0.90F)
-            hiermesh.chunkSetAngles("GearL_CoverC", 0.0F, 0.0F, Aircraft.cvt(f, 0.92F, 0.99F, 88F, 0.0F));
-        hiermesh.chunkSetAngles("GearL_CoverW", 0.0F, 0.0F, Aircraft.cvt(f, 0.13F, 0.85F, 0.0F, -100F));
-
-        if(f1 < 0.10F)
-            hiermesh.chunkSetAngles("GearR_CoverC", 0.0F, 0.0F, Aircraft.cvt(f1, 0.02F, 0.09F, 0.0F, -88F));
-        if(f1 > 0.90F)
-            hiermesh.chunkSetAngles("GearR_CoverC", 0.0F, 0.0F, Aircraft.cvt(f1, 0.92F, 0.99F, -88F, 0.0F));
-        hiermesh.chunkSetAngles("GearR_CoverW", 0.0F, 0.0F, Aircraft.cvt(f1, 0.13F, 0.85F, 0.0F, 100F));
-
-        if(f < 0.10F)
-        {
-            hiermesh.chunkSetAngles("GearT_CoverLF", 0.0F, 0.0F, Aircraft.cvt(f, 0.02F, 0.09F, 0.0F, -88F));
-            hiermesh.chunkSetAngles("GearT_CoverLR", 0.0F, 0.0F, Aircraft.cvt(f, 0.02F, 0.09F, 0.0F, -88F));
-            hiermesh.chunkSetAngles("GearT_CoverRF", 0.0F, 0.0F, Aircraft.cvt(f, 0.02F, 0.09F, 0.0F, 88F));
-            hiermesh.chunkSetAngles("GearT_CoverRR", 0.0F, 0.0F, Aircraft.cvt(f, 0.02F, 0.09F, 0.0F, 88F));
-        }
-        if(f > 0.90F)
-        {
-            hiermesh.chunkSetAngles("GearT_CoverLF", 0.0F, 0.0F, Aircraft.cvt(f, 0.92F, 0.99F, -88F, 0.0F));
-            hiermesh.chunkSetAngles("GearT_CoverLR", 0.0F, 0.0F, Aircraft.cvt(f, 0.92F, 0.99F, -88F, -65F));
-            hiermesh.chunkSetAngles("GearT_CoverRF", 0.0F, 0.0F, Aircraft.cvt(f, 0.92F, 0.99F, 88F, 0.0F));
-            hiermesh.chunkSetAngles("GearT_CoverRR", 0.0F, 0.0F, Aircraft.cvt(f, 0.92F, 0.99F, 88F, 65F));
+            hiermesh.chunkSetAngles("GearC_CoverL1", 0.0F, 0.0F, Aircraft.cvt(fC, 0.91F, 0.98F, -85F, 0.0F));
+            hiermesh.chunkSetAngles("GearC_CoverR1", 0.0F, 0.0F, Aircraft.cvt(fC, 0.91F, 0.98F, 85F, 0.0F));
         }
 
-        hiermesh.chunkSetAngles("GearT3_D0", 0.0F, Aircraft.cvt(f, 0.16F, 0.83F, 0.0F, -98F), 0.0F);
+        if(fL < 0.10F)
+            hiermesh.chunkSetAngles("GearL_CoverC", 0.0F, 0.0F, Aircraft.cvt(fL, 0.02F, 0.09F, 0.0F, 88F));
+        if(fL > 0.90F)
+            hiermesh.chunkSetAngles("GearL_CoverC", 0.0F, 0.0F, Aircraft.cvt(fL, 0.92F, 0.99F, 88F, 0.0F));
+        hiermesh.chunkSetAngles("GearL_CoverW", 0.0F, 0.0F, Aircraft.cvt(fL, 0.14F, 0.86F, 0.0F, -90F));
+
+        if(fR < 0.10F)
+            hiermesh.chunkSetAngles("GearR_CoverC", 0.0F, 0.0F, Aircraft.cvt(fR, 0.02F, 0.09F, 0.0F, -88F));
+        if(fR > 0.90F)
+            hiermesh.chunkSetAngles("GearR_CoverC", 0.0F, 0.0F, Aircraft.cvt(fR, 0.92F, 0.99F, -88F, 0.0F));
+        hiermesh.chunkSetAngles("GearR_CoverW", 0.0F, 0.0F, Aircraft.cvt(fR, 0.14F, 0.86F, 0.0F, 90F));
+
+        float fT = fL * 0.6F + fR * 0.4F;
+        if(fT < 0.10F)
+        {
+            hiermesh.chunkSetAngles("GearT_CoverLF", 0.0F, 0.0F, Aircraft.cvt(fT, 0.02F, 0.09F, 0.0F, -88F));
+            hiermesh.chunkSetAngles("GearT_CoverRF", 0.0F, 0.0F, Aircraft.cvt(fT, 0.02F, 0.09F, 0.0F, 88F));
+        }
+        if(fT > 0.90F)
+        {
+            hiermesh.chunkSetAngles("GearT_CoverLF", 0.0F, 0.0F, Aircraft.cvt(fT, 0.92F, 0.99F, -88F, 0.0F));
+            hiermesh.chunkSetAngles("GearT_CoverRF", 0.0F, 0.0F, Aircraft.cvt(fT, 0.92F, 0.99F, 88F, 0.0F));
+        }
+        hiermesh.chunkSetAngles("GearT_CoverLR", 0.0F, 0.0F, Aircraft.cvt(fT, 0.10F, 0.75F, 0.0F, -60F));
+        hiermesh.chunkSetAngles("GearT_CoverRR", 0.0F, 0.0F, Aircraft.cvt(fT, 0.10F, 0.75F, 0.0F, 60F));
+        hiermesh.chunkSetAngles("GearT3_D0", 0.0F, Aircraft.cvt(fT, 0.16F, 0.83F, 0.0F, -85F), 0.0F);
+
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(fC, 0.15F, 0.85F, 0.0F, -92F), 0.0F);
+
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 0.0F, Aircraft.cvt(fL, 0.14F, 0.86F, 0.0F, -90F));
+        hiermesh.chunkSetAngles("GearL41_D0", 0.0F, 0.0F, Aircraft.cvt(fL, 0.14F, 0.86F, 0.0F, -5.0F));
         resetXYZYPR();
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.70F, 0.81F, 0.0F, -0.46F) * f;
+        Aircraft.xyz[2] = Aircraft.cvt(fL, 0.14F, 0.86F, 0.0F, 0.514681F);
+        hiermesh.chunkSetLocate("GearL42_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearL43_D0", 0.0F, 0.0F, Aircraft.cvt(fL, 0.14F, 0.86F, 0.0F, -46.306F));
+        hiermesh.chunkSetAngles("GearL44_D0", 0.0F, 0.0F, Aircraft.cvt(fL, 0.14F, 0.86F, 0.0F, 164.923F));
+
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, 0.0F, Aircraft.cvt(fR, 0.14F, 0.86F, 0.0F, 90F));
+        hiermesh.chunkSetAngles("GearR41_D0", 0.0F, 0.0F, Aircraft.cvt(fR, 0.14F, 0.86F, 0.0F, 5.0F));
+        resetXYZYPR();
+        Aircraft.xyz[2] = Aircraft.cvt(fR, 0.14F, 0.86F, 0.0F, 0.514681F);
+        hiermesh.chunkSetLocate("GearR42_D0", Aircraft.xyz, Aircraft.ypr);
+        hiermesh.chunkSetAngles("GearR43_D0", 0.0F, 0.0F, Aircraft.cvt(fR, 0.14F, 0.86F, 0.0F, 46.306F));
+        hiermesh.chunkSetAngles("GearR44_D0", 0.0F, 0.0F, Aircraft.cvt(fR, 0.14F, 0.86F, 0.0F, -164.923F));
+
+        resetXYZYPR();
+        Aircraft.xyz[2] = Aircraft.cvt(fL, 0.80F, 0.98F, 0.0F, -0.455245F);
+        hiermesh.chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
+        resetXYZYPR();
+        Aircraft.xyz[2] = Aircraft.cvt(fR, 0.80F, 0.98F, 0.0F, -0.455245F);
+        hiermesh.chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
+        resetXYZYPR();
+        Aircraft.xyz[2] = Aircraft.cvt(fT, 0.80F, 0.98F, 0.0F, -0.255F);
         hiermesh.chunkSetLocate("GearT2_D0", Aircraft.xyz, Aircraft.ypr);
 
-        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(f2, 0.15F, 0.85F, 0.0F, -92F), 0.0F);
-
-        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.14F, 0.86F, 0.0F, -90F));
-        hiermesh.chunkSetAngles("GearL41_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.14F, 0.86F, 0.0F, 107F));
-        resetXYZYPR();
-        Aircraft.xyz[2] = 0.70F * f;
-        hiermesh.chunkSetLocate("GearL42_D0", Aircraft.xyz, Aircraft.ypr);
-
-        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.14F, 0.86F, 0.0F, 90F));
-        hiermesh.chunkSetAngles("GearR41_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.14F, 0.86F, 0.0F, -107F));
-        resetXYZYPR();
-        Aircraft.xyz[2] = -0.70F * f1;
-        hiermesh.chunkSetLocate("GearR42_D0", Aircraft.xyz, Aircraft.ypr);
-
-        resetXYZYPR();
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.88F, 0.95F, 0.0F, -0.27F) * f;
-        hiermesh.chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-
-        resetXYZYPR();
-        Aircraft.xyz[2] = Aircraft.cvt(f1, 0.88F, 0.95F, 0.0F, -0.27F) * f;
-        hiermesh.chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
-
-
-      return;
-      /*
-        if(f2 < 0.31F)
-            hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.11F, 0.31F, 0.0F, -50F), 0.0F);
-        else if(f2 < 0.69F)
-            hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.31F, 0.69F, -50F, -179F), 0.0F);
-        else
-            hiermesh.chunkSetAngles("GearC8_D0", 0.0F, Aircraft.cvt(f2, 0.75F, 0.85F, -179F, -140F), 0.0F);
-        if(f2 < 0.31F)
-            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.11F, 0.31F, 0.0F, 17.3F), 0.0F);
-        else if(f2 < 0.69F)
-            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.31F, 0.69F, 17.3F, 85F), 0.0F);
-        else if(f2 < 0.75F)
-            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.69F, 0.75F, 85F, 71F), 0.0F);
-        else
-            hiermesh.chunkSetAngles("GearC9_D0", 0.0F, Aircraft.cvt(f2, 0.75F, 0.85F, 71F, -2F), 0.0F);
+    /*  // sample of Torque link working codes ---
         resetXYZYPR();
         Aircraft.xyz[0] = Aircraft.cvt(f2, 0.15F, 0.83F, 0.21F, 0.26F);
         hiermesh.chunkSetLocate("GearC6_D0", Aircraft.xyz, Aircraft.ypr);
         float deg = (float)Math.toDegrees(Math.acos((double)((0.742F - Aircraft.xyz[0]) / 0.742F)));
         hiermesh.chunkSetAngles("GearC71_D0", 0.0F, -deg, 0.0F);
         hiermesh.chunkSetAngles("GearC72_D0", 0.0F, deg * 2F, 0.0F);
-        hiermesh.chunkSetAngles("GearC51_D0", 0.0F, Aircraft.cvt(f2, 0.75F, 0.90F, 0.0F, -25F), 0.0F);
 
-        resetXYZYPR();
-        if(f < 0.5F)
-        {
-            Aircraft.xyz[1] = Aircraft.cvt(f, 0.10F, 0.20F, 0.0F, 0.15F);
-            Aircraft.ypr[1] = Aircraft.cvt(f, 0.10F, 0.5F, 0.0F, -50F);
-            Aircraft.ypr[2] = Aircraft.cvt(f, 0.05F, 0.14F, 0.0F, -8F);
-        }
-        else if(f < 0.75F)
-        {
-            Aircraft.xyz[1] = 0.15F;
-            Aircraft.ypr[1] = Aircraft.cvt(f, 0.5F, 0.75F, -50F, -85F);
-            Aircraft.ypr[2] = Aircraft.cvt(f, 0.5F, 0.75F, -8F, -2.8F);
-        }
-        else
-        {
-            Aircraft.xyz[1] = 0.15F;
-            Aircraft.ypr[1] = Aircraft.cvt(f, 0.75F, 1F, -85F, -105F);
-            Aircraft.ypr[2] = Aircraft.cvt(f, 0.75F, 1F, -2.8F, -0.8F);
-        }
-        hiermesh.chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
-        hiermesh.chunkSetAngles("GearL3_D0", Aircraft.cvt(f, 0.10F, 0.20F, 0.0F, 98F), 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.65F, 1F, 0F, 16.32F));
-        if(f < 0.6F)
-            hiermesh.chunkSetAngles("GearL51_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.4F, 0.6F, 0F, -77.4F));
-        else
-            hiermesh.chunkSetAngles("GearL51_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.6F, 1.0F, -77.4F, -167.627F));
-        hiermesh.chunkSetAngles("GearL22_D0", 0.0F, Aircraft.cvt(f, 0.1F, 1.0F, 0.0F, 4.25F), 0.0F);
-        resetXYZYPR();
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.1F, 1.0F, 0.0F, -0.222F);
-        hiermesh.chunkSetLocate("GearL23_D0", Aircraft.xyz, Aircraft.ypr);
         resetXYZYPR();
         Aircraft.xyz[1] = Aircraft.cvt(f, 0.4F, 0.8F, 0.0F, 0.51F);
         hiermesh.chunkSetLocate("GearL4_D0", Aircraft.xyz, Aircraft.ypr);
@@ -659,55 +600,7 @@ public abstract class DC_10family extends Scheme6
         deg -= (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F) / 0.96F)));
         hiermesh.chunkSetAngles("GearL41_D0", 0.0F, 0.0F, -deg);
         hiermesh.chunkSetAngles("GearL42_D0", 0.0F, 0.0F, deg * 2F);
-        hiermesh.chunkSetAngles("GearL15_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.4F, 0.6F, 0F, 70F));
-
-        hiermesh.chunkSetAngles("GearL11_D0", 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, 30F), 0.0F);
-        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.01F, 0.1F, 0.0F, -90F));
-        hiermesh.chunkSetAngles("GearL61_D0", 0.0F, 0.0F, Aircraft.cvt(f, 0.03F, 0.1F, 0.0F, 90F));
-     
-        resetXYZYPR();
-        if(f1 < 0.5F)
-        {
-            Aircraft.xyz[1] = Aircraft.cvt(f1, 0.10F, 0.20F, 0.0F, -0.15F);
-            Aircraft.ypr[1] = Aircraft.cvt(f1, 0.10F, 0.5F, 0.0F, -50F);
-            Aircraft.ypr[2] = Aircraft.cvt(f1, 0.05F, 0.14F, 0.0F, 8F);
-        }
-        else if(f1 < 0.75F)
-        {
-            Aircraft.xyz[1] = -0.15F;
-            Aircraft.ypr[1] = Aircraft.cvt(f1, 0.5F, 0.75F, -50F, -85F);
-            Aircraft.ypr[2] = Aircraft.cvt(f1, 0.5F, 0.75F, 8F, 2.8F);
-        }
-        else
-        {
-            Aircraft.xyz[1] = -0.15F;
-            Aircraft.ypr[1] = Aircraft.cvt(f1, 0.75F, 1F, -85F, -105F);
-            Aircraft.ypr[2] = Aircraft.cvt(f1, 0.75F, 1F, 2.8F, 0.8F);
-        }
-        hiermesh.chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
-        hiermesh.chunkSetAngles("GearR3_D0", Aircraft.cvt(f1, 0.10F, 0.20F, 0.0F, -98F), 0.0F, 0.0F);
-        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.65F, 1F, 0F, 16.32F));
-        if(f1 < 0.6F)
-            hiermesh.chunkSetAngles("GearR51_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.4F, 0.6F, 0F, -77.4F));
-        else
-            hiermesh.chunkSetAngles("GearR51_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.6F, 1.0F, -77.4F, -167.627F));
-        hiermesh.chunkSetAngles("GearR22_D0", 0.0F, Aircraft.cvt(f1, 0.1F, 1.0F, 0.0F, 4.25F), 0.0F);
-        resetXYZYPR();
-        Aircraft.xyz[2] = Aircraft.cvt(f1, 0.1F, 1.0F, 0.0F, -0.222F);
-        hiermesh.chunkSetLocate("GearR23_D0", Aircraft.xyz, Aircraft.ypr);
-        resetXYZYPR();
-        Aircraft.xyz[1] = Aircraft.cvt(f1, 0.4F, 0.8F, 0.0F, 0.51F);
-        hiermesh.chunkSetLocate("GearR4_D0", Aircraft.xyz, Aircraft.ypr);
-        deg = (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F - Aircraft.xyz[1]) / 0.96F)));
-        deg -= (float)Math.toDegrees(Math.acos((double)((0.96F - 0.104F) / 0.96F)));
-        hiermesh.chunkSetAngles("GearR41_D0", 0.0F, 0.0F, -deg);
-        hiermesh.chunkSetAngles("GearR42_D0", 0.0F, 0.0F, deg * 2F);
-        hiermesh.chunkSetAngles("GearR15_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.4F, 0.6F, 0F, -70F));
-
-        hiermesh.chunkSetAngles("GearR11_D0", 0.0F, Aircraft.cvt(f1, 0.03F, 0.15F, 0.0F, -30F), 0.0F);
-        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.01F, 0.1F, 0.0F, 90F));
-        hiermesh.chunkSetAngles("GearR61_D0", 0.0F, 0.0F, Aircraft.cvt(f1, 0.03F, 0.1F, 0.0F, -90F));
-  */
+    */
     }
 
     protected void moveGear(float f, float f1, float f2)
@@ -717,21 +610,48 @@ public abstract class DC_10family extends Scheme6
 
     public void moveWheelSink()
     {
+        if(FM.CT.getGearC() > 0.999F)
+        {
+            float fC = FM.Gears.gWheelSinking[2];
+            resetYPRmodifier();
+            Aircraft.xyz[2] = Aircraft.cvt(fC, 0.0F, 0.16F, 0.0F, 0.16F);
+            hierMesh().chunkSetLocate("GearC2_D0", Aircraft.xyz, Aircraft.ypr);
+        }
+        float fL = FM.Gears.gWheelSinking[0];
+        float fR = FM.Gears.gWheelSinking[1];
+        if(FM.CT.getGearL() > 0.999F)
+        {
+            resetYPRmodifier();
+            Aircraft.xyz[2] = Aircraft.cvt(fL, 0.0F, 0.40F, 0.0F, 0.40F) - 0.455245F;
+            hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
+        }
+        if(FM.CT.getGearR() > 0.999F)
+        {
+            resetYPRmodifier();
+            Aircraft.xyz[2] = Aircraft.cvt(fR, 0.0F, 0.40F, 0.0F, 0.40F) - 0.455245F;
+            hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
+        }
+        if(bHasCenterGear && FM.CT.getGearL() > 0.999F && FM.CT.getGearR() > 0.999F)
+        {
+            resetYPRmodifier();
+            // The center gear is 8 degrees tilted, +3.52 percent longer value is needed.
+            Aircraft.xyz[2] = Aircraft.cvt(fL * 0.5176F + fR * 0.5176F, 0.0F, 0.41F, 0.0F, 0.41F) - 0.255F;
+            hierMesh().chunkSetLocate("GearT2_D0", Aircraft.xyz, Aircraft.ypr);
+        }
     }
 
     private void rotWheels(float f)
     {
         hierMesh().chunkSetAngles("GearL1f_D0", 0.0F, -FM.Gears.gWheelAngles[0], 0.0F);
-        hierMesh().chunkSetAngles("GearL1r_D0", 0.0F, -FM.Gears.gWheelAngles[0], 0.0F);
         hierMesh().chunkSetAngles("GearR1f_D0", 0.0F, -FM.Gears.gWheelAngles[1], 0.0F);
-        hierMesh().chunkSetAngles("GearR1r_D0", 0.0F, -FM.Gears.gWheelAngles[1], 0.0F);
-        hierMesh().chunkSetAngles("GearT1_D0", 0.0F, -FM.Gears.gWheelAngles[0], 0.0F);
+        if(bHasCenterGear)
+            hierMesh().chunkSetAngles("GearT1_D0", 0.0F, -FM.Gears.gWheelAngles[0], 0.0F);
     }
 
     protected void moveRudder(float f)
     {
-        hierMesh().chunkSetAngles("Rudder1_D0", 20F * f, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("Rudder2_D0", 15F * f, 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Rudder1_D0", 30F * f, 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Rudder2_D0", 20F * f, 0.0F, 0.0F);
     }
 
     public void moveSteering(float f)
@@ -773,25 +693,25 @@ public abstract class DC_10family extends Scheme6
     protected void moveFlap(float f)
     {
         resetYPRmodifier();
-        Aircraft.xyz[0] = -0.20F * f;
-        Aircraft.xyz[2] = 0.14F * f;
+        Aircraft.xyz[0] = -0.1882F * f;
+        Aircraft.xyz[2] = 0.13174F * f;
         Aircraft.ypr[1] = 50F * f;
         hierMesh().chunkSetLocate("Flap02u_D0", Aircraft.xyz, Aircraft.ypr);
         hierMesh().chunkSetLocate("Flap03u_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        Aircraft.xyz[0] = -0.53F * f;
-        Aircraft.xyz[2] = (float)((Math.cos(Math.toRadians(50.0D * (double)f)) - 1.0D) * 0.251954D);
+        Aircraft.xyz[0] = -0.49873F * f;
+        Aircraft.xyz[2] = (float)((Math.cos(Math.toRadians(50.0D * (double)f)) - 1.0D) * 0.2370887D);
         Aircraft.ypr[1] = 50F * f;
         hierMesh().chunkSetLocate("Flap02_D0", Aircraft.xyz, Aircraft.ypr);
         hierMesh().chunkSetLocate("Flap03_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        Aircraft.xyz[0] = -0.06F * f;
+        Aircraft.xyz[0] = -0.05646F * f;
         Aircraft.ypr[1] = 18F * f;
         hierMesh().chunkSetLocate("Flap01u_D0", Aircraft.xyz, Aircraft.ypr);
         hierMesh().chunkSetLocate("Flap04u_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        Aircraft.xyz[0] = -0.43F * f;
-        Aircraft.xyz[2] = (float)((Math.cos(Math.toRadians(50.0D * (double)f)) - 1.0D) * 0.1403315D);
+        Aircraft.xyz[0] = -0.40463F * f;
+        Aircraft.xyz[2] = (float)((Math.cos(Math.toRadians(50.0D * (double)f)) - 1.0D) * 0.1320519D);
         Aircraft.ypr[1] = 50F * f;
         hierMesh().chunkSetLocate("Flap01_D0", Aircraft.xyz, Aircraft.ypr);
         hierMesh().chunkSetLocate("Flap04_D0", Aircraft.xyz, Aircraft.ypr);
@@ -804,27 +724,27 @@ public abstract class DC_10family extends Scheme6
         hierMesh().chunkSetAngles("PylonR2o", 0.0F, 50F * f, 0.0F);
 
         resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(35.5D))) * 0.55F);
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(-Math.sin(Math.toRadians(35.5D))) * 0.55F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.12F);
+        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(35.5D))) * 0.51755F);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(-Math.sin(Math.toRadians(35.5D))) * 0.51755F);
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.11292F);
         Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -18.0F);
         hierMesh().chunkSetLocate("SlatLI_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(34.0D))) * 0.51F);
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(-Math.sin(Math.toRadians(34.0D))) * 0.51F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.06F);
+        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(34.0D))) * 0.47991F);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(-Math.sin(Math.toRadians(34.0D))) * 0.47991F);
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.05646F);
         Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -18.0F);
         hierMesh().chunkSetLocate("SlatLO_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(35.5D))) * 0.55F);
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.sin(Math.toRadians(35.5D))) * 0.55F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.12F);
+        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(35.5D))) * 0.51755F);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.sin(Math.toRadians(35.5D))) * 0.51755F);
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.11292F);
         Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -18.0F);
         hierMesh().chunkSetLocate("SlatRI_D0", Aircraft.xyz, Aircraft.ypr);
         resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(34.0D))) * 0.51F);
-        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.sin(Math.toRadians(34.0D))) * 0.51F);
-        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.06F);
+        Aircraft.xyz[0] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.cos(Math.toRadians(34.0D))) * 0.47991F);
+        Aircraft.xyz[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, (float)(Math.sin(Math.toRadians(34.0D))) * 0.47991F);
+        Aircraft.xyz[2] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -0.05646F);
         Aircraft.ypr[1] = Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -18.0F);
         hierMesh().chunkSetLocate("SlatRO_D0", Aircraft.xyz, Aircraft.ypr);
     }
@@ -840,7 +760,7 @@ public abstract class DC_10family extends Scheme6
     protected void moveThrustReverser(float f)
     {
         resetYPRmodifier();
-        Aircraft.xyz[0] = Aircraft.cvt(f, 0.03F, 0.97F, 0.0F, -0.65F);
+        Aircraft.xyz[0] = Aircraft.cvt(f, 0.03F, 0.97F, 0.0F, -0.61165F);
         hierMesh().chunkSetLocate("Engine1_Cowling2_D0", Aircraft.xyz, Aircraft.ypr);
         hierMesh().chunkSetLocate("Engine2_Cowling2_D0", Aircraft.xyz, Aircraft.ypr);
         hierMesh().chunkSetLocate("Engine3_Cowling2_D0", Aircraft.xyz, Aircraft.ypr);
@@ -1056,6 +976,7 @@ public abstract class DC_10family extends Scheme6
     private float stockAilerons;
     private float stockThrustMax;
     private boolean lastThrustReverser;
+    protected boolean bHasCenterGear;
     public static float FlowRate = 10F;  // fake value, 1/4 of historical
     public static float FuelReserve = 1500F;  // fake value, 1/4 of historical
 

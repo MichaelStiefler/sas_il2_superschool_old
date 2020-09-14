@@ -1,6 +1,6 @@
 [Aircraft]
   Type 6
-  Crew 4
+  Crew 3
   Wingspan 50.41
   Length 55.35
   Seaplane 0
@@ -9,12 +9,11 @@
   JetHiV 1
   CrewFunction1 2
   CrewFunction2 8
-  CrewFunction3 11
 [Mass]
   Empty 109328.0
   TakeOff 267620.0
   Oil 400.0
-  Fuel 161480.0
+  Fuel 110000.0
 [Controls]
   CAileron 3
   CAileronTrim 1

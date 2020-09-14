@@ -7,6 +7,9 @@
   Canard 0
   Jet 1
   JetHiV 1
+  CrewFunction1 2
+  CrewFunction2 8
+  CrewFunction3 11
 [Mass]
   Empty 27332.0
   TakeOff 66905.0
@@ -27,6 +30,7 @@
   CFlapStage2 22
   CFlapStage3 35
   CFlapStageMax 50
+  CFlapTakeoffGroundRatio 0.44
   CDiveBrake 1
   CInterceptor 0
   CEngine 1
@@ -103,7 +107,7 @@
   Wing_In 2.0
   Wing_Mid 5.8
   Wing_Out 13.5
-  GCenter 0.90  //1.50  //2.50   //0.00
+  GCenter 0.00  //0.90  //1.50  //2.50
   GCenterZ 0.00
   GC_AOA_Shift 0.60
   GC_Flaps_Shift 0.20
@@ -115,36 +119,36 @@
   Engine1SubModel CF6-50C2
   Engine2Family GE_CF6fake:KC10fakeFM
   Engine2SubModel CF6-50C2
-  Position0x 0.0
-  Position0y 8.9
-  Position0z -2.39
-  PropPosition0x 0.0
-  PropPosition0y 8.9
-  PropPosition0z -2.39
+  Position0x -1.0
+  Position0y 8.376
+  Position0z -2.247
+  PropPosition0x -1.0
+  PropPosition0y 8.376
+  PropPosition0z -2.247
   Vector0x 1.0
   Vector0y 0.0
   Vector0z 0.0
-  Position1x -28.0
+  Position1x -27.35
   Position1y 0.0
-  Position1z 5.6
-  PropPosition1x -28.0
+  Position1z 5.25
+  PropPosition1x -27.35
   PropPosition1y 0.0
-  PropPosition1z 5.6
+  PropPosition1z 5.25
   Vector1x 1.0
   Vector1y 0.0
   Vector1z 0.0
-  Position2x 0.0
-  Position2y -8.9
-  Position2z -2.39
-  PropPosition2x 0.0
-  PropPosition2y -8.9
-  PropPosition2z -2.39
+  Position2x -1.0
+  Position2y -8.376
+  Position2z -2.247
+  PropPosition2x -1.0
+  PropPosition2y -8.376
+  PropPosition2z -2.247
   Vector2x 1.0
   Vector2y 0.0
   Vector2z 0.0
 [Gear]
-  H 4.54
-  Pitch 0.1
+  H 4.42
+  Pitch 0.01
   SinkFactor 4000.0
   SpringsStiffness 1.8
   TailStiffness 0.2
@@ -184,11 +188,11 @@
   FlapsAngSh 5.0
   G_class_coeff 12.0
   G_class 6.0
-  Range 20000.0
+  Range 18000.0
   CruiseSpeed 850.0
-  SensYaw 0.22
-  SensPitch 0.22
-  SensRoll 0.17
+  SensYaw 0.18
+  SensPitch 0.20
+  SensRoll 0.15
 [Polares]
   lineCyCoeff 0.09
   AOAMinCx_Shift 1.5
