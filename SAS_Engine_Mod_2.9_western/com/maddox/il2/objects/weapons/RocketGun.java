@@ -1,5 +1,5 @@
 // Source File Name:   RocketGun.java
-// 03rd/Oct./2020 : Bomb hook position tweak in _Hardpoint refering
+// 09th/Oct./2020 : Rocket hook position tweak in _Hardpoint refering, multiple offset rockets
 
 package com.maddox.il2.objects.weapons;
 
@@ -8,6 +8,7 @@ import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.*;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
+import java.util.ArrayList;
 
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            Rocket, GunEmpty
@@ -28,11 +29,28 @@ public class RocketGun extends Interpolate
         plusPitch = 0.0F;
         plusYaw = 0.0F;
         bulletMassa = 0.048F;
+
+        // +++ western : Multi rockets in SAS Engine mod 2.9.x
+        bMultiPos = false;
+        curMultiNum = 0;
+        rocketList = null;
+        // ---
     }
 
     public void doDestroy()
     {
         ready = false;
+        // +++ western : Multi rockets in SAS Engine mod 2.9.x
+        if(bMultiPos && rocketList != null)
+        {
+            for(int j = 0; j < rocketList.size(); j++)
+                if(rocketList.get(j) != null)
+                    ((Rocket)rocketList.get(j)).destroy();
+            rocketList.clear();
+            rocketList = null;
+            bMultiPos = false;
+        }
+        // ---
         if(rocket != null)
         {
             rocket.destroy();
@@ -108,11 +126,32 @@ public class RocketGun extends Interpolate
         bHide = flag;
         if(bHide)
         {
+            // +++ western : Multi rockets in SAS Engine mod 2.9.x
+            if(bMultiPos && rocketList != null)
+            {
+                for(int j = 0; j < rocketList.size(); j++)
+                {
+                    if(Actor.isValid((Rocket)rocketList.get(j)))
+                        ((Rocket)rocketList.get(j)).drawing(false);
+                }
+            }
+            // ---
             if(Actor.isValid(rocket))
                 rocket.drawing(false);
-        } else
-        if(Actor.isValid(rocket))
-            rocket.drawing(true);
+        } else {
+            // +++ western : Multi rockets in SAS Engine mod 2.9.x
+            if(bMultiPos && rocketList != null)
+            {
+                for(int j = 0; j < rocketList.size(); j++)
+                {
+                    if(Actor.isValid((Rocket)rocketList.get(j)))
+                        ((Rocket)rocketList.get(j)).drawing(true);
+                }
+            }
+            // ---
+            if(Actor.isValid(rocket))
+                rocket.drawing(true);
+        }
     }
 
     public boolean isHide()
@@ -163,6 +202,54 @@ public class RocketGun extends Interpolate
     public void loadBullets(int i)
     {
         bullets(i);
+
+        // +++ western : Multi rockets in SAS Engine mod 2.9.x
+        if(bMultiPos && i == 0 && rocketList != null)
+        {
+            for(int j = 0; j < rocketList.size(); j++)
+            {
+                if(Actor.isValid((Rocket)rocketList.get(j)))
+                    ((Rocket)rocketList.get(j)).destroy();
+            }
+            rocketList.clear();
+            rocketList = null;
+        }
+
+        bMultiPos = false;
+        curMultiNum = 0;
+        if(i > 1 && i < 41)
+        {
+            // checking multi positions
+            double tmpad[][] = new double[40][3];
+            String propname = "posArray" + Integer.toString(i);
+            Object tmpObj = Property.value(getClass(), propname, null);
+            if(tmpObj != null)
+            {
+                tmpad = (double[][])tmpObj;
+                if(tmpad.length == i && tmpad[0].length == 3)
+                    bMultiPos = true;
+            }
+
+            if(bMultiPos)
+            {
+                rocketList = new ArrayList();
+                int jstart = 0;
+                if(bullets() != 0 && Actor.isValid(rocket))
+                {
+                    rocketList.add(rocket);
+                    jstart = 1;
+                }
+                for(int j = jstart; j < i; j++)
+                {
+                    Point3d tmpp3d = new Point3d(tmpad[j][0], tmpad[j][1], tmpad[j][2]);
+                    Rocket tmprc = newRocketObject(tmpp3d);
+                    if(tmprc != null)
+                        rocketList.add(tmprc);
+                }
+                return;
+            }
+        }
+        // ---
         if(bullets() != 0)
         {
             if(!Actor.isValid(rocket))
@@ -228,7 +315,35 @@ public class RocketGun extends Interpolate
                 return;
             }
             bTickShot = true;
-            if(rocket != null)
+            // +++ western : Multi rockets in SAS Engine mod 2.9.x
+            if(bMultiPos)
+            {
+                if(rocketList != null && curMultiNum < rocketList.size() && rocketList.get(curMultiNum) != null)
+                {
+                    Rocket tmprocket = (Rocket)rocketList.get(curMultiNum);
+                    tmprocket.pos.setUpdateEnable(true);
+                    if(plusPitch != 0.0F || plusYaw != 0.0F)
+                    {
+                        tmprocket.pos.getAbs(_tmpOr0);
+                        _tmpOr1.setYPR(plusYaw, plusPitch, 0.0F);
+                        _tmpOr1.add(_tmpOr0);
+                        tmprocket.pos.setAbs(_tmpOr1);
+                    }
+                    tmprocket.pos.resetAsBase();
+                    tmprocket.start(timeLife, spread);
+                    if(Actor.isValid(tmprocket))
+                    {
+                        String s = Property.stringValue(getClass(), "sound", null);
+                        if(s != null)
+                            tmprocket.newSound(s, true);
+                    }
+                    rocketList.set(curMultiNum, null);
+
+                    curMultiNum++;
+                }
+            }
+            // ---
+            else if(rocket != null)
             {
                 rocket.pos.setUpdateEnable(true);
                 if(plusPitch != 0.0F || plusYaw != 0.0F)
@@ -252,8 +367,10 @@ public class RocketGun extends Interpolate
                 curShots--;
             if(bullets() > 0)
                 bullets(bullets() - 1);
-            if(bullets() != 0)
+            // +++ western : Multi rockets in SAS Engine mod 2.9.x
+            if(!bMultiPos && bullets() != 0)
                 newRocket();
+            // ---
             curShotStep = shotStep;
         }
         curShotStep--;
@@ -289,6 +406,37 @@ public class RocketGun extends Interpolate
         }
         catch(Exception exception) { }
     }
+
+    // +++ western : Multi rockets in SAS Engine mod 2.9.x
+    private Rocket newRocketObject(Point3d p3d)
+    {
+        Rocket tmprocket = null;
+        try
+        {
+            tmprocket = (Rocket)bulletClass.newInstance();
+            HookNamed hookatc = null;
+            try {
+                hookatc = (HookNamed)tmprocket.findHook("_Hardpoint");
+            } catch(Exception exception) {
+                hookatc = null;
+            }
+            tmprocket.pos.setBase(actor, hook, false, hookatc, p3d);
+            // ---
+            if(bRocketPosRel)
+                tmprocket.pos.changeHookToRel();
+            tmprocket.pos.resetAsBase();
+            tmprocket.visibilityAsBase(true);
+            if(bRocketPosRel)
+                tmprocket.pos.setUpdateEnable(false);
+        }
+        catch(Exception exception)
+        {
+            return null;
+        }
+
+        return tmprocket;
+    }
+    // ---
 
     public void setHookToRel(boolean flag)
     {
@@ -332,9 +480,9 @@ public class RocketGun extends Interpolate
         set(actor, s);
     }
 
-    public void set(Actor actor, String s)
+    public void set(Actor actor1, String s)
     {
-        this.actor = actor;
+        actor = actor1;
         Class class1 = getClass();
         bCassette = Property.containsValue(class1, "cassette");
         bulletClass = (Class)Property.value(class1, "bulletClass", null);
@@ -347,9 +495,9 @@ public class RocketGun extends Interpolate
         shotStep = (int)((1.0F / f + Time.tickConstLenFs() / 2.0F) / Time.tickConstLenFs());
         if(shotStep <= 0)
             shotStep = 1;
-        hook = (HookNamed)actor.findHook(s);
+        hook = (HookNamed)actor1.findHook(s);
         newRocket();
-        this.actor.interpPut(this, null, -1L, null);
+        actor.interpPut(this, null, -1L, null);
     }
 
     public void setConvDistance(float f, float f1)
@@ -372,6 +520,21 @@ public class RocketGun extends Interpolate
     public void setSpreadRnd(int i)
     {
         spread = i;
+    }
+
+    private static String actorString(Actor actor) {
+        if(!Actor.isValid(actor)) return "(InvalidActor)";
+        String s;
+        try {
+            s = actor.getClass().getName();
+        } catch(Exception e) {
+            System.out.println("RocketGun - actorString(): Cannot resolve class name of " + actor);
+            return "(NoClassnameActor)";
+        }
+        int i = s.lastIndexOf('.');
+        String strSection = s.substring(i + 1);
+        strSection =  strSection + '@' + Integer.toHexString(actor.hashCode());
+        return strSection;
     }
 
     protected boolean ready;
@@ -397,4 +560,9 @@ public class RocketGun extends Interpolate
     private static Loc nullLoc = new Loc();
     private static final boolean DEBUG = false;
 
+    // +++ western : Multi rockets in SAS Engine mod 2.9.x
+    private boolean bMultiPos;
+    private int curMultiNum;
+    protected ArrayList rocketList;
+    // ---
 }

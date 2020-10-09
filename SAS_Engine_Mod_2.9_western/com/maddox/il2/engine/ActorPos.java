@@ -1,5 +1,5 @@
 // Source File Name:   ActorPos.java
-// By western: add bombs' _Hardpoint hook referred on 03rd/Oct./2020
+// By western: add bombs' _Hardpoint hook referred , offset position value on 09th/Oct./2020
 
 package com.maddox.il2.engine;
 
@@ -102,6 +102,11 @@ public abstract class ActorPos
 
     // +++ western: Engine mod 2.9.x Bomb hook position in _Hardpoint refering
     public void setBase(Actor actor1, Hook hook, boolean flag, Hook hookatc)
+    {
+        throw new ActorException("method 'setBase' not implemented");
+    }
+
+    public void setBase(Actor actor1, Hook hook, boolean flag, Hook hookatc, Point3d posoffset)
     {
         throw new ActorException("method 'setBase' not implemented");
     }

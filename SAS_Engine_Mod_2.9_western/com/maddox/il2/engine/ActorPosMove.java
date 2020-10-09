@@ -1,5 +1,5 @@
 // Source File Name:   ActorPosMove.java
-// By western: add bombs' _Hardpoint hook referred on 03rd/Oct./2020
+// By western: add bombs' _Hardpoint hook referred , offset position value on 09th/Oct./2020
 
 package com.maddox.il2.engine;
 
@@ -109,12 +109,15 @@ public class ActorPosMove extends ActorPos
             Labs.set(L);
             baseHook.computePos(base, base.pos.getAbs(), Labs);
             // +++ western: Engine mod 2.9.x Bomb hook position in _Hardpoint refering
-            if(attachHook != null)
+            if(attachHook != null || offsetPos != null)
             {
                 if(saveAttachL == null)
                 {
                     saveAttachL = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    attachHook.computePos(actor, saveAttachL, saveAttachL);
+                    if(attachHook != null)
+                        attachHook.computePos(actor, saveAttachL, saveAttachL);
+                    if(offsetPos != null)
+                        saveAttachL.add(offsetPos);
                 }
                 Point3d tmpAtcP = new Point3d(saveAttachL.getPoint());
                 tmpAbsO = Labs.getOrient();
@@ -240,16 +243,26 @@ public class ActorPosMove extends ActorPos
         setBase(actor1, hook, flag, false, false, hookatc);
     }
 
+    public void setBase(Actor actor1, Hook hook, boolean flag, Hook hookatc, Point3d posoffset)
+    {
+        setBase(actor1, hook, flag, false, false, hookatc, posoffset);
+    }
+
     protected void setBase(Actor actor1, Hook hook, boolean flag, boolean flag1, boolean flag2, Hook hookatc)
+    {
+        setBase(actor1, hook, flag, false, false, hookatc, null);
+    }
+
+    protected void setBase(Actor actor1, Hook hook, boolean flag, boolean flag1, boolean flag2, Hook hookatc, Point3d posoffset)
     {
         if(actor == null)
             return;
-        if(hookatc == null)
+        if(hookatc == null && posoffset == null)
         {
             setBase(actor1, hook, flag, flag1, flag2);
             return;
         }
-        if(actor1 != base || hook != baseHook || hookatc != attachHook)
+        if(actor1 != base || hook != baseHook || hookatc != attachHook || posoffset != offsetPos)
         {
             if(actor1 != null && !Actor.isValid(actor1))
                 throw new ActorException("new base is destroyed");
@@ -266,6 +279,7 @@ public class ActorPosMove extends ActorPos
             base = actor1;
             baseHook = hook;
             attachHook = hookatc;
+            offsetPos = posoffset;
             if(flag)
             {
                 Labs.get(tmpBaseP, tmpBaseO);
@@ -369,20 +383,26 @@ public class ActorPosMove extends ActorPos
         L.sub(base.pos.getAbs());
 
         // +++ western: Engine mod 2.9.x Bomb hook position in _Hardpoint refering
-        if(baseHook != null && attachHook != null)
+        if(baseHook != null)
         {
-            if(saveAttachL == null)
+            if(attachHook != null || offsetPos != null)
             {
-                saveAttachL = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                attachHook.computePos(actor, saveAttachL, saveAttachL);
+                if(saveAttachL == null)
+                {
+                    saveAttachL = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    if(attachHook != null)
+                        attachHook.computePos(actor, saveAttachL, saveAttachL);
+                    if(offsetPos != null)
+                        saveAttachL.add(offsetPos);
+                }
+                Point3d tmpAtcP = new Point3d(saveAttachL.getPoint());
+                tmpAbsO = Labs.getOrient();
+                tmpAbsO.transform(tmpAtcP);
+                Loc loctempatc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                loctempatc.set(tmpAtcP);
+                L.sub(loctempatc);
+                attachHook = null;
             }
-            Point3d tmpAtcP = new Point3d(saveAttachL.getPoint());
-            tmpAbsO = Labs.getOrient();
-            tmpAbsO.transform(tmpAtcP);
-            Loc loctempatc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-            loctempatc.set(tmpAtcP);
-            L.sub(loctempatc);
-            attachHook = null;
         }
         // ---
 
@@ -508,12 +528,15 @@ public class ActorPosMove extends ActorPos
             Labs.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
             baseHook.computePos(base, base.pos.getAbs(), Labs);
             // +++ western: Engine mod 2.9.x Bomb hook position in _Hardpoint refering
-            if(attachHook != null)
+            if(attachHook != null || offsetPos != null)
             {
                 if(saveAttachL == null)
                 {
                     saveAttachL = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-                    attachHook.computePos(actor, saveAttachL, saveAttachL);
+                    if(attachHook != null)
+                        attachHook.computePos(actor, saveAttachL, saveAttachL);
+                    if(offsetPos != null)
+                        saveAttachL.add(offsetPos);
                 }
                 Point3d tmpAtcP = new Point3d(saveAttachL.getPoint());
                 tmpAbsO = Labs.getOrient();
@@ -732,7 +755,7 @@ public class ActorPosMove extends ActorPos
             prevLabs.set(L);
             baseHook.computePos(base, base.pos.getCurrent(), prevLabs);
             // +++ western: Engine mod 2.9.x Bomb hook position in _Hardpoint refering
-            if(attachHook != null && saveAttachL != null)
+            if((attachHook != null || offsetPos != null) && saveAttachL != null)
             {
                 Point3d tmpAtcP = new Point3d(saveAttachL.getPoint());
                 tmpAbsO = prevLabs.getOrient();
@@ -763,7 +786,7 @@ public class ActorPosMove extends ActorPos
             prevLabs.set(L);
             baseHook.computePos(base, base.pos.getPrev(), prevLabs);
             // +++ western: Engine mod 2.9.x Bomb hook position in _Hardpoint refering
-            if(attachHook != null && saveAttachL != null)
+            if((attachHook != null || offsetPos != null) && saveAttachL != null)
             {
                 Point3d tmpAtcP = new Point3d(saveAttachL.getPoint());
                 tmpAbsO = prevLabs.getOrient();
@@ -944,6 +967,7 @@ public class ActorPosMove extends ActorPos
         renderTick = -1;
         // western: Engine mod 2.9.x
         attachHook = null;
+        offsetPos = null;
         saveAttachL = null;
     }
 
@@ -1062,6 +1086,7 @@ public class ActorPosMove extends ActorPos
 
     // +++ western: Engine mod 2.9.x Bomb hook position in _Hardpoint refering
     protected Hook attachHook;
+    protected Point3d offsetPos;
     protected Loc saveAttachL;
     // ---
 }
