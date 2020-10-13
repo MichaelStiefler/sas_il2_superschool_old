@@ -236,6 +236,11 @@ public class RocketGun extends Interpolate
                 int jstart = 0;
                 if(bullets() != 0 && Actor.isValid(rocket))
                 {
+                    if(tmpad[0][0] != 0.0D || tmpad[0][1] != 0.0D || tmpad[0][2] != 0.0D)
+                    {
+                        Point3d tmpp3d = new Point3d(tmpad[0][0], tmpad[0][1], tmpad[0][2]);
+                        rocketObjectOffset(rocket, tmpp3d);
+                    }
                     rocketList.add(rocket);
                     jstart = 1;
                 }
@@ -435,6 +440,34 @@ public class RocketGun extends Interpolate
         }
 
         return tmprocket;
+    }
+
+    private Rocket rocketObjectOffset(Rocket rocket1, Point3d p3d)
+    {
+        try
+        {
+            HookNamed hookatc = null;
+            try {
+                hookatc = (HookNamed)rocket1.findHook("_Hardpoint");
+            } catch(Exception exception) {
+                hookatc = null;
+            }
+            rocket1.pos.destroy();
+            rocket1.pos = new ActorPosMove(rocket1);
+            rocket1.pos.setBase(actor, hook, false, hookatc, p3d);
+            // ---
+            if(bRocketPosRel)
+                rocket1.pos.changeHookToRel();
+            rocket1.pos.resetAsBase();
+            if(bRocketPosRel)
+                rocket1.pos.setUpdateEnable(false);
+        }
+        catch(Exception exception)
+        {
+            return null;
+        }
+
+        return rocket1;
     }
     // ---
 
