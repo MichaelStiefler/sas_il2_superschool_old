@@ -23,9 +23,6 @@ public class RocketS5K extends Rocket
     {
         setMesh("3DO/Arms/S5/mono_open.sim");
         super.start(f, i);
-        //super.speed.normalize();
-        //super.speed.scale(525D);
-        //super.noGDelay = -1L;
     }
 
  
@@ -46,7 +43,7 @@ public class RocketS5K extends Rocket
         Property.set(class1, "force", 8300F);
         Property.set(class1, "power", 1.13F);
         Property.set(class1, "powerType", 0);
-        Property.set(class1, "kalibr", 0.1F/*0.057F*/);
+        Property.set(class1, "kalibr", 0.057F);
         Property.set(class1, "massa", 3.65F);
         Property.set(class1, "massaEnd", 2.76F);
         Property.set(class1, "friendlyName", "S5K");

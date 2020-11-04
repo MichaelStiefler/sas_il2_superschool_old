@@ -1,6 +1,6 @@
 // Source File Name: Missile.java
 // Author:	Storebror
-// Edit:	western0221 on 20th/Aug./2018
+// Edit:	western0221 on 21th/Feb./2019
 package com.maddox.il2.objects.weapons;
 
 import java.io.IOException;
@@ -36,6 +36,7 @@ import com.maddox.il2.objects.ActorSimpleMesh;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGuidedMissileCarrier;
+import com.maddox.il2.objects.air.TypeHARM_carrier;
 import com.maddox.il2.objects.air.TypeLaserDesignator;
 import com.maddox.il2.objects.air.TypeSACLOS;
 import com.maddox.il2.objects.air.TypeSemiRadar;
@@ -210,7 +211,7 @@ public class Missile extends Rocket
 		this.trajectoryVector3d = new Vector3d();
 		this.victimSpeed = new Vector3d();
 		this.victimOffsetOrient = new Orient();
-		this.victimOffsetPoint3d = new Point3d();
+		this.victimOffsetPoint3f = new Point3f();
 		this.MissileInit();
 		return;
 	}
@@ -278,7 +279,7 @@ public class Missile extends Rocket
 				this.previousDistance = 1000F;
 			}
 		}
-		this.safeVictimOffset.set(this.victimOffsetPoint3d);
+		this.safeVictimOffset.set(this.victimOffsetPoint3f);
 		if (!Actor.isValid(this.getOwner())) {
 			if ( bLogDetail )
 				System.out.println("Missile(" + actorString(this) + ") - entering doExplosionAir(); - Because of owner(" + actorString(this.getOwner()) + ") becomes not valid.");
@@ -292,7 +293,7 @@ public class Missile extends Rocket
 	}
 
 	private float computeMissileAccelleration() {
-		this.victimOffsetPoint3d.set(this.safeVictimOffset);
+		this.victimOffsetPoint3f.set(this.safeVictimOffset);
 		// float tickLen = Time.tickLenFs();
 		float missileSpeed = (float) this.getSpeed(null);
 		if (this.getFailState() == FAIL_TYPE_ENGINE) {
@@ -748,6 +749,7 @@ public class Missile extends Rocket
 		this.showingTrailSmoke = false;
 		this.endSmoke();
 		this.victim = null;
+		this.lockingVictim = false;
 		this.startTime = 0L;
 		this.previousDistance = 1000F;
 		if (this.myActiveMissile != null) {
@@ -777,25 +779,36 @@ public class Missile extends Rocket
 		this.myActiveMissile = new ActiveMissile(this, this.getOwner(), this.victim, (Actor.isValid(this.getOwner())) ? this.getOwner().getArmy() : Integer.MAX_VALUE, (Actor.isValid(this.victim)) ? this.victim.getArmy() : Integer.MAX_VALUE, this.ownerIsAI());
 		GuidedMissileUtils.addActiveMissile(this.myActiveMissile);
 		this.startEngineDone();
-          //TODO: reset missile FOV
 		
-			System.out.println(
-					"Missile FOV changing to: "
-			        + this.maxFOVfrom_real 
-			        + " /from: " 
-			        + this.maxFOVfrom    
-				);
-		if(this.maxFOVfrom_real!=0.0F)
-		this.maxFOVfrom = this.maxFOVfrom_real;
-			//TODO: end of reset FOV
+		//TODO: reset missile FOV
+		
+				
+			if(this.maxFOVfrom_real!=0.0F)  //Checks if missile has two different FOV's in code
+			{
+				System.out.println(
+						"Missile FOV changing to: "
+				        + this.maxFOVfrom_real 
+				        + "° /from: " 
+				        + this.maxFOVfrom    + "°"
+					);  //Feedback in log
+			this.maxFOVfrom = this.maxFOVfrom_real; //FOV changed to post-launch FOV
+			
+			}
+			else
+			{
+				System.out.println(
+						"Missile FOV not changed !!! "
+				        + this.maxFOVfrom    + "°"
+					);  //Feedback in log
+			}
 		if ( bLogDetail && Actor.isValid(this) ) System.out.println("Missile(" + actorString(this) + ") - doStart(f), recording new ActiveMissile(): getOwner()=" + actorString(this.getOwner()) + "; " + (Actor.isValid(this.getOwner()) ? ("Valid getOwner().getArmy()=" + getOwner().getArmy()) : "Invalid") + " - collisionR()=" + this.mesh().collisionR() + " , visibilityR()=" + this.mesh().visibilityR());
 		if ( bLogDetail && Actor.isValid(this) ) iStatusCur_getArmy |= Integer.parseInt("0000000000000000000010000000000", 2);
-//		if (this.victim == null)
-//			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=null");
-//		else
-//			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=" + this.victim.hashCode() + " (" + this.victim.getClass().getName() + ")");
-//		System.out.println("Active Missile added for victim " + this.victim.hashCode());
-	}
+/*		if (this.victim == null)
+			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=null");
+		else
+			System.out.println("Owner " + this.getOwner().hashCode() + " Active Missile added for victim=" + this.victim.hashCode() + " (" + this.victim.getClass().getName() + ")");
+		System.out.println("Active Missile added for victim " + this.victim.hashCode());
+	*/}
 
 	private void endAllFlame() {
 		if (this.exhausts < 2) {
@@ -973,10 +986,11 @@ public class Missile extends Rocket
 
 	private void getMissileProperties() {
 		Class localClass = super.getClass();
+		this.MyotkaFOV = Property.floatValue(localClass, "typeMyotka", 0);
 		this.launchType = Property.intValue(localClass, "launchType", 0);
 		this.stepMode = Property.intValue(localClass, "stepMode", 0);
 		this.maxFOVfrom = Property.floatValue(localClass, "maxFOVfrom", 180F);
-		this.maxFOVfrom_real = Property.floatValue(localClass, "maxFOVfrom_real", 180F);
+		this.maxFOVfrom_real = Property.floatValue(localClass, "maxFOVfrom_real", 0F);
 		this.maxLaunchG = Property.floatValue(localClass, "maxLockGForce", 99.9F);
 		this.maxG = Property.floatValue(localClass, "maxGForce", 12F);
 		this.stepsForFullTurn = Property.floatValue(localClass, "stepsForFullTurn", 10);
@@ -1039,10 +1053,10 @@ public class Missile extends Rocket
 			this.massLossPerTick = 0.0F;
 		}
 		this.iDetectorType = Property.intValue(localClass, "detectorType", DETECTOR_TYPE_MANUAL);
-		if (iDetectorType == DETECTOR_TYPE_LASER) bLaserHoming = true;
-		else bLaserHoming = false;
-		if (iDetectorType == DETECTOR_TYPE_SACLOS) bSACLOSHoming = true;
-		else bSACLOSHoming = false;
+		if (this.iDetectorType == DETECTOR_TYPE_LASER) this.bLaserHoming = true;
+		else this.bLaserHoming = false;
+		if (this.iDetectorType == DETECTOR_TYPE_SACLOS) this.bSACLOSHoming = true;
+		else this.bSACLOSHoming = false;
 		this.lTargetType = Property.longValue(localClass, "targetType", TARGET_AIR);
 		this.missileProximityFuzeRadius = Property.floatValue(localClass, "proximityFuzeRadius", 50.0F);
 		// When proximityFuzeRadius = 0F set, means no Proximity Fuze. So, working as Contact Fuze or Time Fuze (reaching timeLife).
@@ -1136,6 +1150,10 @@ public class Missile extends Rocket
 		return this.targetPoint3dAbs;
 	}
 
+	public boolean getLockStatus() {
+		return this.lockingVictim;
+	}
+
 	public int getDetectorType() {
 		return this.iDetectorType;
 	}
@@ -1169,16 +1187,38 @@ public class Missile extends Rocket
 			if (this.isSunTracking() || this.isGroundTracking()) {
 				this.victim = null;
 			}
-			int lockType = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getDetectorType();
-			if (bRealisticRadarSelect && lockType == DETECTOR_TYPE_RADAR_HOMING && this.victim != null) {
+			if (this.iDetectorType == DETECTOR_TYPE_RADAR_HOMING && this.victim != null) {
 				if (!Actor.isValid(this.getOwner())) {
 					this.victim = null;
 				} else {
 					FlightModelMain ownerfm = ((Aircraft)this.getOwner()).FM;
 					if (this.getOwner() instanceof TypeSemiRadar &&
 						(((ownerfm instanceof RealFlightModel)) && (((RealFlightModel) ownerfm).isRealMode()) && (ownerfm instanceof Pilot))) {
-						if (!((TypeSemiRadar) this.getOwner()).getSemiActiveRadarOn() || ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor() != this.victim) {
+			//			if (/*bRealisticRadarSelect && */(!((TypeSemiRadar) this.getOwner()).getSemiActiveRadarOn() || ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor() != this.victim)) {
+				//			this.lockingVictim = false;
+					//		this.victim = null;
+						//} else {
+//							this.victim = ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor();
+	//						this.lockingVictim = true;
+		//				}
+						
+						
+						if( ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarOn() &&  ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor() != null )
+						{
+							this.victim = ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor();
+							this.lockingVictim = true;
+						}
+						else{
+							this.lockingVictim = false;
 							this.victim = null;
+						}
+						
+					} else {
+						if (GuidedMissileUtils.angleBetween(this.getOwner(), this.victim) > 45.0F ||
+							GuidedMissileUtils.pitchBetween(this.getOwner(), this.victim) > 45.0F) {
+							this.lockingVictim = false;
+						} else {
+							this.lockingVictim = true;
 						}
 					}
 				}
@@ -1237,6 +1277,7 @@ public class Missile extends Rocket
 
 	public final void MissileInit() {
 		this.victim = null;
+		this.lockingVictim = false;
 		this.startTime = 0L;
 		this.previousDistance = 1000F;
 		this.deltaAzimuth = 0.0F;
@@ -1259,6 +1300,7 @@ public class Missile extends Rocket
 			}
 		}
 		this.victim = null;
+		this.lockingVictim = false;
 		this.startTime = 0L;
 		this.previousDistance = 1000F;
 		this.oldDeltaAzimuth = 0.0F;
@@ -1422,9 +1464,49 @@ public class Missile extends Rocket
 		this.missileBaseSpeed = (float) this.getSpeed((Vector3d) null);
 	}
 
+	public void update (float f)
+	{
+		if(this.iDetectorType == DETECTOR_TYPE_RADAR_HOMING && this.getOwner() instanceof TypeSemiRadar)
+		{
+			if( ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarOn() && ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor() != null)
+			{
+				this.victim = ((TypeSemiRadar) this.getOwner()).getSemiActiveRadarLockedActor();
+				this.lockingVictim = true;
+				return;
+			}
+			else{
+				this.lockingVictim = false;
+				this.victim = null;
+				return;
+			}
+		}
+	}
 	private void setMissileVictim() {
 		this.victim = null;
+		this.lockingVictim = false;
+//:TODO
+		/*if (iDetectorType == 6 || iDetectorType == 5)
+		{
+			Actor owner = this.getOwner();
+	    	this.victim = ((TypeHARM_carrier)owner).getHarmVictim();
+	    	//this.loft_mode = ((TypeHARM_carrier)owner).getHarmLOFT();
+	    	//if(this.loft_mode > 100)this.loft_mode=100; if(this.loft_mode<0)this.loft_mode=0;
+	    	this.HARM_MODE = new String();
+	    	this.HARM_MODE = ((TypeHARM_carrier)owner).getHarmMode();
+	    	this.HARM_WP = new Point3d();
+	    	this.HARM_WP = ((TypeHARM_carrier)owner).getHarmWP();
+	    	((TypeHARM_carrier)owner).setNewHARMVictim();
+	    	this.lockingVictim = true;
+	    	//this.lockingVictim = true;
+	    	System.out.println(
+					"Setting missile victim"
+				);
+	    	this.targetPoint3dAbs = null;
+	    	this.targetPoint3dAbs = this.victim.pos.getAbsPoint();
 
+			return;
+		}*/
+		
 		if (bLaserHoming) {
 			if (!this.ownerIsAI()) {
 				if (this.getFM().getOverload() > this.maxLaunchG) {
@@ -1437,12 +1519,12 @@ public class Missile extends Rocket
 			if (this.getOwner() instanceof TypeGuidedMissileCarrier && this.getOwner() instanceof TypeLaserDesignator && (((TypeLaserDesignator) this.getOwner()).getLaserOn())) {
 				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
 				this.laserOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
-				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+				this.victimOffsetPoint3f = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
 
-				if (this.targetPoint3dAbs == null || this.laserOwner == null || this.victimOffsetPoint3d == null)
+				if (this.targetPoint3dAbs == null || this.laserOwner == null || this.victimOffsetPoint3f == null)
 					return;
 
-				this.safeVictimOffset.set(this.victimOffsetPoint3d);
+				this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				this.targetPoint3d.set(this.targetPoint3dAbs);
 				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
 			}
@@ -1461,12 +1543,12 @@ public class Missile extends Rocket
 			if ((this.getOwner() instanceof TypeGuidedMissileCarrier) && (this.getOwner() instanceof TypeSACLOS) && (((TypeSACLOS) this.getOwner()).getSACLOSenabled())) {
 				this.targetPoint3dAbs = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPos();
 				this.saclosOwner = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetPosOwner();
-				this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+				this.victimOffsetPoint3f = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
 
-				if (this.targetPoint3dAbs == null || this.saclosOwner == null || this.victimOffsetPoint3d == null)
+				if (this.targetPoint3dAbs == null || this.saclosOwner == null || this.victimOffsetPoint3f == null)
 					return;
 
-				this.safeVictimOffset.set(this.victimOffsetPoint3d);
+				this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				this.targetPoint3d.set(this.targetPoint3dAbs);
 				this.targetPoint3d.sub(this.missilePoint3d); // relative Position to target
 			}
@@ -1477,11 +1559,18 @@ public class Missile extends Rocket
 			if (this.ownerIsAI()) {
 				if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
 					this.victim = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTarget();
-					this.victimOffsetPoint3d = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
-					this.safeVictimOffset.set(this.victimOffsetPoint3d);
+					if (GuidedMissileUtils.distanceBetween(this.getOwner(), this.victim) < 1500F && this.getOwner().getArmy() == this.victim.getArmy()) {
+						// to avoid AI friendly fire
+						this.victim = null;
+					} else {
+						this.lockingVictim = true;
+						this.victimOffsetPoint3f = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTargetOffset();
+						this.safeVictimOffset.set(this.victimOffsetPoint3f);
+					}
 				} else if (this.getOwner() instanceof TypeFighter) {
 					if (this.getFM() != null) {
 						this.victim = ((Pilot) this.getFM()).target.actor;
+						this.lockingVictim = true;
 					}
 				}
 			} else {
@@ -1491,17 +1580,21 @@ public class Missile extends Rocket
 						return;
 					}
 				}
+				
 				if (this.getOwner() instanceof TypeGuidedMissileCarrier) {
 					this.victim = ((TypeGuidedMissileCarrier) this.getOwner()).getGuidedMissileUtils().getMissileTarget();
-					this.safeVictimOffset.set(this.victimOffsetPoint3d);
+					this.lockingVictim = true;
+					this.safeVictimOffset.set(this.victimOffsetPoint3f);
 				} else {
 					this.victim = Selector.look(true, false, Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()], World.getPlayerAircraft().getArmy(), -1, World.getPlayerAircraft(), false);
 					if (this.victim == null) {
 						this.victim = Main3D.cur3D().getViewPadlockEnemy();
+						this.lockingVictim = true;
 					}
 				}
 			}
 		} catch (Exception exception) {	}
+		
 	}
 
 	private void setSmokeSpriteFlames(int stage) {
@@ -1770,7 +1863,7 @@ public class Missile extends Rocket
 				Vector3d vectorOffset = new Vector3d();
 				Orient orientTarget = new Orient();
 				orientTarget.set(this.victim.pos.getAbsOrient());
-				vectorOffset.set(this.victimOffsetPoint3d); // take victim Offset into account
+				vectorOffset.set(this.victimOffsetPoint3f); // take victim Offset into account
 				orientTarget.transform(vectorOffset); // take victim Offset into account
 				pointTarget.add(vectorOffset); // take victim Offset into account
 
@@ -1888,11 +1981,21 @@ public class Missile extends Rocket
 
 		if (Time.current() < this.startTime + this.trackDelay) {
 			this.computeNoTrackPath();
+		} else if (this.victim != null && !this.lockingVictim) {
+			this.computeNoTrackPath();
 		} else if (this.victim != null) {
 			this.checkChaffFlareLock();
 			// System.out.println("stepTargetHoming victim=" + this.victim.getClass().getName());
 			this.victim.pos.getAbs(this.targetPoint3d, this.victimOffsetOrient);
 			// Calculate future victim position
+
+			// IR or IMAGE homing cannot chase the victim behind clouds
+			if ((this.iDetectorType == DETECTOR_TYPE_INFRARED || this.iDetectorType == DETECTOR_TYPE_IMAGE_EOTV || this.iDetectorType == DETECTOR_TYPE_IMAGE_IR) &&
+				Main.cur().clouds != null &&
+				Main.cur().clouds.getVisibility(this.victim.pos.getAbsPoint(), this.pos.getAbsPoint()) < 0.4F) {
+				this.computeNoTrackPath();
+				return this.computeFuzeState();
+			}
 
 			this.victim.getSpeed(this.victimSpeed); // target movement vector
 			double victimDistance = GuidedMissileUtils.distanceBetween(this, this.victim); // distance missile -> target
@@ -1909,9 +2012,20 @@ public class Missile extends Rocket
 				this.victimSpeed.scale(timeToTarget * (this.leadPercent / 100.0F));
 				this.targetPoint3d.add(this.victimSpeed);
 			}
+			/*
+			double speed = this.getSpeed(null);
+	    	if (speed <100) speed = 100;
+	    	double distance = GuidedMissileUtils.distanceBetween(this, victim);
+	    	if (distance < 0) distance = 0;
+	    	loft = distance/speed;
+	    	loft = 0.5*9.81*loft*loft*(loft_mode);
+	    	if((loft/distance) > 0.35D) loft = distance*0.35;
+	    	
+			if(loft > 0) this.targetPoint3d.z += loft; 
+			*/
 			Orient orientTarget = new Orient();
 			orientTarget.set(this.victim.pos.getAbsOrient());
-			this.trajectoryVector3d.set(this.victimOffsetPoint3d); // take victim Offset into account
+			this.trajectoryVector3d.set(this.victimOffsetPoint3f); // take victim Offset into account
 			orientTarget.transform(this.trajectoryVector3d); // take victim Offset into account
 			this.targetPoint3d.add(this.trajectoryVector3d); // take victim Offset into account
 
@@ -2105,7 +2219,6 @@ public class Missile extends Rocket
 		} catch (Exception e) { }
 
 		if (theCountermeasures == null) return;
-		int lockType = ((TypeGuidedMissileCarrier) getOwner()).getGuidedMissileUtils().getDetectorType();
 //		Random random = new Random();
 		int lockTime = TrueRandom.nextInt((int)flareLockTime + 1000); //  World.rnd().nextInt((int) (flareLockTime + 1000));
 		double flareDistance = 0.0D;
@@ -2115,11 +2228,11 @@ public class Missile extends Rocket
 			Actor flarechaff = (Actor) theCountermeasures.get(counterMeasureIndex);
 			flareDistance = GuidedMissileUtils.distanceBetween(this, flarechaff);
 //			victim1Distance = GuidedMissileUtils.distanceBetween(this, victim);
-			if (lockType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F)
+			if (this.iDetectorType == DETECTOR_TYPE_INFRARED && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 200D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F)
 				this.victim = flarechaff;
-			else if ((lockType == DETECTOR_TYPE_RADAR_HOMING || lockType == DETECTOR_TYPE_RADAR_BEAMRIDING || lockType == DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) && flarechaff instanceof RocketChaff && flareLockTime < lockTime && flareDistance < 500D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F)
+			else if ((this.iDetectorType == DETECTOR_TYPE_RADAR_HOMING || this.iDetectorType == DETECTOR_TYPE_RADAR_BEAMRIDING || this.iDetectorType == DETECTOR_TYPE_RADAR_TRACK_VIA_MISSILE) && flarechaff instanceof RocketChaff && flareLockTime < lockTime && flareDistance < 500D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F)
 				this.victim = flarechaff;
-			else if (lockType == DETECTOR_TYPE_IMAGE_IR && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 500D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F && TrueRandom.nextFloat() < 0.1F)
+			else if (this.iDetectorType == DETECTOR_TYPE_IMAGE_IR && flarechaff instanceof RocketFlare && flareLockTime < lockTime && flareDistance < 500D && GuidedMissileUtils.angleActorBetween(victim, this) > 30F && TrueRandom.nextFloat() < 0.1F)
 				this.victim = flarechaff;
 		}
 	}
@@ -2481,12 +2594,26 @@ public class Missile extends Rocket
 	private String soundNameRadarPW = null;
 	DecimalFormat twoPlaces = new DecimalFormat("+000.00;-000.00"); // only required for debugging
 
-	private Actor victim = null;
+	protected Actor victim = null;
+	private boolean lockingVictim = false;
+	
+	/**TODO Myotka*/
+	public float Myotka_x;
+	public float Myotka_y;
+	public int MyotkaMode;
+	public Actor MyotkaActor;
+	public float MyotkaFOV;
+	
+	private double loft;
+	private float loft_mode;
+    private String HARM_MODE;
+    private Point3d HARM_WP;
 
+	
 	// private static RangeRandom theRangeRandom;
 
 	private Orient victimOffsetOrient = null;
-	private Point3d victimOffsetPoint3d = null;
+	private Point3f victimOffsetPoint3f = null;
 	private Vector3d victimSpeed = null;
 	private boolean bRocketFiring = false;
 
@@ -2525,6 +2652,7 @@ public class Missile extends Rocket
 	private boolean bMirrorValueSet = false;
 	private float mirrorAzimuth = 0.0F;
 	private float mirrorTangage = 0.0F;
+	
 
 	static
 	{

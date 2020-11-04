@@ -1,7 +1,7 @@
-// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 01.09.2018 11:10:48
+// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 02.10.2020 3:09:37
 // Home Page : http://members.fortunecity.com/neshkov/dj.html  - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   RocketS13.java
+// Source File Name:   RocketS13_gn16.java
 
 package com.maddox.il2.objects.weapons;
 
@@ -12,21 +12,22 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            Rocket
 
-public class RocketS13 extends Rocket
+public class RocketS13_gn16 extends Rocket
 {
 
-    public RocketS13()
+    public RocketS13_gn16()
     {
     }
 
 
 
-  
+
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.RocketS13.class;
-        Property.set(class1, "mesh", "3DO/Arms/5inchZuni/mono.sim");
+        Class class1 = com.maddox.il2.objects.weapons.RocketS13_gn16.class;
+        Property.set(class1, "mesh", "3DO/Arms/Zuni_5inch_gn16/Mk16Mk24close.sim");
+        Property.set(class1, "meshFly", "3DO/Arms/Zuni_5inch_gn16/Mk16Mk24fly.sim");
         Property.set(class1, "sprite", (String)null);
         Property.set(class1, "flame", "3do/Effects/RocketKS1/RocketKS1Flame.sim");
         Property.set(class1, "smoke", "3do/Effects/RocketKS1/RocketKS1Smoke.eff");
@@ -43,6 +44,7 @@ public class RocketS13 extends Rocket
         Property.set(class1, "kalibr", 0.122F);
         Property.set(class1, "massa", 57F);
         Property.set(class1, "massaEnd", 40F);
+        Property.set(class1, "maxDeltaAngle", 0.17F);
         Property.set(class1, "friendlyName", "S-13");
     }
 }

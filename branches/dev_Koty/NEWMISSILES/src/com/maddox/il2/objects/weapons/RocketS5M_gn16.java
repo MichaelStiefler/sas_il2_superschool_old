@@ -1,7 +1,7 @@
-// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 01.09.2018 11:10:47
+// Decompiled by DJ v3.7.7.81 Copyright 2004 Atanas Neshkov  Date: 02.10.2020 3:05:37
 // Home Page : http://members.fortunecity.com/neshkov/dj.html  - Check often for new version!
 // Decompiler options: packimports(3) 
-// Source File Name:   RocketS5M.java
+// Source File Name:   RocketS5M_gn16.java
 
 package com.maddox.il2.objects.weapons;
 
@@ -12,28 +12,20 @@ import com.maddox.rts.Property;
 // Referenced classes of package com.maddox.il2.objects.weapons:
 //            Rocket
 
-public class RocketS5M extends Rocket
+public class RocketS5M_gn16 extends Rocket
 {
 
-    public RocketS5M()
+    public RocketS5M_gn16()
     {
-    }
-
-    public void start(float f, int i)
-    {
-        setMesh("3DO/Arms/S5/mono_open.sim");
-        super.start(f, i);
-        //super.speed.normalize();
-        //super.speed.scale(525D);
-        //super.noGDelay = -1L;
     }
 
 
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.RocketS5M.class;
-        Property.set(class1, "mesh", "3DO/Arms/S5/mono.sim");
+        Class class1 = com.maddox.il2.objects.weapons.RocketS5M_gn16.class;
+        Property.set(class1, "mesh", "3DO/Arms/S5_Rocket_gn16/mono.sim");
+        Property.set(class1, "meshFly", "3DO/Arms/S5_Rocket_gn16/mono_open.sim");
         Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
         Property.set(class1, "flame", "3DO/Effects/Rocket/mono.sim");
         Property.set(class1, "smoke", "3DO/Effects/Tracers/GuidedRocket/White.eff");
