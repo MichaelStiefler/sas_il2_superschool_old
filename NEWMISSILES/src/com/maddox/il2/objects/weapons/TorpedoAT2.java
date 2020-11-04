@@ -34,6 +34,7 @@ public class TorpedoAT2 extends Bomb
         torpedoUtils = new TorpedoAcusticUtils(this);
         pT = new Point3d();
         v = new Vector3d();
+        MagneticFuse = false;
     }
 
     private void getTorpedoTarget()
@@ -165,10 +166,33 @@ public class TorpedoAT2 extends Bomb
                 deltaAzimuth *= 5F * f;
                 or.increment(deltaAzimuth, 0.0F, 0.0F);
                 or.setYPR(or.getYaw(), 0.0F, 0.0F);
+                
+                Point3d me = new Point3d();
+                Point3d tgt = new Point3d();
+                super.pos.getAbs(me);   	me.z  = 0;
+                victim.pos.getAbs(tgt); 	tgt.z = 0;
+                double distance = me.distance(tgt);
+                
+                /*if(!MagneticFuse)
+                {
+                	if(distance < 60D)MagneticFuse=true;
+                }
+                else*/
+                {
+                	if(Math.abs(distance) < 0.2D)
+                	{
+                		doMidAirExplosion();
+                        postDestroy();
+                        collide(false);
+                        drawing(false);
+                	}
+                }
             }
             super.pos.setAbs(P, or);
             if(Time.current() > started + travelTime || !World.land().isWater(((Tuple3d) (P)).x, ((Tuple3d) (P)).y))
                 sendexplosion();
+            
+            
         }
         updateSound();
     }
@@ -226,5 +250,6 @@ public class TorpedoAT2 extends Bomb
     private static Orient or = new Orient();
     private float deltaAzimuth;
     private Vector3d v;
+    private boolean MagneticFuse;
 
 }

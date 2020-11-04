@@ -44,11 +44,12 @@
      Property.set(class1, "forceP1", 0.0F);
      Property.set(class1, "forceT2", 0.2F);
      Property.set(class1, "forceP2", 50.0F);
-     Property.set(class1, "dragCoefficient", 0.3F);
-     Property.set(class1, "powerType", 0);
-     Property.set(class1, "power", 0.42F);
+     Property.set(class1, "dragCoefficient", 0.36F);
+     Property.set(class1, "dragCoefficientTurn", 0.6F);
+     Property.set(class1, "powerType", 1);
+     Property.set(class1, "power", 11.3F);//0.42F);
      Property.set(class1, "radius", 8.96F);
-     Property.set(class1, "kalibr", 0.2F);
+     Property.set(class1, "kalibr", 0.13F);
      Property.set(class1, "massa", 72.0F);
      Property.set(class1, "massaEnd", 47.0F);
      Property.set(class1, "stepMode", 0);
@@ -64,30 +65,33 @@
      Property.set(class1, "targetType", 1);
      Property.set(class1, "shotFreq", 0.01F);
      
- 
+     Property.set(class1, "spriteSustain", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
+//   Property.set(class1, "flameSustain", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
+   Property.set(class1, "smokeSustain", "3DO/Effects/Tracers/GuidedRocket/White.eff");
+   Property.set(class1, "timeSustain", 12.2F);
  
  
      Property.set(class1, "groundTrackFactor", 9.0F);
      Property.set(class1, "flareLockTime", 1000L);
-     Property.set(class1, "trackDelay", 1000L);
+     Property.set(class1, "trackDelay", 600L);
      Property.set(class1, "failureRate", 50.0F);
      Property.set(class1, "maxLockGForce", 2.0F);
-     Property.set(class1, "maxFOVfrom", 5.0F);//25
-     Property.set(class1, "maxFOVfrom_real", 25.0F);
+     Property.set(class1, "maxFOVfrom", 1.75F);//25
+     Property.set(class1, "maxFOVfrom_real", 14F);
      Property.set(class1, "maxFOVto", 60.0F);
-     Property.set(class1, "PkMaxFOVfrom", 25.0F);//25
+     Property.set(class1, "PkMaxFOVfrom", 3.0F);//25
      Property.set(class1, "PkMaxFOVto", 70.0F);
      Property.set(class1, "PkDistMin", 400.0F);
      Property.set(class1, "PkDistOpt", 1500.0F);
-     Property.set(class1, "PkDistMax", 5000.0F);
+     Property.set(class1, "PkDistMax", 8000.0F);
      Property.set(class1, "maxSpeed", 2012.2145F);
      Property.set(class1, "leadPercent", 50.0F);
-     Property.set(class1, "maxGForce", 11.0F);
-     Property.set(class1, "stepsForFullTurn", 10);
-     Property.set(class1, "fxLock", "weapon.K5.lock");
-     Property.set(class1, "fxNoLock", "weapon.K5.nolock");
-     Property.set(class1, "smplLock", "K5_lock.wav");
-     Property.set(class1, "smplNoLock", "K5_no_lock.wav");
+     Property.set(class1, "maxGForce", 12.0F);
+     Property.set(class1, "stepsForFullTurn", 15);
+     Property.set(class1, "fxLock", "weapon.K13.lock");
+     Property.set(class1, "fxNoLock", "weapon.K13.nolock");
+     Property.set(class1, "smplLock", "K13_lock.wav");
+     Property.set(class1, "smplNoLock", "K13_no_lock.wav");
      Property.set(class1, "friendlyName", "R-3S");
      com.maddox.rts.Spawn.add(class1, new SPAWN());
    }

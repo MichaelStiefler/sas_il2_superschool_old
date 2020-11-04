@@ -41,7 +41,7 @@ public class MissileR3R extends Missile
 
     static 
     {
-        Class class1 = com.maddox.il2.objects.weapons.MissileR3R.class;
+        Class class1 = MissileR3R.class;
         Property.set(class1, "mesh", "3do/arms/R-3R/mono.sim");
         Property.set(class1, "sprite", "3do/effects/RocketSidewinder/RocketSidewinderSpriteBlack.eff");
         Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
@@ -67,6 +67,13 @@ public class MissileR3R extends Missile
         Property.set(class1, "stepMode", 0);
         Property.set(class1, "launchType", 2);
         Property.set(class1, "detectorType", 2);
+        
+        Property.set(class1, "spriteSustain", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
+//      Property.set(class1, "flameSustain", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
+      Property.set(class1, "smokeSustain", "3DO/Effects/Tracers/GuidedRocket/White.eff");
+      Property.set(class1, "timeSustain", 12.2F);
+        
+        
         Property.set(class1, "sunRayAngle", 0.0F);
         Property.set(class1, "multiTrackingCapable", 1);
         Property.set(class1, "canTrackSubs", 0);
@@ -81,10 +88,10 @@ public class MissileR3R extends Missile
         Property.set(class1, "trackDelay", 1000L);
         Property.set(class1, "failureRate", 30F);
         Property.set(class1, "maxLockGForce", 2F);
-        Property.set(class1, "maxFOVfrom", 5F);
+        Property.set(class1, "maxFOVfrom", 1.75F);
         Property.set(class1, "maxFOVfrom_real", 25F);
         Property.set(class1, "maxFOVto", 180F);
-        Property.set(class1, "PkMaxFOVfrom", 30F);
+        Property.set(class1, "PkMaxFOVfrom", 3F);
         Property.set(class1, "PkMaxFOVto", 70F);
         Property.set(class1, "PkDistMin", 1000F);
         Property.set(class1, "PkDistOpt", 3000F);

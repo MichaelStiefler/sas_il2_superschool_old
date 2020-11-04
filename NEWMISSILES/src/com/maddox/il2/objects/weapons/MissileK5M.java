@@ -32,7 +32,7 @@
      Property.set(class1, "mesh", "3do/arms/K-5M/mono.sim");
      Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
      Property.set(class1, "flame", "3do/Effects/RocketSidewinder/RocketSidewinderFlame.sim");
-     Property.set(class1, "smoke", "3DO/Effects/Tracers/GuidedRocket/White.eff");
+     Property.set(class1, "smoke", "3DO/Effects/Aircraft/TurboHWK109D.eff");
      Property.set(class1, "exhausts", 2);
      Property.set(class1, "emitColor", new com.maddox.JGP.Color3f(1.0F, 1.0F, 0.5F));
      Property.set(class1, "emitLen", 50.0F);
@@ -46,8 +46,8 @@
      Property.set(class1, "forceT2", 0.2F);
      Property.set(class1, "forceP2", 50.0F);
      Property.set(class1, "dragCoefficient", 0.5F);
-     Property.set(class1, "power", 0.92F);
-     Property.set(class1, "powerType", 0);
+     Property.set(class1, "power", 13F);
+     Property.set(class1, "powerType", 1);
      Property.set(class1, "radius", 10.0F);
      Property.set(class1, "kalibr", 0.2F);
      Property.set(class1, "massa", 74.2F);
@@ -82,7 +82,7 @@
      Property.set(class1, "PkDistOpt", 1500.0F);
      Property.set(class1, "PkDistMax", 4000.0F);
      Property.set(class1, "leadPercent", 0.0F);
-     Property.set(class1, "maxGForce", 12.0F);
+     Property.set(class1, "maxGForce", 3.0F);
      Property.set(class1, "stepsForFullTurn", 10.0F);
      Property.set(class1, "fxLock", "weapon.K5.lock");
      Property.set(class1, "fxNoLock", "weapon.K5.nolock");
