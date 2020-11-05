@@ -252,6 +252,7 @@ public class CockpitMIG_23ML extends CockpitPilot
         bufInt = new int[imgW * imgH * 4];
         buf = new byte[imgW * imgH * 4];
         prepareBuf(255,0);
+        lookdown = false;
 
         
         HookNamed hooknamed = new HookNamed(super.mesh, "LAMPHOOK1");
@@ -504,8 +505,8 @@ public class CockpitMIG_23ML extends CockpitPilot
     	    super.mesh.chunkVisible("Z_Z_Bar_2", (rp_23_bar==2));
     	    super.mesh.chunkVisible("Z_Z_Bar_3", (rp_23_bar==3));
     	    super.mesh.chunkVisible("Z_Z_Bar_4", (rp_23_bar==4));
-    	    super.mesh.chunkVisible("Z_Z_Bar_down", rp_23_down);
-    	    super.mesh.chunkVisible("Z_Z_Bar_up", !rp_23_down);
+    	    super.mesh.chunkVisible("Z_Z_Bar_down", lookdown);
+    	    super.mesh.chunkVisible("Z_Z_Bar_up", !lookdown);
     	    
     	    switch(((MIG_23)aircraft()).RP_23_range)
     	    {
@@ -581,8 +582,8 @@ public class CockpitMIG_23ML extends CockpitPilot
     	    super.mesh.chunkVisible("Z_Z_Bar_2", (rp_23_bar==2));
     	    super.mesh.chunkVisible("Z_Z_Bar_3", (rp_23_bar==3));
     	    super.mesh.chunkVisible("Z_Z_Bar_4", (rp_23_bar==4));
-    	    super.mesh.chunkVisible("Z_Z_Bar_down", rp_23_down);
-    	    super.mesh.chunkVisible("Z_Z_Bar_up", !rp_23_down);
+    	    super.mesh.chunkVisible("Z_Z_Bar_down", lookdown);
+    	    super.mesh.chunkVisible("Z_Z_Bar_up", !lookdown);
     	    
     	    switch(((MIG_23)aircraft()).RP_23_range)
     	    {
@@ -1379,7 +1380,7 @@ public class CockpitMIG_23ML extends CockpitPilot
     	}
     	
     	
-    	
+    	if(antennapitch >=0)lookdown = false; else lookdown = true;
     	
     	if(!((MIG_23)aircraft()).BSV_SC)
     	{
@@ -1389,12 +1390,14 @@ public class CockpitMIG_23ML extends CockpitPilot
     		{
     			((MIG_23)aircraft()).BSV_mode = 0;
     			((MIG_23)aircraft()).RP_23_range = 2;
+    			
     		}
     			else
     			{
 
         			((MIG_23)aircraft()).BSV_mode = 1;
         			((MIG_23)aircraft()).RP_23_range = 2;
+        			
     			}
     		}
     	if(fm.getAltitude() <= 1500f)
@@ -1403,12 +1406,14 @@ public class CockpitMIG_23ML extends CockpitPilot
     		{
     			((MIG_23)aircraft()).BSV_mode = 2;
     			((MIG_23)aircraft()).RP_23_range = 1;
+    			
     		}
     			else
     			{
 
         			((MIG_23)aircraft()).BSV_mode = 3;
         			((MIG_23)aircraft()).RP_23_range = 1;
+        			
     			}
     		}
     	}
@@ -1422,7 +1427,7 @@ public class CockpitMIG_23ML extends CockpitPilot
     	try
     	{
     	long time = Time.current();
-	    if (time > t_rp23 + 15)
+	    if (time > t_rp23 + 10)
 	    {
 	    	float rp_23_pitch = 0;
 	    	switch(rp_23_bar)
@@ -1597,8 +1602,7 @@ public class CockpitMIG_23ML extends CockpitPilot
 	                //drawNoise_RP(rp_23_azimuth, intensity);}
 	                
 	                //if((((MIG_23)aircraft()).rangeGate_azimuth*30f - 4f < rp_23_azimuth) && (((MIG_23)aircraft()).rangeGate_azimuth*30f + 4f > rp_23_azimuth))
-	                for(int i=-4; i<=4; i++)
-	                {
+	                
             		float strobe = 0.5f*(((MIG_23)aircraft()).rangeGate_range +1 );
             		switch(((MIG_23)aircraft()).RP_23_range)
                 	{
@@ -1608,13 +1612,12 @@ public class CockpitMIG_23ML extends CockpitPilot
                 	case 2:
                 		strobe*=60000;
                 		break;
-                		
-                		default:
-                			return;
+                	
                 	}
-            		drawContact_RP(((MIG_23)aircraft()).rangeGate_azimuth*30f+i, strobe, 1f, false);
-            		drawContact_RP(((MIG_23)aircraft()).rangeGate_azimuth*30f+i, strobe + 9000f, 1f, false);
-	                }
+            		if(rp_23_azimuth < (((MIG_23)aircraft()).rangeGate_azimuth*30) + 4 && rp_23_azimuth > (((MIG_23)aircraft()).rangeGate_azimuth*30) - 4)
+            		drawContact_RP(rp_23_azimuth, strobe, 1f, false);
+            		drawContact_RP(rp_23_azimuth, strobe + 9000f, 1f, false);
+	                
 		    		
 		    	switch(rp_23_bar)
 		    	{
@@ -1632,7 +1635,7 @@ public class CockpitMIG_23ML extends CockpitPilot
 		    		if (rp_23_azimuth == -31)
 		    		{
 		    			rp_23_azimuth = -30;
-		    			if(rp_23_down)rp_23_bar++; else rp_23_bar--;
+		    			rp_23_bar++; 
 		    		}
 		    		break;
 		    	case 3:
@@ -1640,7 +1643,7 @@ public class CockpitMIG_23ML extends CockpitPilot
 		    		if (rp_23_azimuth == 31)
 		    		{
 		    			rp_23_azimuth = 30;
-		    			if(rp_23_down)rp_23_bar++; else rp_23_bar--;
+		    			rp_23_bar++;
 		    		}
 		    		break;
 		    	case 4:
@@ -1648,7 +1651,7 @@ public class CockpitMIG_23ML extends CockpitPilot
 		    		if (rp_23_azimuth == -31)
 		    		{
 		    			rp_23_azimuth = -30;
-		    			rp_23_bar--;
+		    			rp_23_bar=1;
 		    			rp_23_down = false; 
 		    		}
 		    		break;
@@ -1832,6 +1835,333 @@ public class CockpitMIG_23ML extends CockpitPilot
     
     public void RP_23_lock(float box_x, float box_y)
     {
+    	float antennapitch = 0;
+    	switch(rp_23_bar)
+    	{
+    	case 1:
+    	{antennapitch = ((MIG_23)aircraft()).RP_23_elevation + 2f;
+    	break;}
+    	case 2:
+    	{antennapitch = ((MIG_23)aircraft()).RP_23_elevation;
+    	break;}
+    	case 3:
+    	{antennapitch = ((MIG_23)aircraft()).RP_23_elevation - 2f;
+    	break;}
+    	case 4:
+    	{antennapitch = ((MIG_23)aircraft()).RP_23_elevation - 4f;
+    	break;}
+    	}
+    	
+    	
+    	if(antennapitch >=0)lookdown = false; else lookdown = true;
+    	
+    	if(!((MIG_23)aircraft()).BSV_SC)
+    	{
+    	if(fm.getAltitude() > 1500f)
+    		{
+    		if(antennapitch >=0)
+    		{
+    			((MIG_23)aircraft()).BSV_mode = 0;
+    			((MIG_23)aircraft()).RP_23_range = 2;
+    			
+    		}
+    			else
+    			{
+
+        			((MIG_23)aircraft()).BSV_mode = 1;
+        			((MIG_23)aircraft()).RP_23_range = 2;
+        			
+    			}
+    		}
+    	if(fm.getAltitude() <= 1500f)
+    		{
+    		if(antennapitch >=0)
+    		{
+    			((MIG_23)aircraft()).BSV_mode = 2;
+    			((MIG_23)aircraft()).RP_23_range = 1;
+    			
+    		}
+    			else
+    			{
+
+        			((MIG_23)aircraft()).BSV_mode = 3;
+        			((MIG_23)aircraft()).RP_23_range = 1;
+        			
+    			}
+    		}
+    	}
+    	else
+    	{
+    		((MIG_23)aircraft()).BSV_mode = 4;
+    	}
+    	
+    	
+    	
+    	try
+    	{
+    	long time = Time.current();
+	    if (time > t_rp23 + 10)
+	    {
+	    	float rp_23_pitch = 0;
+	    	switch(rp_23_bar)
+	    	{
+	    	case 1:
+	    	{rp_23_pitch = ((MIG_23)aircraft()).RP_23_elevation + 3f;
+	    	break;}
+	    	case 2:
+	    	{rp_23_pitch = ((MIG_23)aircraft()).RP_23_elevation + 0.875f;
+	    	break;}
+	    	case 3:
+	    	{rp_23_pitch = ((MIG_23)aircraft()).RP_23_elevation - 0.875f;
+	    	break;}
+	    	case 4:
+	    	{rp_23_pitch = ((MIG_23)aircraft()).RP_23_elevation - 3f;
+	    	break;}
+	    	}
+	    	
+	    	float K = ((FlightModelMain) (super.fm)).Or.getKren();
+	    	float T = ((FlightModelMain) (super.fm)).Or.getTangage();
+	    	if (T > 35)T=35;
+	    	if (T < -30)T=-30;
+	    	if (K>72) K=72;
+	    	if (K<-72) K=-72;
+	    	float alpha1 = (float) (Math.cos(Math.toRadians(K))*rp_23_pitch);
+	    	float alpha2 = (float) (Math.sin(Math.toRadians(K))*rp_23_pitch);
+	    	float beta1 = (float) (Math.sin(Math.toRadians(K))*rp_23_azimuth);
+	    	float beta2 = (float) (Math.cos(Math.toRadians(K))*rp_23_azimuth);
+	    	
+	    	float x = -T+alpha1+beta1;
+	    	float y = +alpha2-beta2;
+	    	
+	    	float strobe = 0.5f*(((MIG_23)aircraft()).rangeGate_range +1 );
+    		switch(((MIG_23)aircraft()).RP_23_range)
+        	{
+        	case 1:
+        		strobe*=30000;
+        		break;
+        	case 2:
+        		strobe*=60000;
+        		break;
+        	
+        	}
+    		
+    		float lockdistance_Max = strobe+9000;
+    		float lockdistance_Min = strobe;
+    		Actor preliminarytarget = null;
+
+	    	
+	    	double noise = RP_23_noiseCheck(x,y);
+	    	noise += RP_23_noiseCheckBroad(x,y);
+	    	RP_23_noise = (float)noise;
+	    	double ECCM_power = ((MIG_23)aircraft()).ECCM_power;
+	      	double ECCM_RCS = 16;
+	      	int PPS = ((MIG_23)aircraft()).RP_23_range;
+	      	if(PPS == 0) ECCM_power /=2;
+	      	double tresholdCheck =  16*ECCM_power/((Math.pow((RP_23_range()*1000)*2D*3.1415926D*2.5D/360 , 4)*3.1415926D));
+	    	Aircraft aircraft = World.getPlayerAircraft();
+		    	if(Actor.isValid(aircraft) && Actor.isAlive(aircraft))
+		    	{
+		    		Point3d point3d = ((Actor) (aircraft)).pos.getAbsPoint();
+	                Orient orient = ((Actor) (aircraft)).pos.getAbsOrient();
+	                List list = Engine.targets();
+	                int j = list.size();
+		    		
+	                for(int k = 0; k < j; k++)
+	                {
+	                	Actor actor = (Actor)list.get(k);
+	                    if((actor instanceof Aircraft) && actor != World.getPlayerAircraft()|| (((actor instanceof RocketryRocket)) && (!((RocketryRocket)actor).isOnRamp())) || (((actor instanceof MissileInterceptable)) && (((MissileInterceptable)actor).isReleased())))
+	                    {
+	                    	if(actor instanceof TypeJammer)ECCM_RCS = ((TypeJammer)actor).getJammerRCS(aircraft);
+	                        Vector3d vector3d = new Vector3d();
+	                        vector3d.set(point3d);
+	                        Point3d point3d1 = new Point3d();
+	                        point3d1.set(actor.pos.getAbsPoint());
+	                        point3d1.sub(point3d);
+	                        orient.transformInv(point3d1);
+	                          float radar_range = RP_23_range();
+	                          float aspect = GuidedMissileUtils.angleBetween(actor, aircraft);
+	                          
+	                          
+	                          
+	                          if(actor instanceof Aircraft && !(actor instanceof TypeHelicopter))
+	                          {
+	                          float velocity = ((Aircraft)actor).FM.getSpeed();
+	                          velocity *= (float)Math.cos(Math.toRadians(aspect));
+	                          if(PPS == 0)velocity = Math.abs(velocity);
+	                          if(PPS == -1 || ((MIG_23)aircraft()).BSV_mode == 3)velocity *= -1;
+	                          if(velocity < 60 || velocity > 700) continue;
+	                          }
+	                          else
+	                        	  if(actor instanceof TypeHelicopter)
+	                        	  {
+	                        		  float velocity = ((Aircraft)actor).FM.getSpeed();
+	    	                          velocity *= (float)Math.cos(Math.toRadians(aspect));
+	    	                          velocity = Math.abs(velocity);
+	    	                          if(velocity < 60 || velocity > 700) ECCM_RCS /=2 ;
+	                        	  }
+	                        	  else
+	                        	  {
+	                          
+	              	    		switch (((MIG_23)aircraft()).BSV_mode)
+	              	    		{
+	              	    		case 0:
+	              	    			break;
+	              	    		case 1:
+	              	    			if(aspect > 70 && aspect < 110) continue;
+	              	    			break;
+	              	    		case 2:
+	              	    			if(aspect > 70 && aspect < 110) continue;
+	              	    			break;
+	              	    		case 3:
+	              	    			if(aspect < 110) continue;
+	              	    			break;
+	              	    		case 4:
+	              	    			if(aspect > 70 && aspect < 110) continue;
+	              	    			break;
+	              	    			default:
+	              	    				break;
+	              	    		}
+	              	    		}
+	                          
+	                        if( ((Tuple3d) (point3d1)).x > 300 && ((Tuple3d) (point3d1)).x < (radar_range)*1000)
+	                        {
+	                        	float alpha = (float) Math.toDegrees(Math.atan(((Tuple3d) (point3d1)).z/((Tuple3d) (point3d1)).x));
+	                        	float beta = (float) Math.toDegrees(Math.atan(((Tuple3d) (point3d1)).y/((Tuple3d) (point3d1)).x));
+	                        	
+	                	    	
+	                	    	
+	                        	float z = (float) Math.sqrt(
+	                        		     ((Tuple3d) (point3d1)).x*((Tuple3d) (point3d1)).x
+	                        			+((Tuple3d) (point3d1)).y*((Tuple3d) (point3d1)).y
+	                        			+((Tuple3d) (point3d1)).z*((Tuple3d) (point3d1)).z);
+	                        		
+	                        	if(alpha > x - 1.25f && alpha < x + 1.25f && beta > y - 1.25f && beta < y + 1.25)
+	                        	{
+	                        		
+	                    	    	float alpha22 = (float) (Math.sin(Math.toRadians(K))*alpha);
+	                    	    	
+	                    	    	float beta22 = (float) (Math.cos(Math.toRadians(K))*beta);
+	                        		
+		                	    	float y3 = +alpha22-beta22;
+	                        		boolean iff = false;
+	                        		iff = actor.getArmy() == World.getPlayerArmy();
+	                        		
+	                        		double radar_return = ECCM_RCS*ECCM_power/((Math.pow(z*2D*3.1415926D*2.5D/360 , 4)*3.1415926D));
+	                        		if (noise < tresholdCheck) noise =  tresholdCheck;
+	                        		
+	                        		if(actor instanceof TypeJammer)
+	                        		{
+	                        			((TypeJammer)actor).setJammerRWR('I', null, (float) (ECCM_power/((Math.pow(z*2D*3.1415926D*2.5D/360 , 2)*3.1415926D))));
+	                        			float[] ghosts;
+	                        			if (((TypeJammer)actor).getJammerGhost('I', null) != null)
+	                        			{
+	                        			ghosts = ((TypeJammer)actor).getJammerGhost('I', null);
+	                        			if(ghosts[0] != 0)
+	                        			{
+	                        				int iG = ghosts.length;
+	                        				for(int jG = 1; jG < iG; jG++)
+	                        				{
+	                        					float size = cvt ((float)(ghosts[0]/noise), 0f, 10f, 0f, 1f);
+	                        					if(ghosts[0] > noise)
+	                        					{
+	                        						drawContact_RP(y3, ghosts[jG], size, false);
+	                        					
+	                        					
+	                        						if(ghosts[jG] < lockdistance_Max && ghosts[jG] > lockdistance_Min) { lockdistance_Max = ghosts[jG]; ((MIG_23)aircraft()).RP_lock = false;}
+	                        					}
+	                        					
+	                        					}
+	                        			}
+	                        			}
+	                        		}
+	                        		
+	                        		if (radar_return > noise)
+	                        			{float size = cvt ((float)(radar_return/noise), 0f, 10f, 0f, 1f);
+	                        			if((actor instanceof RocketryRocket)|| (actor instanceof MissileInterceptable)) size *=0.7;
+	                        			
+	                        			drawContact_RP(y3,z,size,iff);
+	                        			if(z<lockdistance_Max && z > lockdistance_Min){lockdistance_Max = z; preliminarytarget = actor; ((MIG_23)aircraft()).RP_lock = false;}
+	                        			
+	                        			}
+	                        		
+	                        		
+	                        		
+	                        		
+	                        	}
+	                        		
+	                        	
+	                        }
+	                    }
+	                }
+		    			
+
+
+	                //if(noise > 0 && tresholdCheck > 0)
+	                //{
+	                	
+	            	//float intensity = cvt((float)noise, (float)tresholdCheck, (float) tresholdCheck *100, 0.1f, 1f);
+	                //drawNoise_RP(rp_23_azimuth, intensity);}
+	                
+	                //if((((MIG_23)aircraft()).rangeGate_azimuth*30f - 4f < rp_23_azimuth) && (((MIG_23)aircraft()).rangeGate_azimuth*30f + 4f > rp_23_azimuth))
+	                
+	                if(preliminarytarget != null)
+	                {
+	                ((MIG_23)aircraft()).victim_RP = preliminarytarget;
+            		((MIG_23)aircraft()).radarmode = 100;
+            		((MIG_23)aircraft()).RP_23_range = 1;
+            		return;
+	                }
+            		if(rp_23_azimuth < (((MIG_23)aircraft()).rangeGate_azimuth*30) + 4 && rp_23_azimuth > (((MIG_23)aircraft()).rangeGate_azimuth*30) - 4)
+            		drawContact_RP(rp_23_azimuth, strobe, 1f, false);
+            		drawContact_RP(rp_23_azimuth, strobe + 9000f, 1f, false);
+	                
+		    		
+		    	switch(rp_23_bar)
+		    	{
+		    	case 1: 
+		    		rp_23_azimuth++;
+		    		if (rp_23_azimuth >= (((MIG_23)aircraft()).rangeGate_azimuth*30) + 4)
+		    		{
+		    			rp_23_azimuth = (int) ((((MIG_23)aircraft()).rangeGate_azimuth*30) + 4);
+		    			rp_23_bar++;
+		    			rp_23_down = true; 
+		    		}
+		    		break;
+		    	case 2:
+		    		rp_23_azimuth--;
+		    		if (rp_23_azimuth <= (((MIG_23)aircraft()).rangeGate_azimuth*30) - 4)
+		    		{
+		    			rp_23_azimuth = (int) ((((MIG_23)aircraft()).rangeGate_azimuth*30) - 4);
+		    			rp_23_bar++; 
+		    		}
+		    		break;
+		    	case 3:
+		    		rp_23_azimuth++;
+		    		if (rp_23_azimuth >= (((MIG_23)aircraft()).rangeGate_azimuth*30) + 4)
+		    		{
+		    			rp_23_azimuth = (int) ((((MIG_23)aircraft()).rangeGate_azimuth*30) + 4);
+		    			rp_23_bar++;
+		    		}
+		    		break;
+		    	case 4:
+		    		rp_23_azimuth--;
+		    		if (rp_23_azimuth <= (((MIG_23)aircraft()).rangeGate_azimuth*30) - 4)
+		    		{
+		    			rp_23_azimuth = (int) ((((MIG_23)aircraft()).rangeGate_azimuth*30) - 4);
+		    			rp_23_bar=1;
+		    			rp_23_down = false; 
+		    		}
+		    		break;
+		    	}
+	    	}
+	    t_rp23 = time;
+	    }
+    	}
+    	catch(Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    	/*
     	box_x ++;
     	box_x *=0.5;
     	switch(((MIG_23)aircraft()).RP_23_range)
@@ -2046,6 +2376,9 @@ public class CockpitMIG_23ML extends CockpitPilot
             exception.printStackTrace();
         }
     	((MIG_23)aircraft()).RP_lock = false;
+    	
+    	
+    	*/
     	}
     		
     	
@@ -2970,6 +3303,7 @@ public void breakLock()
     public int mt;
     boolean bufEmpty;
     public float RP_23_noise;
+    private boolean lookdown;
 
 
 
