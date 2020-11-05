@@ -337,7 +337,10 @@ public class MIG_23 extends Scheme1
         	}
     		if(radarmode==1||radarmode==11)
         	{
+    			if(RP_lock)RP_lock=false;
+    			else
         		RP_lock=true;
+        		return false;
         	}
 
     		if(radarmode==100)
