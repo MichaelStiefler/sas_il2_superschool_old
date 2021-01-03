@@ -1,5 +1,6 @@
 package com.maddox.il2.engine.cmd;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,8 +48,10 @@ import com.maddox.rts.MsgTimeOutListener;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.RTSConf;
+import com.maddox.rts.SFSReader;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
+import com.maddox.sas1946.Junidecode;
 import com.maddox.sas1946.il2.util.Reflection;
 import com.maddox.sound.AudioDevice;
 import com.maddox.util.NumberTokenizer;
@@ -216,6 +219,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
     }
 
     public Object exec(CmdEnv cmdenv, Map map) {
+
         boolean flag = false;
         checkMsg();
         if (map.containsKey("SHOW")) {
@@ -284,34 +288,45 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             if (Mission.isNet() && NetEnv.hosts().size() > 1) {
                 System.out.println("Network mission detected, disabling fm debug.");
             } else {
-                if (map.containsKey("SWITCH"))
+            	readConfig();
+                if (map.containsKey("SWITCH")) {
                     if (!Maneuver.showFM)
                         Maneuver.showFM = true;
                     else
                         Maneuver.showFM = false;
-                if (map.containsKey("DUMP") && Actor.isAlive(World.getPlayerAircraft()) && !World.isPlayerParatrooper() && !World.isPlayerDead()) {
-                    com.maddox.il2.fm.FlightModel flightmodel = World.getPlayerFM();
-                    if (flightmodel != null)
-                        flightmodel.drawData();
-                }
-                if (map.containsKey("DMPALL") && Actor.isAlive(World.getPlayerAircraft()) && !World.isPlayerParatrooper() && !World.isPlayerDead()) {
-                    DumpDesc = Reflection.getString(Config.class, "VERSION");
-                    if (nargs(map, "DMPALL") > 0) {
-                        DumpDesc = arg(map, "DMPALL", 0);
-                    }
-                    DumpStart = 0;
+                } else if (map.containsKey("DUMP") && Actor.isAlive(World.getPlayerAircraft()) && !World.isPlayerParatrooper() && !World.isPlayerDead()) {
+                    dumpFlightModel(World.getPlayerAircraft().getClass().getName(), false);
+//                    FlightModel flightmodel = World.getPlayerFM();
+//                    if (flightmodel != null)
+//                        flightmodel.drawData();
+                } else if (map.containsKey("DMPALL") && Actor.isAlive(World.getPlayerAircraft()) && !World.isPlayerParatrooper() && !World.isPlayerDead()) {
+                    //dumpDesc = Reflection.getString(Config.class, "VERSION");
+                    dumpStart = 0;
                     if (nargs(map, "DMPALL") > 1) {
-                        DumpStart = arg(map, "DMPALL", 1, 0);
+                        dumpStart = arg(map, "DMPALL", 1, 0);
+                        dumpDesc = arg(map, "DMPALL", 0);
+                    } else if (nargs(map, "DMPALL") > 0) {
+                    	String arg0 = arg(map, "DMPALL", 0);
+                    	try {
+                    		int intArg0 = Integer.parseInt(arg0);
+                    		dumpStart = intArg0;
+                    	} catch (NumberFormatException nfe) {
+                    		dumpDesc = arg0;
+                    	}
                     }
                     dumpAllFlightModels();
                     RTSConf.setRequestExitApp(true);
-               }
-                if (map.containsKey("FMDMP") && Actor.isAlive(World.getPlayerAircraft()) && !World.isPlayerParatrooper() && !World.isPlayerDead()) {
+               } else if (map.containsKey("DMPLIST") && Actor.isAlive(World.getPlayerAircraft()) && !World.isPlayerParatrooper() && !World.isPlayerDead()) {
+                    //dumpDesc = Reflection.getString(Config.class, "VERSION");
+                    dumpFlightModelsFromList();
+                    RTSConf.setRequestExitApp(true);
+               } else if (map.containsKey("FMDMP") && Actor.isAlive(World.getPlayerAircraft()) && !World.isPlayerParatrooper() && !World.isPlayerDead()) {
+//                	iFuelLevel = 100;
                     if (nargs(map, "FMDMP") > 0) {
-                        dumpFlightModel(arg(map, "FMDMP", 0));
+                        dumpFlightModel(arg(map, "FMDMP", 0), true);
                         RTSConf.setRequestExitApp(true);
                     } else {
-                        dumpFlightModel(World.getPlayerAircraft().getClass().getName());
+                        dumpFlightModel(World.getPlayerAircraft().getClass().getName(), true);
                         RTSConf.setRequestExitApp(true);
                     }
                 }
@@ -382,6 +397,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
         param.put("SWITCH", null);
         param.put("DUMP", null);
         param.put("DMPALL", null);
+        param.put("DMPLIST", null);
         param.put("FMDMP", null);
         _properties.put("NAME", "fps");
         _levelAccess = 1;
@@ -443,16 +459,71 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
         return df2.format(h) + ":" + df2.format(m) + ":" + df2.format(s) + "." + df3.format(ms);
     }
 
-    private static void dumpAllFlightModels() {
-        System.out.println("*** FM DUMP START ! ***");
-        iFuelLevel = 100;
+    private static void readConfig() {
+    	if (settingsInitialized) return;
+    	System.out.println("InfoMod FullAuto 4.10+ reading settings...");
+        SectFile codIniSectfile = new SectFile("settings/infomod.ini");
+        fuelLevel = codIniSectfile.get("Common", "fuelLevel", -1, -1, 100);
+        radiatorSetting = codIniSectfile.get("Common", "radiatorSetting", 100, 0, 100);
+        dumpDesc = codIniSectfile.get("Common", "dumpDesc", Reflection.getString(Config.class, "VERSION"));
+        if (fuelLevel == -1)
+        	System.out.println("Fuel Level = 25%, 50%, 75% and 100%");
+        else
+        	System.out.println("Fuel Level = " + fuelLevel + "%");
+        System.out.println("Radiator Setting = " + radiatorSetting + "%");
+        System.out.println("Flight Model Descriptor = " + dumpDesc);
+        settingsInitialized = true;
+    }
+
+    private static void dumpFlightModelsFromList() {
+        System.out.println("*** FM DUMP (LIST) START ! ***");
+        fullDump = true;
         int saveMouseMode = RTSConf.cur.getUseMouse();
         RTSConf.cur.setUseMouse(0);
-        for (int iAirClassIterator = DumpStart; iAirClassIterator < Main.cur().airClasses.size(); iAirClassIterator++) {
+		try {
+			BufferedReader listReader = new BufferedReader(new SFSReader("settings/dumplist.ini"));
+			for (;;) {
+				String listLine = listReader.readLine();
+				if (listLine == null) break;
+				listLine = listLine.trim();
+				if (listLine.startsWith("//") || listLine.startsWith(";") || listLine.startsWith("#")) continue;
+				if (listLine.length() == 0) continue;
+				Class airClass = Class.forName("com.maddox.il2.objects.air." + listLine);
+				//System.out.println("Dumping Flight Model for " + listLine);
+				CmdEnv.top().exec("fps FMINFO FMDMP " + airClass.getName());
+				System.out.flush();
+				String logFileName = RTSConf.cur.console.logFileName();
+				Object consoleLogFile = Reflection.getValue(RTSConf.cur.console, "log");
+				PrintWriter pw = (PrintWriter) Reflection.getValue(consoleLogFile, "f");
+				pw.flush();
+				pw.close();
+				try {
+					pw = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(logFileName, 0), true));
+					Reflection.setValue(consoleLogFile, "f", pw);
+				} catch (FileNotFoundException fne) {
+					fne.printStackTrace();
+				}
+			}
+			listReader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		fullDump = false;
+		System.out.println("*** FM DUMP (LIST) FINISHED ! ***");
+		RTSConf.cur.setUseMouse(saveMouseMode);
+		RTSConf.setRequestExitApp(true);
+	}
+
+    private static void dumpAllFlightModels() {
+        System.out.println("*** FM DUMP START ! ***");
+        fullDump = true;
+        int saveMouseMode = RTSConf.cur.getUseMouse();
+        RTSConf.cur.setUseMouse(0);
+        for (int iAirClassIterator = dumpStart; iAirClassIterator < Main.cur().airClasses.size(); iAirClassIterator++) {
             Class airClass = (Class) Main.cur().airClasses.get(iAirClassIterator);
-            System.out.println("" + iAirClassIterator + ". dumpFlightModel " + airClass.getName());
+//            System.out.println("" + iAirClassIterator + ". dumpFlightModel " + airClass.getName());
             if (airClass.getName().toLowerCase().indexOf("placeholder") != -1) {
-                System.out.println("...is PlaceHolder, choose next.");
+//                System.out.println("...is PlaceHolder, choose next.");
                 continue;
             }
             CmdEnv.top().exec("fps FMINFO FMDMP " + airClass.getName());
@@ -468,79 +539,93 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             } catch (FileNotFoundException fne) {
                 fne.printStackTrace();
             }
-            
+
         }
-        iFuelLevel = -1;
+        fullDump = false;
         System.out.println("*** FM DUMP FINISHED ! ***");
         RTSConf.cur.setUseMouse(saveMouseMode);
         RTSConf.setRequestExitApp(true);
     }
 
-    private static void dumpFlightModel(String theAircraftClass) {
+    private static void dumpFlightModel(String theAircraftClass, boolean reloadAircraft) {
         HUD.training("dumpFlightModel " + theAircraftClass);
         try {
-            World.getPlayerAircraft().destroy();
-            if (!theAircraftClass.startsWith("com.maddox.il2.objects.air.")) theAircraftClass = "com.maddox.il2.objects.air." + theAircraftClass;
+            if (!theAircraftClass.startsWith("com.maddox.il2.objects.air."))
+                theAircraftClass = "com.maddox.il2.objects.air." + theAircraftClass;
             Class airClass = Class.forName(theAircraftClass);
-            World.setPlayerAircraft((Aircraft) airClass.newInstance());
             Aircraft theAircraft = World.getPlayerAircraft();
-            String aircraftFM = Property.stringValue(airClass, "FlightModel", null);
-            if (aircraftFM != null) {
-                theAircraft.interpEnd("FlightModel");
-                theAircraft.setFM(aircraftFM, 1, true);
-                
-                String weaponSlot = "default";
-                String[] registeredWeapons = Aircraft.getWeaponsRegistered(theAircraft.getClass());
-                boolean slotFound = false;
-                for (int weaponIndex = 0; weaponIndex<registeredWeapons.length; weaponIndex++) {
-                    if (registeredWeapons[weaponIndex].equals(weaponSlot)) {
-                        slotFound = true;
-                        break;
+            FlightModel theFlightModel = theAircraft.FM;
+            if (reloadAircraft) {
+                World.getPlayerAircraft().destroy();
+                World.setPlayerAircraft((Aircraft) airClass.newInstance());
+                theAircraft = World.getPlayerAircraft();
+                String aircraftFM = Property.stringValue(airClass, "FlightModel", null);
+                if (aircraftFM != null) {
+                    theAircraft.interpEnd("FlightModel");
+                    theAircraft.setFM(aircraftFM, 1, true);
+
+                    String weaponSlot = "default";
+                    String[] registeredWeapons = Aircraft.getWeaponsRegistered(theAircraft.getClass());
+                    boolean slotFound = false;
+                    for (int weaponIndex = 0; weaponIndex < registeredWeapons.length; weaponIndex++) {
+                        if (registeredWeapons[weaponIndex].equals(weaponSlot)) {
+                            slotFound = true;
+                            break;
+                        }
+                    }
+                    if (!slotFound) {
+                        weaponSlot = registeredWeapons[0];
+                        System.out.println("\"default\" weapon slot does not exist on Aircraft " + theAircraft.getClass().getName() + ", using slot \"" + weaponSlot + "\" instead!");
+                    }
+
+                    try {
+                        Reflection.invokeMethod(theAircraft, "weaponsLoad", new Class[] { String.class }, new Object[] { weaponSlot });
+                    } catch (Exception e) {
+                        System.out.println("Failed to load Weapon Slot \"" + weaponSlot + "\" for Aircraft " + theAircraft.getClass().getName() + ", FM data might not be accurate!");
                     }
                 }
-                if (!slotFound) {
-                    weaponSlot = registeredWeapons[0];
-                    System.out.println("\"default\" weapon slot does not exist on Aircraft " + theAircraft.getClass().getName() + ", using slot \"" + weaponSlot + "\" instead!");
-                }
 
-                try {
-                    Reflection.invokeMethod(theAircraft, "weaponsLoad", new Object[] { weaponSlot });
-                } catch (Exception e) {
-                    System.out.println("Failed to load Weapon Slot \"" + weaponSlot + "\" for Aircraft " + theAircraft.getClass().getName() + ", FM data might not be accurate!");
-                }
-
-                FlightModel theFlightModel = theAircraft.FM;
+                theFlightModel = theAircraft.FM;
                 theFlightModel.M.computeParasiteMass(theFlightModel.CT.Weapons);
                 theFlightModel.M.fuel = theFlightModel.M.maxFuel;
                 theFlightModel.M.nitro = theFlightModel.M.maxNitro;
                 theFlightModel.M.requestNitro(0);
-
-                String airName = getAirNameForClassName(airClass.getName().substring(27));
-                String i18Name = I18N.plane(airName);
-
-                i18Name = i18Name.replace('<', '_');
-                i18Name = i18Name.replace('>', '_');
-                i18Name = i18Name.replace(':', '_');
-                i18Name = i18Name.replace('"', '_');
-                i18Name = i18Name.replace('/', '_');
-                i18Name = i18Name.replace('\\', '_');
-                i18Name = i18Name.replace('|', '_');
-                i18Name = i18Name.replace('?', '_');
-                i18Name = i18Name.replace('*', '_');
-                i18Name = i18Name.replace('\t', ' ');
-
-                System.out.print("dumping FM data of " + i18Name + " ... ");
-                speedFile = "FlightModels/DataSpeed/" + i18Name;
-                turnFile = "FlightModels/DataTurn/" + i18Name;
-                craftFile = "FlightModels/DataCraft/" + i18Name;
-                weaponFile = "FlightModels/DataWeapon/" + i18Name;
-                auxFile = "FlightModels/DataAux/" + i18Name;
-                drawData(theFlightModel, iFuelLevel, speedFile, turnFile, auxFile);
-                drawCraft(theFlightModel, craftFile + " (" + CmdFPS.DumpDesc + ").txt");
-                dumpWeaponList(theAircraft, airName, weaponFile + " (" + CmdFPS.DumpDesc + ").txt");
-                System.out.println("done.");
             }
+
+            String airName = getAirNameForClassName(airClass.getName().substring(27));
+            String i18Name = I18N.plane(airName);
+
+//            	try {
+//            		i18Name = new String(i18Name.getBytes("US-ASCII"));
+//        		} catch (UnsupportedEncodingException e) {
+//        			e.printStackTrace();
+//        		}
+
+            i18Name = Junidecode.unidecode(i18Name);
+
+            i18Name = i18Name.replace('<', '_');
+            i18Name = i18Name.replace('>', '_');
+            i18Name = i18Name.replace(':', '_');
+            i18Name = i18Name.replace('"', '_');
+            i18Name = i18Name.replace('/', '_');
+            i18Name = i18Name.replace('\\', '_');
+            i18Name = i18Name.replace('|', '_');
+            i18Name = i18Name.replace('?', '_');
+            i18Name = i18Name.replace('*', '_');
+            i18Name = i18Name.replace('\t', ' ');
+
+            System.out.print("dumping FM data of " + i18Name + " ... ");
+            speedFile = "FlightModels/DataSpeed/" + i18Name;
+            turnFile = "FlightModels/DataTurn/" + i18Name;
+            craftFile = "FlightModels/DataCraft/" + i18Name;
+            weaponFile = "FlightModels/DataWeapon/" + i18Name;
+            auxFile = "FlightModels/DataAux/" + i18Name;
+            drawData(theFlightModel, fuelLevel, speedFile, turnFile, auxFile);
+            drawCraft(theFlightModel, craftFile + " (" + CmdFPS.dumpDesc + ").txt");
+            dumpWeaponList(theAircraft, airName, weaponFile + " (" + CmdFPS.dumpDesc + ").txt");
+            System.out.println("done.");
         } catch (Exception e) {
+            System.out.println("Error in dumpFlightModel(" + theAircraftClass + "):");
             e.printStackTrace();
         }
     }
@@ -556,6 +641,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
 
         if (iFuelLevel < 0) {
             for (int i = 0; i <= 75; i += 25) {
+//            	System.out.println("drawData " + i);
                 Wing.G = (M.getFullMass() - (M.maxFuel * (float) i) / 100F) * Atmosphere.g();
                 for (int k = 0; k < 250; k++) {
                     float normP[] = (float[]) Reflection.getValue(Wing, "normP");
@@ -571,13 +657,28 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                 Wing.setFlaps(0.0F);
                 drawGraphs(Wing, s1, i, true);
                 Wing.setFlaps(0.0F);
-                s1 = speedFile + " " + (100 - i) + "% fuel" + " (" + CmdFPS.DumpDesc + ")_speed.txt";
+
+                // TODO: Added by SAS~Storebror, full speed usually requires radiators to be fully open!
+                boolean hasRadiatorControl = false;
+                for (int engineIndex = 0; engineIndex<fm.EI.getNum(); engineIndex++) {
+                	if (fm.EI.engines[engineIndex].isHasControlRadiator()) {
+                		hasRadiatorControl = true;
+                		break;
+                	}
+                }
+                if (hasRadiatorControl) {
+	                float oldCxMin = Reflection.getFloat(Wing, "CxMin");
+	                float newCxMin = oldCxMin + (fm.radiatorCX * (float)radiatorSetting / 100F);
+	                Reflection.setFloat(Wing, "CxMin", newCxMin);
+                }
+
+                s1 = speedFile + " " + (100 - i) + "% fuel" + " (" + CmdFPS.dumpDesc + ")_speed.txt";
                 drawSpeed(fm, s1);
                 Wing.setFlaps(0.0F);
-                String s2 = auxFile + " avail thrust (" + CmdFPS.DumpDesc + ").txt";
-                String s3 = auxFile + " thrust summary " + (100 - i) + "% fuel (" + CmdFPS.DumpDesc + ").txt";
-                String s4 = auxFile + " req thrust " + (100 - i) + "% fuel (" + CmdFPS.DumpDesc + ").txt";
-                drawZhukovski(fm, s2, s3, s4);
+                String s2 = auxFile + " avail thrust (" + CmdFPS.dumpDesc + ").txt";
+                String s3 = auxFile + " thrust summary " + (100 - i) + "% fuel (" + CmdFPS.dumpDesc + ").txt";
+                String s4 = auxFile + " req thrust " + (100 - i) + "% fuel (" + CmdFPS.dumpDesc + ").txt";
+                if (!fullDump) drawZhukovski(fm, s2, s3, s4);
                 Wing.setFlaps(0.0F);
             }
         } else {
@@ -598,17 +699,36 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             Wing.setFlaps(0.0F);
             drawGraphs(Wing, s1, i, false);
             Wing.setFlaps(0.0F);
-            s1 = speedFile + " (" + CmdFPS.DumpDesc + ")_speed.txt";
+
+            // TODO: Added by SAS~Storebror, full speed usually requires radiators to be fully open!
+            boolean hasRadiatorControl = false;
+            for (int engineIndex = 0; engineIndex<fm.EI.getNum(); engineIndex++) {
+            	if (fm.EI.engines[engineIndex].isHasControlRadiator()) {
+            		hasRadiatorControl = true;
+            		break;
+            	}
+            }
+            if (hasRadiatorControl) {
+                float oldCxMin = Reflection.getFloat(Wing, "CxMin");
+                float newCxMin = oldCxMin + (fm.radiatorCX * (float)radiatorSetting / 100F);
+                Reflection.setFloat(Wing, "CxMin", newCxMin);
+            }
+
+            s1 = speedFile + " (" + CmdFPS.dumpDesc + ")_speed.txt";
             drawSpeed(fm, s1);
             Wing.setFlaps(0.0F);
-            String s2 = auxFile + " avail thrust (" + CmdFPS.DumpDesc + ").txt";
-            String s3 = auxFile + " thrust summary " + (100 - i) + "% fuel (" + CmdFPS.DumpDesc + ").txt";
-            String s4 = auxFile + " req thrust " + (100 - i) + "% fuel (" + CmdFPS.DumpDesc + ").txt";
+            if (!fullDump) {
+            String s2 = auxFile + " avail thrust (" + CmdFPS.dumpDesc + ").txt";
+            String s3 = auxFile + " thrust summary " + (100 - i) + "% fuel (" + CmdFPS.dumpDesc + ").txt";
+            String s4 = auxFile + " req thrust " + (100 - i) + "% fuel (" + CmdFPS.dumpDesc + ").txt";
             drawZhukovski(fm, s2, s3, s4);
+            }
             Wing.setFlaps(0.0F);
         }
 
-        String s = speedFile + " data (" + CmdFPS.DumpDesc + ").txt";
+        if (!fullDump) {
+
+        String s = speedFile + " data (" + CmdFPS.dumpDesc + ").txt";
         PrintWriter printwriter = null;
         try {
             File file = new File(HomePath.toFileSystemName(s, 0));
@@ -695,6 +815,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             if (printwriter != null)
                 printwriter.close();
         }
+        }
         Wing.G = M.maxWeight * Atmosphere.g();
         return;
     }
@@ -731,7 +852,18 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             }
 
             printwriter1.println("Height\tMaxThrust\tSpeedMaxThrust\tMaxClimb\tSpeedMaxClimb\tMaxSpeed");
-            for (int j2 = 0; j2 <= 10000; j2 += 100) {
+
+            int topAltitude = 10000;
+            for (int engineIndex=0; engineIndex<fm.EI.getNum(); engineIndex++) {
+            	Motor m = fm.EI.engines[engineIndex];
+            	for (int altitudeIndex=0; altitudeIndex<m.compressorAltitudes.length; altitudeIndex++) {
+            		int compressorAltitude = (int)m.compressorAltitudes[altitudeIndex] + 3000;
+            		if (compressorAltitude > topAltitude) topAltitude = compressorAltitude;
+            	}
+            }
+            topAltitude = (int)Math.ceil((double)topAltitude / 100D) * 100;
+
+            for (int j2 = 0; j2 <= topAltitude; j2 += 100) {
                 int k2 = 0;
                 int l2 = 0;
                 float f1 = 0.0F;
@@ -820,14 +952,25 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
     }
 
     public static void drawSpeed(FlightModel fm, String s) {
+//    	System.out.println("drawSpeed " + s);
         Polares Wing = (Polares) Reflection.getValue(fm, "Wing");
         EnginesInterface EI = fm.EI;
         try {
             File file = new File(HomePath.toFileSystemName(s, 0));
             file.getParentFile().mkdirs();
             PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s, 0))));
-            for (int i = 0; i <= 10000; i += 100) {
-                printwriter.print(i + "\t");
+
+            int topAltitude = 10000;
+            for (int engineIndex=0; engineIndex<fm.EI.getNum(); engineIndex++) {
+            	Motor m = fm.EI.engines[engineIndex];
+            	for (int altitudeIndex=0; altitudeIndex<m.compressorAltitudes.length; altitudeIndex++) {
+            		int compressorAltitude = (int)m.compressorAltitudes[altitudeIndex] + 3000;
+            		if (compressorAltitude > topAltitude) topAltitude = compressorAltitude;
+            	}
+            }
+            topAltitude = (int)Math.ceil((double)topAltitude / 100D) * 100;
+
+            for (int i = 0; i <= topAltitude; i += 100) {
                 float f = -1000F;
                 float f1 = -1000F;
                 int j = 50;
@@ -835,8 +978,8 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                 do {
                     if (j >= 1500)
                         break;
-                    float f2 = EI.forcePropAOA((float) j * 0.27778F, i, 1.1F, true);
-                    float f4 = Wing.getClimb((float) j * 0.27778F, i, f2);
+                    float f2 = EI.forcePropAOA((float) j / 3.6F, i, 1.1F, true);
+                    float f4 = Wing.getClimb((float) j / 3.6F, i, f2);
                     //System.out.println("i=" + i + ", j=" + j + ", f2=" + f2 + ", f4=" + f4 + ", f=" + f + ", f1=" + f1);
                     if (f4 > f)
                         f = f4;
@@ -848,10 +991,16 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                     }
                     j++;
                 } while (true);
+                f1 *= 0.982F; // TODO: Added by SAS~Storebror, for some reason IL-2 Compare tends to give slightly unachievable speed values otherwise
                 if (f1 < 0.0F)
-                    printwriter.print("\t");
-                else
-                    printwriter.print(f1 + "\t");
+                	break;
+//                    printwriter.print("\t");
+//                else
+//                    printwriter.print(f1 + "\t");
+
+                printwriter.print(i + "\t");
+                printwriter.print(f1 + "\t");
+
                 printwriter.print(f * Wing.Vyfac + "\t");
                 f = -1000F;
                 f1 = -1000F;
@@ -859,8 +1008,8 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                 do {
                     if (j >= 1500)
                         break;
-                    float f3 = EI.forcePropAOA((float) j * 0.27778F, i, 1.0F, false);
-                    float f5 = Wing.getClimb((float) j * 0.27778F, i, f3);
+                    float f3 = EI.forcePropAOA((float) j / 3.6F, i, 1.0F, false);
+                    float f5 = Wing.getClimb((float) j / 3.6F, i, f3);
                     if (f5 > f)
                         f = f5;
                     if (f5 < 0.0F && f5 < f) {
@@ -869,6 +1018,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
                     }
                     j++;
                 } while (true);
+                f1 *= 0.982F; // TODO: Added by SAS~Storebror, for some reason IL-2 Compare tends to give slightly unachievable speed values otherwise
                 if (f1 < 0.0F)
                     printwriter.print("\t");
                 else
@@ -919,10 +1069,11 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
 
     public static void drawGraphs(Polares p, String s, int fuel, boolean bDrawFuel) {
         float f = -10000F;
+        if (!fullDump) {
         try {
-            File file = new File(HomePath.toFileSystemName(s + " Polares (" + CmdFPS.DumpDesc + ").txt", 0));
+            File file = new File(HomePath.toFileSystemName(s + " Polares (" + CmdFPS.dumpDesc + ").txt", 0));
             file.getParentFile().mkdirs();
-            PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + " Polares (" + CmdFPS.DumpDesc + ").txt", 0))));
+            PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + " Polares (" + CmdFPS.dumpDesc + ").txt", 0))));
             for (int i = -90; i < 90; i++)
                 printwriter.print(i + "\t");
 
@@ -963,17 +1114,18 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             System.out.println("File save failed: " + ioexception.getMessage());
             ioexception.printStackTrace();
         }
+        }
         try {
             PrintWriter printwriter1;
             if (bDrawFuel) {
-                File file = new File(HomePath.toFileSystemName(s + " " + (100 - fuel) + "% fuel" + " (" + CmdFPS.DumpDesc + ")_turn.txt", 0));
+                File file = new File(HomePath.toFileSystemName(s + " " + (100 - fuel) + "% fuel" + " (" + CmdFPS.dumpDesc + ")_turn.txt", 0));
                 file.getParentFile().mkdirs();
-                printwriter1 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + " " + (100 - fuel) + "% fuel" + " (" + CmdFPS.DumpDesc + ")_turn.txt", 0))));
+                printwriter1 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + " " + (100 - fuel) + "% fuel" + " (" + CmdFPS.dumpDesc + ")_turn.txt", 0))));
             }
             else {
-                File file = new File(HomePath.toFileSystemName(s + " (" + CmdFPS.DumpDesc + ")_turn.txt", 0));
+                File file = new File(HomePath.toFileSystemName(s + " (" + CmdFPS.dumpDesc + ")_turn.txt", 0));
                 file.getParentFile().mkdirs();
-                printwriter1 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + " (" + CmdFPS.DumpDesc + ")_turn.txt", 0))));
+                printwriter1 = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(s + " (" + CmdFPS.dumpDesc + ")_turn.txt", 0))));
             }
             for (int j1 = 120; j1 < 620; j1 += 2)
                 printwriter1.print(j1 + "\t");
@@ -1786,7 +1938,7 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
             return "300l Tank";
         return weaponName;
     }
-    
+
     private void logFpsToFile() {
         if (this.fpsLogWriter == null) {
             this.missionName = getMissionName();
@@ -1873,9 +2025,12 @@ public class CmdFPS extends Cmd implements MsgTimeOutListener {
     public static final String HIDE       = "HIDE";
     public static final String PERF       = "PERF";
     private MsgTimeOut         msg;
-    public static String       DumpDesc   = "unkown";
-    public static int          DumpStart  = 0;
-    private static int         iFuelLevel = -1;
+    public static String       dumpDesc   = "unkown";
+    public static int          dumpStart  = 0;
+    private static int         fuelLevel = -1;
+    private static int         radiatorSetting = 100;
+    private static boolean     fullDump = false;
+    private static boolean     settingsInitialized = false;
     public static String       turnFile;
     public static String       speedFile;
     public static String       auxFile;
