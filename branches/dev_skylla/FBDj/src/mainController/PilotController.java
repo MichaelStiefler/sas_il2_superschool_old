@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.JSONObject;
+
 import model.ConfigurationItem;
 import model.GUICommand;
 import model.Pilot;
@@ -465,22 +467,55 @@ class PilotController {
             if (welcomeMessage.contains("{pilotName}")) {
                 welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{pilotName}", pilot.getAsciiTextName());
             }
-            if (welcomeMessage.contains("{countryCode}")) {
-                welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{countryCode}", PilotGeoIPController.getGeoIPInfo(pilot.getIPAddress(), "countryCode"));
+            JSONObject json = PilotGeoIPController.readJsonIpInfo(pilot.getIPAddress());
+            
+            String jsonStatus = PilotGeoIPController.getGeoIPInfoNew("status", json);
+            boolean hasIpInfo = jsonStatus.equalsIgnoreCase("success");
+            boolean needsIpInfo = false;
+            
+            String[] infoItems = { "continent",
+                    "country",
+                    "countryCode",
+                    "region",
+                    "city",
+                    "org",
+                    "ipType"
+            };
+            
+            for (int infoIndex=0; infoIndex<infoItems.length; infoIndex++) {
+                String infoItem = "{" + infoItems[infoIndex] + "}";
+                if (welcomeMessage.contains(infoItem)) {
+                    needsIpInfo = true;
+                    if (hasIpInfo) {
+                        if (infoItems[infoIndex].equalsIgnoreCase("ipType")) {
+                            String infoText = PilotGeoIPController.getGeoIPInfoNew(infoItems[infoIndex], json);
+                            if (!PilotGeoIPController.getGeoIPInfoNew("ipType", json).equalsIgnoreCase("Residential")
+                                && !PilotGeoIPController.getGeoIPInfoNew("ipType", json).equalsIgnoreCase("N/A")) {
+                                infoText += " (" + PilotGeoIPController.getGeoIPInfoNew("businessName", json) + ")";
+                            }
+                            welcomeMessage = StringUtilities.stringReplace(welcomeMessage,
+                                    infoItem,
+                                    infoText);
+                        } else {
+                            welcomeMessage = StringUtilities.stringReplace(welcomeMessage,
+                                    infoItem,
+                                    PilotGeoIPController.getGeoIPInfoNew(infoItems[infoIndex], json));
+                        }
+                    } else {
+                        welcomeMessage = StringUtilities.stringReplace(welcomeMessage,
+                                infoItem, "N/A");
+                    }
+                }
             }
-            if (welcomeMessage.contains("{country}")) {
-                welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{country}", PilotGeoIPController.getGeoIPInfo(pilot.getIPAddress(), "country"));
+            
+            int trustLevel = PilotGeoIPController.trustLevel(pilot.getIPAddress());
+            if (welcomeMessage.contains("{trustLevel}")) {
+                welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{trustLevel}", "" + trustLevel);
             }
-            if (welcomeMessage.contains("{city}")) {
-                welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{city}", PilotGeoIPController.getGeoIPInfo(pilot.getIPAddress(), "city"));
+            if (needsIpInfo && !hasIpInfo) {
+                welcomeMessage += " (Error: " + PilotGeoIPController.getGeoIPInfoNew("message", json) + ")";
             }
-            if (welcomeMessage.contains("{regionName}")) {
-                welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{regionName}", PilotGeoIPController.getGeoIPInfo(pilot.getIPAddress(), "regionName"));
-            }
-            if (welcomeMessage.contains("{region}")) {
-                welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{region}", PilotGeoIPController.getGeoIPInfo(pilot.getIPAddress(), "region"));
-            }
-
+                        
             String receipient = "";
             if (MainController.CONFIG.getSendWelcomeMessageTo() == ConfigurationItem.ChatReciepients.PILOT) {
                 receipient = pilot.getAsciiTextName();
@@ -491,9 +526,27 @@ class PilotController {
             }
 
             if (welcomeMessage != null && receipient.length() > 0) {
-                ServerCommandController.serverCommandSend("chat " + welcomeMessage + " TO \"" + receipient + "\"");
+                ServerCommandController.serverCommandSend("chat Pilot " + welcomeMessage + " TO \"" + receipient + "\"");
             }
             pilot.setCountry(PilotGeoIPController.getGeoIPInfo(pilot.getIPAddress(), "country"));
+            
+            if (pilot.getAsciiTextName().length() < 3) {
+                if (receipient.length() > 0) 
+                    ServerCommandController.serverCommandSend("chat " + pilot.getAsciiTextName() + " gets kicked (name invalid!) TO \"" + receipient + "\"");
+                PilotController.pilotKick(pilot.getName(), SortieEvent.EventType.PILOTKICKED);
+
+                MainController.writeDebugLogFile(1, "AdminCommandController.kick: kicked (" + pilot.getAsciiTextName() + "), ASCII name has less than 3 characters!");
+                
+            }
+            
+            if (trustLevel < PilotGeoIPController.trustLevelLimit() && !PilotGeoIPController.isWhitelisted(pilot.getIPAddress()) && !PilotGeoIPController.isWhitelisted(pilot.getAsciiTextName())) {
+                if (receipient.length() > 0) 
+                    ServerCommandController.serverCommandSend("chat " + pilot.getAsciiTextName() + " gets kicked (abuse) TO \"" + receipient + "\"");
+                PilotController.pilotKick(pilot.getName(), SortieEvent.EventType.PILOTKICKED);
+
+                MainController.writeDebugLogFile(1, "AdminCommandController.kick: kicked (" + pilot.getAsciiTextName() + "), AbuseIPDB returned trust level " + trustLevel + "%% !");
+                
+            }
         } catch (Exception ex) {
             MainController.writeDebugLogFile(1, "PilotController.pilotWelcomeMessage - Error Unhandled Exception for Pilot (" + pilot.getName() + ") ex:" + ex);
         }
