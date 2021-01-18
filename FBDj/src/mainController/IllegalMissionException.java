@@ -9,7 +9,11 @@ package mainController;
 
 public class IllegalMissionException extends Exception{
 
-	private String wrongMissionName;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1394968869933645012L;
+    private String wrongMissionName;
 	
 	public IllegalMissionException(String wrongMissionName) {
 		super("Mission not found: " + wrongMissionName);

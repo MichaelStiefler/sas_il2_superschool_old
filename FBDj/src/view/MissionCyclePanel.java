@@ -63,22 +63,30 @@ public class MissionCyclePanel extends JPanel {
     private ListSelectionModel       missionFilesSelection;
     private javax.swing.JFileChooser missionFileChooser;
     private javax.swing.JScrollPane  missionCycleScrollPane;
+    @SuppressWarnings("rawtypes")
     private static DefaultListModel  missionCycleListModel;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JList        missionCycleList;
     private javax.swing.JButton      missionCycleAddButton;
     private javax.swing.JButton      missionCycleRemoveButton;
     private String                   selectedMissionCycle;
     private javax.swing.JScrollPane  difficultyScrollPane;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JList        difficultyList;
+    @SuppressWarnings("rawtypes")
     private DefaultListModel         difficultyListModel;
     private String                   selectedDifficulty;
     private javax.swing.JButton      difficultyAddButton;
     private javax.swing.JButton      difficultyRemoveButton;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JComboBox    difficultyComboBox;
     private javax.swing.JScrollPane  difficultySettingsScrollPane;
     private MissionCycleTableModel   difficultySettingsTableModel;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JComboBox    availableMissionComboBox;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JList        availableMissionList;
+    @SuppressWarnings("rawtypes")
     private DefaultListModel         availableMissionListModel;
 
     private javax.swing.JTable       difficultySettingsTable;
@@ -141,6 +149,7 @@ public class MissionCyclePanel extends JPanel {
 
     }  // End class MissionStatusPanelTableModel
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void initComponents() {
         resetMissionCycleButton = new javax.swing.JButton();
         runTempMissionButton = new javax.swing.JButton();
@@ -727,6 +736,7 @@ public class MissionCyclePanel extends JPanel {
     }
 
     class AddMissionCycleButtonListener implements ActionListener {
+        @SuppressWarnings("unchecked")
         public void actionPerformed(ActionEvent e) {
 
             String addError;
@@ -776,6 +786,7 @@ public class MissionCyclePanel extends JPanel {
     }
 
     class AddDifficultyButtonListener implements ActionListener {
+        @SuppressWarnings("unchecked")
         public void actionPerformed(ActionEvent e) {
             String addError;
             String difficulty = (String) JOptionPane.showInputDialog(null, "Enter New Difficulty Setup Name:", "Add Difficulty Setup", JOptionPane.PLAIN_MESSAGE, null, null, null);
@@ -964,6 +975,7 @@ public class MissionCyclePanel extends JPanel {
 //			}
     }
 
+    @SuppressWarnings("unchecked")
     public void populateAvailableMissionFilesList() {
         availableMissionComboBox.removeAllItems();
         availableMissionListModel.removeAllElements();
@@ -1022,6 +1034,7 @@ public class MissionCyclePanel extends JPanel {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void loadGUI() {
         // Mission Files
         loadMissionFilesTableData();
@@ -1064,10 +1077,12 @@ public class MissionCyclePanel extends JPanel {
         MissionCyclePanel.userMissionCycles = userMissionCycles;
     }
 
+    @SuppressWarnings("rawtypes")
     public static DefaultListModel getMissionCycleListModel() {
         return missionCycleListModel;
     }
 
+    @SuppressWarnings("rawtypes")
     public void setMissionCycleListModel(DefaultListModel missionCycleListModel) {
         MissionCyclePanel.missionCycleListModel = missionCycleListModel;
     }

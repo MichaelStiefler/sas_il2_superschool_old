@@ -7,7 +7,11 @@ package mainController;
 
 public class IllegalInputException extends Exception{
 
-	private String illegalInput;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -1486285654782114714L;
+    private String illegalInput;
 	private String reason;
 	
 	public IllegalInputException(String illegalInput, String reason) {

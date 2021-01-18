@@ -49,6 +49,7 @@ public class UnicodeFormatter {
      *            with embededed unicode expressed as a string
      * @return string which contains the embeded unicode
      */
+    @SuppressWarnings("resource")
     public static String convertAsciiStringToUnicode(String asciiText) {
         boolean finished = false;
         String newText = "";

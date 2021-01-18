@@ -23,6 +23,7 @@ import view.PlaneLoadoutsPopup;
 
 public class PlaneLoadoutsController {
 
+    @SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
     public static void displayLoadouts(int army, String plane) {
         String armyDesc = "Unknown";
         if (army == MainController.REDARMY) {
