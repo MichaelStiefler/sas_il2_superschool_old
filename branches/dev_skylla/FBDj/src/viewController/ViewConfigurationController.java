@@ -49,6 +49,7 @@ public class ViewConfigurationController {
         }
     }  // End updateConfigurationItem
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void updateMissionCycleList(DefaultListModel missionCycleList) {
         JComboBox missionCycleComboBox = ConfigurationPanel.getMissionCycleComboBox();
         if (missionCycleComboBox != null) {

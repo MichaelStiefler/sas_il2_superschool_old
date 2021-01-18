@@ -169,6 +169,7 @@ public class MissionCycleController {
 
     public static Object[] getMissionCycleList() {
         Object[] missionCycleList = null;
+        @SuppressWarnings("rawtypes")
         DefaultListModel missionCycleModel = MissionCyclePanel.getMissionCycleListModel();
         missionCycleList = missionCycleModel.toArray();
         return missionCycleList;

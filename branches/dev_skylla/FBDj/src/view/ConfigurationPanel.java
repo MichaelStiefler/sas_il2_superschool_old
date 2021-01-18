@@ -37,6 +37,7 @@ import utility.SortedHashMap;
 import viewController.MissionCycleController;
 import viewController.ViewConfigurationController;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ConfigurationPanel extends JPanel {
 
     /**
@@ -86,14 +87,12 @@ public class ConfigurationPanel extends JPanel {
 
         private static final int  ROW              = 0;
 
-        @SuppressWarnings("rawtypes")
         Class                     types[]          = new Class[] { String.class, String.class, String.class };
 
         public ConfigurationTableModel(String[] columnNames) {
             super(columnNames, ROW);
         }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         public Class getColumnClass(int c) {
             return types[c];
         }

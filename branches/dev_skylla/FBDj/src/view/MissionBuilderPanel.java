@@ -83,15 +83,18 @@ public class MissionBuilderPanel extends JPanel {
     private javax.swing.JButton                     saveButton;
     private javax.swing.JLabel                      missionStatusMessageLabel;
     private javax.swing.JFileChooser                missionFileChooser;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JComboBox                   missionObjectiveComboBox;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JComboBox                   armyComboBox;
     private static MissionParameters                missionDetails;
     private javax.swing.JButton                     planeLimitAddButton;
     private javax.swing.JButton                     planeLimitRemoveButton;
     private javax.swing.JButton                     loadoutRestrictionAddButton;
     private javax.swing.JButton                     loadoutRestrictionRemoveButton;
+    @SuppressWarnings("rawtypes")
     private javax.swing.JComboBox                   weaponLoadoutComboBox;
-    @SuppressWarnings("unused")
+    @SuppressWarnings({ "unused", "rawtypes" })
     private javax.swing.ComboBoxModel               weaponLoadoutListModel;
     private javax.swing.tree.DefaultMutableTreeNode planeTreeRoot;
     private javax.swing.tree.DefaultMutableTreeNode redPlaneTreeRoot;
@@ -155,6 +158,7 @@ public class MissionBuilderPanel extends JPanel {
 
     }  // End class MissionStatusPanelTableModel
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void initComponents() {
 
         missionMissionNameLabel = new javax.swing.JLabel();
@@ -676,6 +680,7 @@ public class MissionBuilderPanel extends JPanel {
     }
 
     class LoadoutTableSelectionListener implements ListSelectionListener {
+        @SuppressWarnings("unchecked")
         public void valueChanged(ListSelectionEvent le) {
             weaponLoadoutComboBox.removeAllItems();
             try {

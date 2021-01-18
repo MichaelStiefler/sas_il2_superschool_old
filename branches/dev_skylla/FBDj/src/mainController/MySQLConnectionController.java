@@ -365,7 +365,7 @@ public class MySQLConnectionController {
 
     public static int getPilotId(String name) {
         int pilotId = 0;
-        PreparedStatement s;
+        //PreparedStatement s;
         int rowCount = 0;
         String country = null;
         String ipAddress = null;
@@ -373,17 +373,17 @@ public class MySQLConnectionController {
         if (MainController.isStatsOn()) {
             try {
                 // Get pilotId from database if the pilot exists.
-                s = MainController.STATSCONN.prepareStatement("SELECT pilotId, country, ipAddress FROM pilots WHERE pilotName = ?");
-                s.setString(1, name);
-                ResultSet rs = s.executeQuery();
-                while (rs.next()) {
-                    pilotId = rs.getInt("pilotId");
-                    country = rs.getString("country");
-                    ipAddress = rs.getString("ipAddress");
+                PreparedStatement s1 = MainController.STATSCONN.prepareStatement("SELECT pilotId, country, ipAddress FROM pilots WHERE pilotName = ?");
+                s1.setString(1, name);
+                ResultSet rs1 = s1.executeQuery();
+                while (rs1.next()) {
+                    pilotId = rs1.getInt("pilotId");
+                    country = rs1.getString("country");
+                    ipAddress = rs1.getString("ipAddress");
                     rowCount++;
                 } // end while loop
-                rs.close();
-                s.close();
+                rs1.close();
+                s1.close();
 
                 // If pilot did not exist, insert new pilot into database and get the new pilotId
                 if (rowCount < 1) {
@@ -392,27 +392,28 @@ public class MySQLConnectionController {
                     if (country == null) {
                         country = "Unknown";
                     }
-                    s = MainController.STATSCONN.prepareStatement("INSERT INTO pilots (pilotName, ipaddress, country) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
-                    s.setString(1, name);
-                    s.setString(2, ipAddress);
-                    s.setString(3, country);
-                    rowCount = s.executeUpdate();
-                    rs = s.getGeneratedKeys();
+                    PreparedStatement s2 = MainController.STATSCONN.prepareStatement("INSERT INTO pilots (pilotName, ipaddress, country) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                    s2.setString(1, name);
+                    s2.setString(2, ipAddress);
+                    s2.setString(3, country);
+                    rowCount = s2.executeUpdate();
+                    ResultSet rs2 = s2.getGeneratedKeys();
 
-                    if (rs.next()) {
-                        pilotId = rs.getInt(1);
+                    if (rs2.next()) {
+                        pilotId = rs2.getInt(1);
                     } else {
                         MainController.writeDebugLogFile(1, "MySQLConnectionController.newPilot - Error retrieving pilotId after Insert");
                     }
-                    rs.close();
-                    s.close();
+                    rs2.close();
+                    s2.close();
                 } else { // Pilot found in database Update country and IPaddress if necessary
                     if ((country == null || !country.equals(MainController.PILOTS.get(name).getCountry())) || (ipAddress == null || !ipAddress.equals(MainController.PILOTS.get(name).getIPAddress()))) {
-                        s = MainController.STATSCONN.prepareStatement("UPDATE pilots SET ipaddress = ?, country = ? WHERE pilotId = ?");
-                        s.setString(1, MainController.PILOTS.get(name).getIPAddress());
-                        s.setString(2, MainController.PILOTS.get(name).getCountry());
-                        s.setInt(3, pilotId);
-                        rowCount = s.executeUpdate();
+                        PreparedStatement s3 = MainController.STATSCONN.prepareStatement("UPDATE pilots SET ipaddress = ?, country = ? WHERE pilotId = ?");
+                        s3.setString(1, MainController.PILOTS.get(name).getIPAddress());
+                        s3.setString(2, MainController.PILOTS.get(name).getCountry());
+                        s3.setInt(3, pilotId);
+                        rowCount = s3.executeUpdate();
+                        s3.close();
                     }
                 }
             } catch (Exception ex) {

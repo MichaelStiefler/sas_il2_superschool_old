@@ -18,6 +18,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class PilotView {
     JPanel     pilotListPanel;
     JPanel     pilotDetailsPanel;

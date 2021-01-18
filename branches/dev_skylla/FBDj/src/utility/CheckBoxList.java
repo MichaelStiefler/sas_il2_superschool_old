@@ -16,6 +16,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+@SuppressWarnings("rawtypes")
 public class CheckBoxList extends JList implements ListSelectionListener {
 
     /**
@@ -31,11 +32,11 @@ public class CheckBoxList extends JList implements ListSelectionListener {
         listSelectionBackground = uid.getColor("List.selectionBackground");
     }
 
-    @SuppressWarnings("rawtypes")
     HashSet                   selectionCache   = new HashSet();
     int                       toggleIndex      = -1;
     boolean                   toggleWasSelected;
 
+    @SuppressWarnings("unchecked")
     public CheckBoxList() {
         super();
         setCellRenderer(new CheckBoxListCellRenderer());
@@ -50,7 +51,6 @@ public class CheckBoxList extends JList implements ListSelectionListener {
             removeListSelectionListener(this);
 
             // remember everything selected as a result of this action
-            @SuppressWarnings("rawtypes")
             HashSet newSelections = new HashSet();
             int size = getModel().getSize();
             for (int i = 0; i < size; i++) {
@@ -60,7 +60,6 @@ public class CheckBoxList extends JList implements ListSelectionListener {
             }
 
             // turn on everything that was previously selected
-            @SuppressWarnings("rawtypes")
             Iterator it = selectionCache.iterator();
             while (it.hasNext()) {
                 int index = ((Integer) it.next()).intValue();
