@@ -5,12 +5,11 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.json.JSONObject;
-
 import model.ConfigurationItem;
 import model.GUICommand;
 import model.Pilot;
 import model.PilotBlueprint;
+import model.PilotGeoIPInformation;
 import model.PilotSortie;
 import model.QueueObj;
 import model.SortieEvent;
@@ -467,10 +466,10 @@ class PilotController {
             if (welcomeMessage.contains("{pilotName}")) {
                 welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{pilotName}", pilot.getAsciiTextName());
             }
-            JSONObject json = PilotGeoIPController.readJsonIpInfo(pilot.getIPAddress());
             
-            String jsonStatus = PilotGeoIPController.getGeoIPInfoNew("status", json);
-            boolean hasIpInfo = jsonStatus.equalsIgnoreCase("success");
+            PilotGeoIPInformation pilotGeoIPInformation = new PilotGeoIPInformation(pilot);
+            
+            boolean hasIpInfo = pilotGeoIPInformation.getGeoIpData().getStatus().equalsIgnoreCase("success");
             boolean needsIpInfo = false;
             
             String[] infoItems = { "continent",
@@ -488,10 +487,10 @@ class PilotController {
                     needsIpInfo = true;
                     if (hasIpInfo) {
                         if (infoItems[infoIndex].equalsIgnoreCase("ipType")) {
-                            String infoText = PilotGeoIPController.getGeoIPInfoNew(infoItems[infoIndex], json);
-                            if (!PilotGeoIPController.getGeoIPInfoNew("ipType", json).equalsIgnoreCase("Residential")
-                                && !PilotGeoIPController.getGeoIPInfoNew("ipType", json).equalsIgnoreCase("N/A")) {
-                                infoText += " (" + PilotGeoIPController.getGeoIPInfoNew("businessName", json) + ")";
+                            String infoText = pilotGeoIPInformation.getGeoIpData().getIpType();
+                            if (!pilotGeoIPInformation.getGeoIpData().getIpType().equalsIgnoreCase("Residential")
+                                && !pilotGeoIPInformation.getGeoIpData().getIpType().equalsIgnoreCase("N/A")) {
+                                infoText += " (" + pilotGeoIPInformation.getGeoIpData().getBusinessName() + ")";
                             }
                             welcomeMessage = StringUtilities.stringReplace(welcomeMessage,
                                     infoItem,
@@ -499,7 +498,7 @@ class PilotController {
                         } else {
                             welcomeMessage = StringUtilities.stringReplace(welcomeMessage,
                                     infoItem,
-                                    PilotGeoIPController.getGeoIPInfoNew(infoItems[infoIndex], json));
+                                    pilotGeoIPInformation.getGeoIpData().getCustomFieldValue(infoItems[infoIndex]));
                         }
                     } else {
                         welcomeMessage = StringUtilities.stringReplace(welcomeMessage,
@@ -508,12 +507,12 @@ class PilotController {
                 }
             }
             
-            int trustLevel = PilotGeoIPController.trustLevel(pilot.getIPAddress());
+            int trustLevel = pilotGeoIPInformation.trustLevelPercent();
             if (welcomeMessage.contains("{trustLevel}")) {
                 welcomeMessage = StringUtilities.stringReplace(welcomeMessage, "{trustLevel}", "" + trustLevel);
             }
             if (needsIpInfo && !hasIpInfo) {
-                welcomeMessage += " (Error: " + PilotGeoIPController.getGeoIPInfoNew("message", json) + ")";
+                welcomeMessage += " (Error: " + pilotGeoIPInformation.getGeoIpData().getMessage() + ")";
             }
                         
             String receipient = "";
@@ -528,7 +527,7 @@ class PilotController {
             if (welcomeMessage != null && receipient.length() > 0) {
                 ServerCommandController.serverCommandSend("chat Pilot " + welcomeMessage + " TO \"" + receipient + "\"");
             }
-            pilot.setCountry(PilotGeoIPController.getGeoIPInfo(pilot.getIPAddress(), "country"));
+            pilot.setCountry(pilotGeoIPInformation.getGeoIpData().getCountry());
             
             if (pilot.getAsciiTextName().length() < 3) {
                 if (receipient.length() > 0) 
@@ -539,7 +538,7 @@ class PilotController {
                 
             }
             
-            if (trustLevel < PilotGeoIPController.trustLevelLimit() && !PilotGeoIPController.isWhitelisted(pilot.getIPAddress()) && !PilotGeoIPController.isWhitelisted(pilot.getAsciiTextName())) {
+            if (!pilotGeoIPInformation.isTrusted()) {
                 if (receipient.length() > 0) 
                     ServerCommandController.serverCommandSend("chat " + pilot.getAsciiTextName() + " gets kicked (abuse) TO \"" + receipient + "\"");
                 PilotController.pilotKick(pilot.getName(), SortieEvent.EventType.PILOTKICKED);
