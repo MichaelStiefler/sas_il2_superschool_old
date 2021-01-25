@@ -144,11 +144,11 @@ public class PilotGeoIPInformation {
         double weightTotal = 0D;
         
         for (AbuseData a:this.abuseDataList) {
-            trustLevelTotal += a.getTrustLevel();
+            trustLevelTotal += a.getTrustLevel() * a.getWeight();
             weightTotal += a.getWeight();
         }
         if (weightTotal == 0D) return 1D;
-        return Math.max(1D, Math.min(0D, trustLevelTotal / weightTotal));
+        return Math.max(0D, Math.min(1D, trustLevelTotal / weightTotal));
     }
     
     public boolean isTrusted() {
@@ -164,7 +164,9 @@ public class PilotGeoIPInformation {
         MainController.CONFIG.getDynamicVariables().put("debugLevel", configItem);
         
         //Pilot pilot = new Pilot("John Doe", "178.155.5.154", 1946, Time.getTime());
-        Pilot pilot = new Pilot("Storebror", "84.46.52.97", 1946, Time.getTime());
+        //Pilot pilot = new Pilot("Storebror", "84.46.52.97", 1946, Time.getTime());
+        Pilot pilot = new Pilot("Storebror", "213.209.105.34", 1946, Time.getTime());
+        
         PilotGeoIPInformation pilotGeoIPInformation = new PilotGeoIPInformation(pilot);
         System.out.println("Pilot " + pilot.getAsciiTextName() + ", IP Address " + pilot.getIPAddress() + " from " + pilotGeoIPInformation.getGeoIpData().getCity() + " (" + pilotGeoIPInformation.getGeoIpData().getCountry() + ")");
         System.out.println("Trusted: " + pilotGeoIPInformation.isTrusted());
