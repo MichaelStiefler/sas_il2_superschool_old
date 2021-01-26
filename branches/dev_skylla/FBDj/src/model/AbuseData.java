@@ -3,6 +3,7 @@ package model;
 import org.ini4j.Ini;
 import org.json.JSONObject;
 
+import mainController.LogController;
 import mainController.MainController;
 
 public class AbuseData extends JsonData {
@@ -31,7 +32,7 @@ public class AbuseData extends JsonData {
         if (temp < abuseMin) temp = abuseMin;
         if (temp > abuseMax) temp = abuseMax;
         this.trustLevel = 1.0D - ((temp - abuseMin) / (abuseMax - abuseMin));
-        MainController.writeDebugLogFile(1, ipAddress + " " + section.getName() + " Trust Level: " + this.trustLevel);
+        LogController.writeIPLogFile(ipAddress + " " + section.getName() + " Trust Level: " + this.trustLevel);
         MainController.writeDebugLogFile(2, "AbuseData <Init>-");
     }
 

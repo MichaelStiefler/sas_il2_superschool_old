@@ -10,6 +10,7 @@ import java.util.HashMap;
 import org.ini4j.Ini;
 import org.json.JSONObject;
 
+import mainController.LogController;
 import mainController.MainController;
 import utility.StringUtilities;
 
@@ -250,7 +251,7 @@ public class JsonData {
                 message.append(line);
             }
             JSONObject json = new JSONObject(message.toString());
-            MainController.writeDebugLogFile(1, "JSON Object returned: " + json.toString());
+            LogController.writeIPLogFile("JSON Object returned: " + json.toString());
             MainController.writeDebugLogFile(2, "JsonData readJson-");
             return json;
         } catch (Exception ex) {

@@ -2,7 +2,7 @@ package mainController;
 
 import utility.FileLoggerFormat;
 
-class LogController {
+public class LogController {
     public static void writeChatLogFile(String data) {
         if (MainController.CONFIG.isLogChat()) {
             FileController.fileWrite(MainController.CONFIG.getConfigDirectory(), MainController.CHATLOGFILENAME, FileLoggerFormat.getLogString(data), true);
