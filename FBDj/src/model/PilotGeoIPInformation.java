@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.ini4j.Ini;
 
+import mainController.LogController;
 import mainController.MainController;
 import utility.Time;
 
@@ -56,7 +57,7 @@ public class PilotGeoIPInformation {
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             MainController.writeDebugLogFile(2, "All Data gathering Threads finished!");
-            MainController.writeDebugLogFile(1, "Pilot " + pilot.getAsciiTextName() + ", IP Address " + pilot.getIPAddress() + " from " + this.getGeoIpData().getCity() + " (" + this.getGeoIpData().getCountry() + ") Name whitelisted: " + this.isWhitelisted(pilot.getAsciiTextName()) + ", IP whitelisted: " + this.isWhitelisted(pilot.getIPAddress()) + ", Trust Level: " + this.trustLevelPercent() + "%");
+            LogController.writeIPLogFile("Pilot " + pilot.getAsciiTextName() + ", IP Address " + pilot.getIPAddress() + " from " + this.getGeoIpData().getCity() + " (" + this.getGeoIpData().getCountry() + ") Name whitelisted: " + this.isWhitelisted(pilot.getAsciiTextName()) + ", IP whitelisted: " + this.isWhitelisted(pilot.getIPAddress()) + ", Trust Level: " + this.trustLevelPercent() + "%");
         } catch (IOException ioe) {
             System.out.println("IO Exception occured in PilotGeoIPController.<Init>:");
             ioe.printStackTrace();
