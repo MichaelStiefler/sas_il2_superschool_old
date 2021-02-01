@@ -47,7 +47,7 @@
     <_ProjectFileVersion>15.0.26419.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>U:\IL2\CLIENT\IL-2 Ultrapack 3</OutDir>
+    <OutDir>U:\IL2\CLIENT\IL-2 Modact 6.4\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -71,7 +71,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
-      <OutputFile>U:\IL2\CLIENT\IL-2 Ultrapack 3\DINPUT.dll</OutputFile>
+      <OutputFile>U:\IL2\CLIENT\IL-2 Ultrapack 3.3\DINPUT.dll</OutputFile>
       <ModuleDefinitionFile>dinput.def</ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -107,7 +107,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="classes_runtime.cpp" />
+    <ClCompile Include="..\FileCrypter\Output\resource_files.cpp" />
     <ClCompile Include="dinput.cpp" />
     <ClCompile Include="dllmain.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -126,7 +126,7 @@
     <None Include="dinput.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classes_runtime.h" />
+    <ClInclude Include="..\FileCrypter\Output\resource_files.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SFS_Tools.h" />

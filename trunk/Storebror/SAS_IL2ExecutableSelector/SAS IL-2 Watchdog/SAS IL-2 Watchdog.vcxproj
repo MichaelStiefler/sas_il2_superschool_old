@@ -46,7 +46,7 @@
     <_ProjectFileVersion>15.0.26419.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>U:\IL2\CLIENT\COMMON\bin\selector\basefiles\</OutDir>
+    <OutDir>U:\IL2\CLIENT\IL-2 Modact 6.4\bin\selector\basefiles</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>IL-2 Watchdog</TargetName>
@@ -101,6 +101,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\FileCrypter\Output\resource_files.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="SAS IL-2 Watchdog.cpp" />
     <ClCompile Include="SplashScreen.cpp" />
@@ -108,6 +109,7 @@
     <ClCompile Include="trace.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\FileCrypter\Output\resource_files.h" />
     <ClInclude Include="CopyData.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="resource.h" />
@@ -121,7 +123,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="img\SAS.ico" />
-    <Image Include="img\splash.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

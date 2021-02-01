@@ -1,6 +1,6 @@
 //*****************************************************************
 // il2fb.exe - Placeholder for IL-2 1946 executable il2fb.exe
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of il2fb.exe
 //

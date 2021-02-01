@@ -12,3 +12,7 @@ EXPORTS
 		DllUnregisterServer														PRIVATE
 		ImmDisableIME															@6
 		Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo		@7
+		Java_com_maddox_rts_SFSInputStream_isDumpMode							@8
+		Java_com_maddox_rts_SFSInputStream_getStartupClass						@9
+		Java_com_maddox_rts_SFSInputStream_freeStartupClasses					@10
+		Java_com_maddox_rts_SFSInputStream_println								@11

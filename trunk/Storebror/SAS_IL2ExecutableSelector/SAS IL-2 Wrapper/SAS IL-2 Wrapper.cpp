@@ -1,6 +1,6 @@
 //*****************************************************************
 // wrapper.dll - il2fb.exe mod files wrapper
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of wrapper.dll.
 //
@@ -78,8 +78,6 @@ IniFileName[MAX_PATH],
 CachedListFileName[MAX_PATH];
 static CHAR cBuf[MAX_PATH];
 TCHAR LogFileName[MAX_PATH];
-
-//static BYTE	bBuf[1000000];
 
 std::vector<MyFileListItem*> FileList;
 
@@ -298,7 +296,7 @@ int __cdecl CompareFileList(const void *mfli1, const void *mfli2)
 void SortList(float * pfPikoSeconds)
 {
 	StopWatchStart(pfPikoSeconds);
-	std::qsort(&*FileList.begin(), FileList.size(), sizeof(MyFileListItem*), CompareFileList);   // sort and keep original relative order of equivalent elements.
+	if (!FileList.empty()) std::qsort(&*FileList.begin(), FileList.size(), sizeof(MyFileListItem*), CompareFileList);   // sort and keep original relative order of equivalent elements.
 	StopWatchStop(pfPikoSeconds);
 }
 
@@ -737,25 +735,27 @@ int RemoveDuplicates(float * pfPikoSeconds)
 	StopWatchStart(pfPikoSeconds);
 	int iRetVal = 0;
 
-	try {
-		MyFileListItem *dupElement = NULL;
+	if (!FileList.empty()) {
+		try {
+			MyFileListItem* dupElement = NULL;
 
-		for (int i = 0; i < (int)FileList.size(); i++) {
-			MyFileListItem *listElement = FileList[i];
+			for (int i = 0; i < (int)FileList.size(); i++) {
+				MyFileListItem* listElement = FileList[i];
 
-			if (dupElement != NULL) {
-				if (listElement->hash == dupElement->hash) {
-					listElement->filePath = dupElement->filePath;
-					iRetVal++;
-					continue;
+				if (dupElement != NULL) {
+					if (listElement->hash == dupElement->hash) {
+						listElement->filePath = dupElement->filePath;
+						iRetVal++;
+						continue;
+					}
 				}
-			}
 
-			dupElement = listElement;
+				dupElement = listElement;
+			}
 		}
-	}
-	catch (...) {
-		TRACE("Error removing duplicates from list\r\n");
+		catch (...) {
+			TRACE("Error removing duplicates from list\r\n");
+		}
 	}
 
 	StopWatchStop(pfPikoSeconds);
@@ -773,6 +773,7 @@ int RemoveDuplicates(float * pfPikoSeconds)
 //************************************
 int binarySearchFileList(unsigned __int64 theHash)
 {
+	if (FileList.empty()) return -1;
 	float fPikoSeconds = 0.;
 	StopWatchStart(&fPikoSeconds);
 	int first = 0;
@@ -1049,6 +1050,7 @@ SASIL2WRAPPER_C_API int __cdecl __SFS_openf(const unsigned __int64 hash, const i
 	int filePointer = -1;
 	int listPos;
 	unsigned __int64 hash2 = 0;
+	if (FileList.empty()) return SFS_openf(hash, flags);
 	listPos = binarySearchFileList(hash);
 	int isInSFS = -1;
 

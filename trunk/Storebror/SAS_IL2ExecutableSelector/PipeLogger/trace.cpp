@@ -1,6 +1,6 @@
 //*****************************************************************
 // PipeLogger.exe - Enhanced Logging Tool for IL-2 1946
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of PipeLogger.exe.
 //
@@ -26,7 +26,6 @@
 #include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <share.h>
 #include <tchar.h>
 #include "globals.h"
@@ -83,18 +82,18 @@ bool traceLog(LPCSTR output) {
 //************************************
 bool _trace(TCHAR *format, ...)
 {
-    va_list argptr;
-    va_start(argptr, format);
-    int len = _vsctprintf(format, argptr)   // _vscprintf doesn't count
-              + 1; // terminating '\0'
-    TCHAR* buffer = (TCHAR*)calloc(len, sizeof(TCHAR));
-    _vsntprintf(buffer, len - 1, format, argptr);
-    buffer[len - 1] = L'\0';
-    va_end(argptr);
-	CHAR* cBufLog = (CHAR*)calloc(len, sizeof(CHAR));
-	wcstombs(cBufLog, buffer, len - 1);
-	cBufLog[len - 1] = '\0';
-	return traceLog(cBufLog);
+	va_list argptr;
+	va_start(argptr, format);
+	int len = _vsctprintf(format, argptr); // _vscprintf doesn't count terminating '\0'
+	TCHAR* buffer = (TCHAR*)calloc(len + 1, sizeof(TCHAR));
+	_vsntprintf(buffer, len, format, argptr);
+	va_end(argptr);
+	CHAR* cBufLog = (CHAR*)calloc(len + 1, sizeof(CHAR));
+	wcstombs(cBufLog, buffer, len + 1);
+	free(buffer);
+	bool retVal = traceLog(cBufLog);
+	free(cBufLog);
+	return retVal;
 }
 
 //************************************
@@ -108,13 +107,13 @@ bool _trace(TCHAR *format, ...)
 //************************************
 bool _trace(char *format, ...)
 {
-    va_list argptr;
-    va_start(argptr, format);
-    int len = _vscprintf(format, argptr)   // _vscprintf doesn't count
-              + 1; // terminating '\0'
-    CHAR* buffer = (CHAR*)calloc(len, sizeof(CHAR));
-    _vsnprintf(buffer, len - 1, format, argptr);
-    buffer[len - 1] = '\0';
-    va_end(argptr);
-	return traceLog(buffer);
+	va_list argptr;
+	va_start(argptr, format);
+	int len = _vscprintf(format, argptr); // _vscprintf doesn't count terminating '\0'
+	CHAR* buffer = (CHAR*)calloc(len + 1, sizeof(CHAR));
+	_vsnprintf(buffer, len, format, argptr);
+	va_end(argptr);
+	bool retVal = traceLog(buffer);
+	free(buffer);
+	return retVal;
 }

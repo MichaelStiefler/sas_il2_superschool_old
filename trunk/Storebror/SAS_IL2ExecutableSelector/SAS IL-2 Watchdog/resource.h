@@ -1,10 +1,10 @@
 //*****************************************************************
-// IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2019 SAS~Storebror
+// IL-2 Selector.exe - IL-2 Selector Launcher
+// Copyright (C) 2021 SAS~Storebror
 //
-// This file is part of IL-2 Watchdog.exe.
+// This file is part of IL-2 Selector.exe.
 //
-// IL-2 Watchdog.exe is free software.
+// IL-2 Selector.exe is free software.
 // It is distributed under the DWTFYWTWIPL license:
 //
 // DO WHAT THE FUCK YOU WANT TO WITH IT PUBLIC LICENSE
@@ -25,14 +25,13 @@
 
 #include "../global/version.h"
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by SAS IL-2 Watchdog.rc
+// Von Microsoft Visual C++ generierte Includedatei.
+// Verwendet durch SAS IL-2 Watchdog.rc
 //
-#define IDB_PNG_SPLASH                  102
 #define IDI_ICON_SASUP                  104
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        101

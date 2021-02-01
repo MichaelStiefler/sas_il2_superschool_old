@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -26,7 +26,6 @@
 #include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <share.h>
 #include <tchar.h>
 #include "globals.h"
@@ -34,6 +33,14 @@
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning( disable : 4996 )
 
+//************************************
+// Method:    traceLog
+// FullName:  traceLog
+// Access:    public 
+// Returns:   bool
+// Qualifier:
+// Parameter: LPCSTR output
+//************************************
 bool traceLog(LPCSTR output) {
 #ifdef _DEBUG
 	OutputDebugStringA(output);
@@ -81,21 +88,20 @@ bool traceLog(LPCSTR output) {
 // Parameter: TCHAR * format
 // Parameter: ...
 //************************************
-bool _trace(TCHAR *format, ...)
+bool _trace(const TCHAR *format, ...)
 {
-    va_list argptr;
-    va_start(argptr, format);
-    int len = _vsctprintf(format, argptr)   // _vscprintf doesn't count
-              + 1; // terminating '\0'
-    TCHAR* buffer = (TCHAR*)malloc(len * sizeof(TCHAR));
-	ZeroMemory(buffer, sizeof(buffer));
-    _vsntprintf(buffer, len - 1, format, argptr);
-    buffer[len - 1] = L'\0';
-    va_end(argptr);
-	CHAR* cBufLog = (CHAR*)calloc(len, sizeof(TCHAR));
-	wcstombs(cBufLog, buffer, len - 1);
-	cBufLog[len - 1] = '\0';
-	return traceLog(cBufLog);
+	va_list argptr;
+	va_start(argptr, format);
+	int len = _vsctprintf(format, argptr); // _vscprintf doesn't count terminating '\0'
+	TCHAR* buffer = (TCHAR*)calloc(len + 1, sizeof(TCHAR));
+	_vsntprintf(buffer, len, format, argptr);
+	va_end(argptr);
+	CHAR* cBufLog = (CHAR*)calloc(len + 1, sizeof(CHAR));
+	wcstombs(cBufLog, buffer, len + 1);
+	free(buffer);
+	bool retVal = traceLog(cBufLog);
+	free(cBufLog);
+	return retVal;
 }
 
 //************************************
@@ -107,15 +113,15 @@ bool _trace(TCHAR *format, ...)
 // Parameter: char * format
 // Parameter: ...
 //************************************
-bool _trace(char *format, ...)
+bool _trace(const char *format, ...)
 {
-    va_list argptr;
-    va_start(argptr, format);
-    int len = _vscprintf(format, argptr)   // _vscprintf doesn't count
-              + 1; // terminating '\0'
-    CHAR* buffer = (CHAR*)calloc(len, sizeof(CHAR));
-    _vsnprintf(buffer, len - 1, format, argptr);
-    buffer[len - 1] = '\0';
-    va_end(argptr);
-	return traceLog(buffer);
+	va_list argptr;
+	va_start(argptr, format);
+	int len = _vscprintf(format, argptr); // _vscprintf doesn't count terminating '\0'
+	CHAR* buffer = (CHAR*)calloc(len + 1, sizeof(CHAR));
+	_vsnprintf(buffer, len, format, argptr);
+	va_end(argptr);
+	bool retVal = traceLog(buffer);
+	free(buffer);
+	return retVal;
 }

@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -25,64 +25,6 @@
 
 #include "StdAfx.h"
 #include "SFS_Tools.h"
-
-void SFS_decrypt(const unsigned __int64 hash, void *buf, const int len)
-{
-	if (!len) return;
-	__asm
-	{
-		mov esi, buf
-		mov edi, len
-		xor ecx, ecx
-
-		L1 : mov eax, 0xAAAAAAAB
-			 mul ecx
-			 shr edx, 0x01
-			 add edx, ecx
-			 and edx, 0x07
-			 mov al, byte ptr ss : [edx + hash]
-			 mov dl, byte ptr ds : [esi]
-			 xor dl, al
-			 mov byte ptr ds : [esi], dl
-			 inc esi
-			 inc ecx
-			 cmp ecx, edi
-			 jb L1
-	}
-}
-
-void SFS_decrypt2(const unsigned __int64 hash, void *buf, const int len)
-{
-	if (!len) return;
-	__asm
-	{
-		mov esi, buf
-		mov edi, len
-		xor ecx, ecx
-
-		L3 : mov eax, 0x92492493
-			 imul ecx
-			 add edx, ecx
-			 sar edx, 0x02
-			 mov eax, edx
-			 shr eax, 0x1F
-			 add edx, eax
-			 add edx, ecx
-			 and edx, 0x80000007
-			 jns L2
-			 dec edx
-			 or edx, 0xFFFFFFF8
-			 inc edx
-			 L2 : mov dl, byte ptr ds : [edx + hash]
-				  mov al, byte ptr ds : [esi + ecx]
-				  xor al, dl
-				  mov byte ptr ds : [esi + ecx], al
-				  inc ecx
-				  cmp ecx, edi
-				  jl L3
-	}
-}
-
 
 unsigned __int64 LongFN(unsigned __int64 hash, LPCTSTR buf) {
 	int paramLen = _tcslen(buf);

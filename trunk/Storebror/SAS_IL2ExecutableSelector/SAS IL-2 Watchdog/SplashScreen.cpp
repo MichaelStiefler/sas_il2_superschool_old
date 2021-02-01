@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of IL-2 Watchdog.exe.
 //
@@ -32,6 +32,8 @@
 #include <assert.h>
 #include "winver.h"
 #include "globals.h"
+#include <atlbase.h>
+#include "../FileCrypter/Output/resource_files.h"
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "gdiplus.lib")
@@ -40,7 +42,6 @@ static Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 static Gdiplus::GdiplusStartupOutput gdiplusStartupOutput;
 static ULONG_PTR gdiplusToken;
 static ULONG_PTR gdiplusBGThreadToken;
-static TCHAR szVersionInfo[MAX_PATH];
 
 // Creates a stream object initialized with the data from an executable resource.
 //************************************
@@ -149,6 +150,58 @@ IWICBitmapSource * LoadBitmapFromStream(IStream * ipImageStream)
     return ipBitmap;
 }
 
+// Loads a PNG image from the specified file (using Windows Imaging Component).
+//************************************
+// Method:    LoadBitmapFromFile
+// FullName:  LoadBitmapFromFile
+// Access:    public 
+// Returns:   IWICBitmapSource *
+// Qualifier:
+// Parameter: LPCTSTR lpFileNam
+//************************************
+IWICBitmapSource* LoadBitmapFromFile(LPCTSTR lpFileName)
+{
+    HRESULT hr = S_OK;
+
+    IWICBitmapSource* ipBitmap = NULL;
+    IWICBitmapDecoder* pIDecoder = NULL;
+    IWICBitmapFrameDecode* pIDecoderFrame = NULL;
+    CComPtr<IWICImagingFactory> m_pIWICFactory;
+
+    // Create WIC factory
+    hr = CoCreateInstance(
+        CLSID_WICImagingFactory,
+        NULL,
+        CLSCTX_INPROC_SERVER,
+        IID_PPV_ARGS(&m_pIWICFactory)
+    );
+
+    hr = m_pIWICFactory->CreateDecoderFromFilename(
+        lpFileName,                     // Image to be decoded
+        NULL,                           // Do not prefer a particular vendor
+        GENERIC_READ,                   // Desired read access to the file
+        WICDecodeMetadataCacheOnDemand, // Cache metadata when needed
+        &pIDecoder                      // Pointer to the decoder
+    );
+
+    // Retrieve the first bitmap frame.
+	if (SUCCEEDED(hr))
+	{
+		hr = pIDecoder->GetFrame(0, &pIDecoderFrame);
+	}
+
+	if (SUCCEEDED(hr)) {
+		// convert the image to 32bpp BGRA format with pre-multiplied alpha
+		//   (it may not be stored in that format natively in the PNG resource,
+		//   but we need this format to create the DIB to use on-screen)
+		WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, pIDecoderFrame, &ipBitmap);
+	}
+
+    pIDecoderFrame->Release();
+    return ipBitmap;
+}
+
+
 // Creates a 32-bit DIB from the specified WIC bitmap.
 //************************************
 // Method:    CreateHBITMAP
@@ -202,6 +255,23 @@ HBITMAP CreateHBITMAP(IWICBitmapSource * ipBitmap)
     return hbmp;
 }
 
+// Checks whether a file exists or not
+//************************************
+// Method:    FileExists
+// FullName:  FileExists
+// Access:    public 
+// Returns:   BOOL
+// Qualifier:
+// Parameter: LPCTSTR szPath
+//************************************
+BOOL FileExists(LPCTSTR szPath)
+{
+    DWORD dwAttrib = GetFileAttributes(szPath);
+
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+        !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
 // Loads the PNG containing the splash image into a HBITMAP.
 //************************************
 // Method:    LoadSplashImage
@@ -216,23 +286,67 @@ HBITMAP CreateHBITMAP(IWICBitmapSource * ipBitmap)
 HBITMAP LoadSplashImage(HMODULE hModule, LPCTSTR lpName, LPCTSTR lpType)
 {
     HBITMAP hbmpSplash = NULL;
-    // load the PNG image data into a stream
-    IStream * ipImageStream = CreateStreamOnResource(hModule, lpName, lpType);
+    IStream* ipImageStream = NULL;
+    IWICBitmapSource* ipBitmap = NULL;
 
-    if(ipImageStream == NULL) {
-        return hbmpSplash;
+    TRACE("LoadSplashImage.\r\n");
+
+    TCHAR splashBaseBuf[MAX_PATH];
+    TCHAR splashIl2Buf[MAX_PATH];
+    GetModuleFileName(NULL, splashBaseBuf, MAX_PATH);
+    *_tcsrchr(splashBaseBuf, '\\') = '\0';
+    _tcscat(splashBaseBuf, L"\\splash.png");
+
+    GetModuleFileName(NULL, splashIl2Buf, MAX_PATH);
+    for (int i = 0; i < 4; i++) *_tcsrchr(splashIl2Buf, '\\') = '\0';
+    _tcscat(splashIl2Buf, L"\\splash.png");
+
+    LPCTSTR lpSplashFile = NULL;
+    if (_tcslen(g_szSplashImage) > 0 && FileExists(g_szSplashImage)) lpSplashFile = g_szSplashImage;
+    else if (FileExists(splashIl2Buf)) lpSplashFile = splashIl2Buf;
+    else if (FileExists(splashBaseBuf)) lpSplashFile = splashBaseBuf;
+
+    //if (lpSplashFile == NULL) {
+    //    IStream* ipImageStream = CreateStreamOnResource(hModule, lpName, lpType);
+    //    if (ipImageStream != NULL) ipBitmap = LoadBitmapFromStream(ipImageStream);
+    //    TRACE("Loading Splash Image from embedded Resource, Handle=%08X\r\n", ipBitmap);
+    //}
+    if (lpSplashFile == NULL) {
+        IStream* ipImageStream = NULL;
+        HGLOBAL hBuffer = GlobalAlloc(GMEM_MOVEABLE, splash_size);
+        void* pBuffer = GlobalLock(hBuffer);
+        CopyMemory(pBuffer, splash, splash_size);
+
+        size_t saltPos = 0;
+        size_t saltLen = strlen(G_FILE_VERSION);
+        for (size_t i = 0; i < splash_size; i++) {
+            unsigned char* x = (unsigned char*)pBuffer + i;
+            unsigned char salt = G_FILE_VERSION[saltPos++];
+            if (saltPos >= saltLen) saltPos = 0;
+            *x ^= salt;
+        }
+        if (HRESULT hr = CreateStreamOnHGlobal(hBuffer, FALSE, &ipImageStream) != S_OK) {
+            TRACE("CreateStreamOnHGlobal ERROR &08X\r\n", hr);
+        }
+        else {
+            if (ipImageStream != NULL) ipBitmap = LoadBitmapFromStream(ipImageStream);
+            ipImageStream->Release();
+        }
+        GlobalUnlock(hBuffer);
+        //GlobalFree(hBuffer);
+        TRACE("Loading Splash Image from embedded Resource, Handle=%08X\r\n", ipBitmap);
+    }
+    else {
+        ipBitmap = LoadBitmapFromFile(lpSplashFile);
+        TRACE(L"Loading Splash Image from \"%s\", Handle=%08X,\r\n", lpSplashFile, ipBitmap);
     }
 
-    // load the bitmap with WIC
-    IWICBitmapSource * ipBitmap = LoadBitmapFromStream(ipImageStream);
-
     if(ipBitmap != NULL) {
-        // create a HBITMAP containing the image
         hbmpSplash = CreateHBITMAP(ipBitmap);
         ipBitmap->Release();
     }
 
-    ipImageStream->Release();
+    if (lpSplashFile == NULL && ipImageStream != NULL) ipImageStream->Release();
     return hbmpSplash;
 }
 
@@ -309,11 +423,6 @@ void SetSplashImage(HWND hwndSplash, HBITMAP hbmpSplash)
     HDC hdcScreen = GetDC(NULL);
     HDC hdcMem = CreateCompatibleDC(hdcScreen);
     HBITMAP hbmpOld = (HBITMAP) SelectObject(hdcMem, hbmpSplash);
-    Gdiplus::Graphics Gx(hdcMem);
-    Gdiplus::Font myFont(L"Times New Roman", 11, 1);
-    Gdiplus::PointF thePoint(268, 405);
-    Gdiplus::SolidBrush GxTextBrush(Gdiplus::Color(255, 255, 0, 0));
-    int stats = Gx.DrawString(szVersionInfo, -1, &myFont, thePoint, &GxTextBrush);
     // use the source image's alpha channel for blending
     BLENDFUNCTION blend = { 0 };
     blend.BlendOp = AC_SRC_OVER;
@@ -327,43 +436,6 @@ void SetSplashImage(HWND hwndSplash, HBITMAP hbmpSplash)
     //cleanup
     DeleteDC(hdcMem);
     ReleaseDC(NULL, hdcScreen);
-}
-
-//************************************
-// Method:    GetSelectorVersion
-// FullName:  GetSelectorVersion
-// Access:    public 
-// Returns:   void
-// Qualifier:
-//************************************
-void GetSelectorVersion()
-{
-    // allocate a block of memory for the version info
-    TCHAR szWatchdogFileName[MAX_PATH];
-    DWORD dummy;
-    GetModuleFileName(NULL, szWatchdogFileName, MAX_PATH);
-    DWORD dwSize = GetFileVersionInfoSize(szWatchdogFileName, &dummy);
-
-    if(dwSize != 0) {
-        BYTE *data = (BYTE*)malloc(dwSize);
-
-        // load the version info
-        if(GetFileVersionInfo(szWatchdogFileName, NULL, dwSize, &data[0])) {
-            // get the name and version strings
-            LPVOID pvProductName = NULL;
-            unsigned int iProductNameLen = 0;
-            LPVOID pvProductVersion = NULL;
-            unsigned int iProductVersionLen = 0;
-
-            // replace "040904e4" with the language ID of your resources
-            if(VerQueryValue(&data[0], _T("\\StringFileInfo\\000004b0\\ProductName"), &pvProductName, &iProductNameLen) &&
-                    VerQueryValue(&data[0], _T("\\StringFileInfo\\000004b0\\ProductVersion"), &pvProductVersion, &iProductVersionLen)) {
-                _tcscpy(szVersionInfo, L"IL-2 Selector ");
-                _tcsncat(szVersionInfo, (LPCTSTR)pvProductVersion, iProductVersionLen);
-                _tcscat(szVersionInfo, L" © by SAS");
-            }
-        }
-    }
 }
 
 //************************************
@@ -382,16 +454,17 @@ void GetSelectorVersion()
 void ShowSplash(HINSTANCE hInstance, LPCTSTR lpIconName, LPCTSTR lpszClassName, LPCTSTR lpszSplashTitle, LPCTSTR lpSplashImageName, LPCTSTR lpSplashImageType)
 {
 	if (!(g_iSplashScreenMode & SPLASH_SCREEN_VISIBLE)) return;
-    GetSelectorVersion();
     SplashParams* mySplashParams = new SplashParams(hInstance, lpIconName, lpszClassName, lpszSplashTitle, lpSplashImageName, lpSplashImageType);
     HANDLE hSplashThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)StartSplashThread, mySplashParams, CREATE_SUSPENDED, NULL);
     SetThreadPriority(hSplashThread, THREAD_PRIORITY_HIGHEST);
     ResumeThread(hSplashThread);
     CloseHandle(hSplashThread);
 
-    while(FindWindow(lpszClassName, NULL) == NULL) {
+    int retryCounter = 100;
+    while(FindWindow(lpszClassName, NULL) == NULL && retryCounter-- > 0) {
         Sleep(100);
     }
+    g_hSplashWnd = FindWindow(lpszClassName, NULL);
 }
 
 //************************************

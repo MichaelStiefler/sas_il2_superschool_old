@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -24,6 +24,6 @@
 //*****************************************************************
 
 #include <windows.h>
-bool _trace(TCHAR *format, ...);
-bool _trace(char *format, ...);
+bool _trace(const TCHAR *format, ...);
+bool _trace(const char *format, ...);
 #define TRACE _trace

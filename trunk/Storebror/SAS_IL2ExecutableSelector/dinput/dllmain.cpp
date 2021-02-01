@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -33,7 +33,6 @@
 #include "trace.h"
 #include <share.h>
 #include "_dinput.h"
-#include "classes_runtime.h"
 #include "globals.h"
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -57,6 +56,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 {
     switch(ul_reason_for_call) {
     case DLL_PROCESS_ATTACH:
+        hDInputSelf = hModule;
         if(hDInput == NULL && !g_bProcessAttached) {
 			ZeroMemory(szCurDir, sizeof(szCurDir));
 			ZeroMemory(cCurDir, sizeof(cCurDir));
@@ -70,7 +70,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 			wcstombs(cCurDir, szCurDir, _tcslen(szCurDir));
 
             _stprintf(LogFileName, L"%s%s", szCurDir, LOGFILE_NAME);
-			ResetFile(LogFileName);
+            DeleteFile(LogFileName);
 
             if(IsServerExe()) {
                 _stprintf(szIniFile, L"%s%s", szCurDir, SERVER_INI);
@@ -105,10 +105,6 @@ BOOL APIENTRY DllMain(HMODULE hModule,
             hDInput = NULL;
 		}
 		if (g_hJobObject != NULL) CloseHandle(g_hJobObject);
-		if (g_bDumpFileAccess) {
-			PrintClassesList();
-			WaitForClassesRuntimeWriter();
-		}
         break;
     }
 

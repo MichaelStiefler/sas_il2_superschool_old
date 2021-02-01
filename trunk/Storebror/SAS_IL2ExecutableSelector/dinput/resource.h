@@ -1,10 +1,10 @@
 //*****************************************************************
-// DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// IL-2 Selector.exe - IL-2 Selector Launcher
+// Copyright (C) 2021 SAS~Storebror
 //
-// This file is part of DINPUT.dll.
+// This file is part of IL-2 Selector.exe.
 //
-// DINPUT.dll is free software.
+// IL-2 Selector.exe is free software.
 // It is distributed under the DWTFYWTWIPL license:
 //
 // DO WHAT THE FUCK YOU WANT TO WITH IT PUBLIC LICENSE
@@ -25,14 +25,15 @@
 
 #include "../global/version.h"
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by dinput.rc
-
-// Nächste Standardwerte für neue Objekte
+// Von Microsoft Visual C++ generierte Includedatei.
+// Verwendet durch dinput.rc
 //
+
+// Next default values for new objects
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_RESOURCE_VALUE        102
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

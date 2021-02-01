@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -31,8 +31,6 @@
 #define FLAG_INTERNAL_BUFFERING 2
 #define FLAG_MAPPING 3
 
-void SFS_decrypt(const unsigned __int64 hash, void *buf, const int len);
-void SFS_decrypt2(const unsigned __int64 hash, void *buf, const int len);
 unsigned __int64 LongFN(const unsigned __int64 hash, LPCSTR buf);
 unsigned __int32 IntFN(unsigned __int32 hash, LPCSTR buf);
 unsigned __int64 LongFN(const unsigned __int64 hash, LPCTSTR buf);
