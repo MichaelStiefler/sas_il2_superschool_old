@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of IL-2 Watchdog.exe.
 //
@@ -29,7 +29,6 @@
 #include "StdAfx.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <TlHelp32.h>
 #include "SAS IL-2 Watchdog.h"
 #include "trace.h"
@@ -95,10 +94,23 @@ int WINAPI _tWinMain(
 	g_iSplashScreenMode = WATCHDOG_DEFAULT_SPLASH_SCREEN_MODE;
 	if (__argc > 0) {
 		try {
-			g_iSplashScreenMode = _ttoi(__targv[__argc - 1]);
+			g_iSplashScreenMode = _ttoi(__targv[0]);
 		} catch(...) {}
 	}
 	TRACE("Splash Screen Mode = %d\r\n", g_iSplashScreenMode);
+
+	ZeroMemory(g_szSplashImageParam, sizeof(g_szSplashImageParam));
+	ZeroMemory(g_szSplashImage, sizeof(g_szSplashImage));
+	if (__argc > 1) {
+		try {
+			_tcscpy(g_szSplashImageParam, __targv[1]);
+			TRACE(L"Splash Screen Image Path = %s\r\n", g_szSplashImageParam);
+			if (_tfullpath(g_szSplashImage, g_szSplashImageParam, _MAX_PATH) != NULL) {
+				TRACE(L"Splash Screen Image Full Path = %s\r\n", g_szSplashImage);
+			}
+		}
+		catch (...) {}
+	}
 
 	wx.cbSize = sizeof(WNDCLASSEX);
 	wx.lpfnWndProc = (WNDPROC)MsgWndProc;        // function which will handle messages
@@ -117,7 +129,7 @@ int WINAPI _tWinMain(
 
 	TRACE("Message Window Created.\r\n");
 	if (g_iSplashScreenMode & SPLASH_SCREEN_VISIBLE) {
-		ShowSplash(hInstance, MAKEINTRESOURCE(IDI_ICON_SASUP), c_szSplashClass, c_szSplashTitle, MAKEINTRESOURCE(IDB_PNG_SPLASH), _T("PNG"));
+		ShowSplash(hInstance, NULL /*MAKEINTRESOURCE(IDI_ICON_SASUP)*/, c_szSplashClass, c_szSplashTitle, NULL /*MAKEINTRESOURCE(IDI_ICON_SASUP)*/, _T("PNG"));
 
 		if(g_hSplashWnd == NULL) {
 			TRACE("Couldn't create Splash Screen, exiting.\r\n");

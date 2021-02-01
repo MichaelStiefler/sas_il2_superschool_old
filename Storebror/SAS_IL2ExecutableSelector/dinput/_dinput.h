@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -77,3 +77,7 @@ void ReadConfSettings();
 void _tcstrim(LPTSTR str);
 
 JNIEXPORT jstring JNICALL Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo(JNIEnv *, jobject, jint);
+JNIEXPORT jboolean JNICALL Java_com_maddox_rts_SFSInputStream_isDumpMode(JNIEnv *, jobject);
+JNIEXPORT jbyteArray JNICALL Java_com_maddox_rts_SFSInputStream_getStartupClass(JNIEnv*, jobject, jint);
+JNIEXPORT void JNICALL Java_com_maddox_rts_SFSInputStream_freeStartupClasses(JNIEnv*, jobject);
+JNIEXPORT void JNICALL Java_com_maddox_rts_SFSInputStream_println(JNIEnv*, jobject, jstring);

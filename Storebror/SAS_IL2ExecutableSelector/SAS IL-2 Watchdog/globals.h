@@ -1,6 +1,6 @@
 //*****************************************************************
 // IL-2 Watchdog.exe - il2fb.exe Watchdog
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of IL-2 Watchdog.exe.
 //
@@ -56,3 +56,5 @@ extern HWND g_hIl2MainWindow;
 extern HANDLE g_hIl2ProcessHandle;
 extern int g_iSplashScreenMode;
 extern HWND g_hSplashWnd;
+extern TCHAR g_szSplashImageParam[MAX_PATH];
+extern TCHAR g_szSplashImage[MAX_PATH];

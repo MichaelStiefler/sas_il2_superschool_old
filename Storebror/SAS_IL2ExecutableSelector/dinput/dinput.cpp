@@ -1,6 +1,6 @@
 //*****************************************************************
 // DINPUT.dll - JVM Parameter parser and il2fb.exe modifier
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of DINPUT.dll.
 //
@@ -32,7 +32,6 @@
 // Includes
 //*************************************************************************
 #include "_dinput.h"
-//#include <windows.h>
 #include <tchar.h>
 #include <vector>
 #include <set>
@@ -44,15 +43,21 @@
 #include "trace.h"
 #include "SFS_Tools.h"
 #include "globals.h"
-#include "classes_runtime.h"
 #include "../global/version.h"
 #include "../detours/include/detours.h"
+#include "resource.h"
+#include "../FileCrypter/Output/resource_files.h"
+
 #pragma comment(lib, "../detours/lib.X86/detours.lib")
 #pragma comment(lib, "psapi.lib")
 
 // Suppress compiler warnings about unsafe functions
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning( disable : 4996 )
+#pragma warning( disable : 4099 )
+
+const unsigned char* initClasses[5] = { LDRCallBack, LDR, Finger, SFSInputStream, RTS };
+const size_t initClassesSize[5] = { LDRCallBack_size, LDR_size, Finger_size, SFSInputStream_size, RTS_size };
 
 //************************************
 // Method:    DirectInputCreateA
@@ -65,7 +70,7 @@
 // Parameter: LPDIRECTINPUTA * ppDI
 // Parameter: LPUNKNOWN punkOuter
 //************************************
-DINPUT_API HRESULT __stdcall DirectInputCreateA(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTA *ppDI, LPUNKNOWN punkOuter)
+DINPUT_API HRESULT __stdcall DirectInputCreateA(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTA* ppDI, LPUNKNOWN punkOuter)
 {
 	// forward any DirectInputCreateA function call to windows native dinput.dll
 	if (hDInput == NULL) {
@@ -97,7 +102,7 @@ DINPUT_API HRESULT __stdcall DirectInputCreateA(HINSTANCE hinst, DWORD dwVersion
 // Parameter: LPVOID * ppDI
 // Parameter: LPUNKNOWN punkOuter
 //************************************
-DINPUT_API HRESULT __stdcall DirectInputCreateEx(HINSTANCE hinst, DWORD dwVersion, REFIID refIID, LPVOID *ppDI, LPUNKNOWN punkOuter)
+DINPUT_API HRESULT __stdcall DirectInputCreateEx(HINSTANCE hinst, DWORD dwVersion, REFIID refIID, LPVOID* ppDI, LPUNKNOWN punkOuter)
 {
 	// forward any DirectInputCreateEx function call to windows native dinput.dll
 	if (hDInput == NULL) {
@@ -128,7 +133,7 @@ DINPUT_API HRESULT __stdcall DirectInputCreateEx(HINSTANCE hinst, DWORD dwVersio
 // Parameter: LPDIRECTINPUTW * ppDI
 // Parameter: LPUNKNOWN punkOuter
 //************************************
-DINPUT_API HRESULT __stdcall DirectInputCreateW(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTW *ppDI, LPUNKNOWN punkOuter)
+DINPUT_API HRESULT __stdcall DirectInputCreateW(HINSTANCE hinst, DWORD dwVersion, LPDIRECTINPUTW* ppDI, LPUNKNOWN punkOuter)
 {
 	// forward any DirectInputCreateW function call to windows native dinput.dll
 	if (hDInput == NULL) {
@@ -233,6 +238,123 @@ DINPUT_API HRESULT __stdcall DllUnregisterServer(void)
 }
 
 //************************************
+// Method:    SAS_DefineClass
+// FullName:  SAS_DefineClass
+// Access:    public
+// Returns:   jclass __stdcall
+// Qualifier:
+// Parameter: JNIEnv* env
+// Parameter: const char* name
+// Parameter: jobject loader
+// Parameter: const jbyte* buf
+// Parameter: jsize len
+//************************************
+jclass __stdcall SAS_DefineClass(JNIEnv* env, const char* name, jobject loader, const jbyte* buf, jsize len) {
+	jclass result;
+
+	// First five classes are to be loaded from embedded resources, afterwards we proceed with normal class loading behaviour
+	if (g_iLoadedClasses >= 5)
+	{
+		result = JniDefineClass(env, name, loader, buf, len);
+		++g_iLoadedClasses;
+	}
+	else
+	{
+		// These are the first five classes that get loaded.
+		// It's essential to use the resource-embedded classes shipped with IL-2 Selector here.
+		g_bStartupClasses[g_iLoadedClasses] = env->NewByteArray(len);
+		env->SetByteArrayRegion(g_bStartupClasses[g_iLoadedClasses], 0, len, buf);
+		//HRSRC myResource = ::FindResource(hDInputSelf, MAKEINTRESOURCE(101 + g_iLoadedClasses), RT_RCDATA);
+		//unsigned int myResourceSize = ::SizeofResource(hDInputSelf, myResource);
+		//HGLOBAL myResourceData = ::LoadResource(hDInputSelf, myResource);
+		//jbyte* pMyBinaryData = (jbyte*)::LockResource(myResourceData);
+		//result = JniDefineClass(env, name, loader, pMyBinaryData, myResourceSize);
+
+		unsigned char* data = (unsigned char*)malloc(initClassesSize[g_iLoadedClasses]);
+		CopyMemory(data, initClasses[g_iLoadedClasses], initClassesSize[g_iLoadedClasses]);
+		size_t saltPos = 0;
+		size_t saltLen = strlen(G_FILE_VERSION);
+		for (size_t i = 0; i < initClassesSize[g_iLoadedClasses]; i++) {
+			unsigned char* x = data + i;
+			unsigned char salt = G_FILE_VERSION[saltPos++];
+			if (saltPos >= saltLen) saltPos = 0;
+			*x ^= salt;
+		}
+		jbyte* pMyBinaryData = (jbyte*)data;
+		result = JniDefineClass(env, name, loader, pMyBinaryData, initClassesSize[g_iLoadedClasses]);
+		++g_iLoadedClasses;
+	}
+
+	return result;
+}
+
+
+//const unsigned char* initClasses[5] = { LDRCallBack, LDR, Finger, SFSInputStream, RTS };
+//const size_t initClassesSize[5] = { LDRCallBack_size, LDR_size, Finger_size, SFSInputStream_size, RTS_size };
+
+//************************************
+// Method:    isDumpMode
+// FullName:  Java_com_maddox_rts_SFSInputStream_isDumpMode
+// Access:    public
+// Returns:   JNIEXPORT jboolean JNICALL
+// Qualifier:
+// Parameter: JNIEnv* env
+// Parameter: jobject thisObject
+//************************************
+JNIEXPORT jboolean JNICALL Java_com_maddox_rts_SFSInputStream_isDumpMode(JNIEnv* env, jobject thisObject)
+{
+	return g_bDumpFiles?JNI_TRUE:JNI_FALSE;
+}
+
+//************************************
+// Method:    getStartupClass
+// FullName:  Java_com_maddox_rts_SFSInputStream_getStartupClass
+// Access:    public
+// Returns:   JNIEXPORT jbyteArray JNICALL
+// Qualifier:
+// Parameter: JNIEnv* env
+// Parameter: jobject thisObject
+// Parameter: jint index
+//************************************
+JNIEXPORT jbyteArray JNICALL Java_com_maddox_rts_SFSInputStream_getStartupClass(JNIEnv* env, jobject thisObject, jint index)
+{
+	return g_bStartupClasses[index];
+}
+
+//************************************
+// Method:    freeStartupClasses
+// FullName:  Java_com_maddox_rts_SFSInputStream_freeStartupClasses
+// Access:    public
+// Returns:   JNIEXPORT void JNICALL
+// Qualifier:
+// Parameter: JNIEnv* env
+// Parameter: jobject thisObject
+//************************************
+JNIEXPORT void JNICALL Java_com_maddox_rts_SFSInputStream_freeStartupClasses(JNIEnv* env, jobject thisObject)
+{
+	if (g_bDumpFiles) for (int i = 0; i < 5; i++)  env->DeleteLocalRef(g_bStartupClasses[i]);
+	return;
+}
+
+//************************************
+// Method:    println
+// FullName:  Java_com_maddox_rts_SFSInputStream_println
+// Access:    public
+// Returns:   JNIEXPORT void JNICALL
+// Qualifier:
+// Parameter: JNIEnv* env
+// Parameter: jobject thisObject
+// Parameter: jstring line
+//************************************
+JNIEXPORT void JNICALL Java_com_maddox_rts_SFSInputStream_println(JNIEnv* env, jobject thisObject, jstring line)
+{
+	const char* nativeString = env->GetStringUTFChars(line, 0);
+	printf(nativeString);
+	printf("\r\n");
+	env->ReleaseStringUTFChars(line, nativeString);
+}
+
+//************************************
 // Method:    SAS_CreateJavaVM
 // FullName:  SAS_CreateJavaVM
 // Access:    public
@@ -242,7 +364,7 @@ DINPUT_API HRESULT __stdcall DllUnregisterServer(void)
 // Parameter: void * * p_env
 // Parameter: void * vm_args
 //************************************
-jint JNICALL SAS_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args)
+jint JNICALL SAS_CreateJavaVM(JavaVM** p_vm, void** p_env, void* vm_args)
 {
 	// This function is being called when the JMP command has been successfully
 	// injected into JVM.dll and an application calls JNI_CreateJavaVM().
@@ -285,7 +407,7 @@ jint JNICALL SAS_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args)
 	TRACE("Injecting JVM Parameters\r\n");
 
 	// get access to JVM arguments being passed to the JNI_CreateJavaVM() function.
-	JavaVMInitArgs *vmargs = (JavaVMInitArgs *)vm_args;
+	JavaVMInitArgs* vmargs = (JavaVMInitArgs*)vm_args;
 	// create a new set of  JVM arguments which holds our modified JVM parameters
 	JavaVMInitArgs newArgs;
 	newArgs.ignoreUnrecognized = JNI_FALSE; // never ignore unknown JVM options and parameters
@@ -298,7 +420,7 @@ jint JNICALL SAS_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args)
 	try {
 		int iCurOption = 0;
 
-		for (const std::string &option : JvmOptions) {
+		for (const std::string& option : JvmOptions) {
 			newOptions[iCurOption++].optionString = (char*)option.c_str();
 		}
 
@@ -318,6 +440,26 @@ jint JNICALL SAS_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args)
 	// call back into original function JNI_CreateJavaVM() (with restored header)
 	jint jRet = JniCreateJavaVM(p_vm, p_env, &newArgs);
 
+	// Modify JVM's function table and re-route the "defineClass" method
+	// Note that this is not the JVM's exported "defineClass" method address, but rather
+	// the method pointer table entry in the JVM's Environment header.
+	// This ensure that our hook gets called before any "legal" hook and be processed.
+
+	jclass(JNICALL * oldDefineClassAddress)(JNIEnv*, const char*, jobject, const jbyte*, jsize);
+	DWORD flOldProtect;
+
+	int jvmEnvironmentAddress = **((int**)p_env);
+	DWORD dwCurProcId = GetCurrentProcessId();
+	HANDLE hCurProc = OpenProcess(0x1F0FFFu, 0, dwCurProcId);
+	VirtualProtectEx(hCurProc, (LPVOID)jvmEnvironmentAddress, 0x18u, 0x40u, &flOldProtect);
+	oldDefineClassAddress = *(jclass(JNICALL**)(JNIEnv*, const char*, jobject, const jbyte*, jsize))(jvmEnvironmentAddress + 20);
+	*(DWORD*)(jvmEnvironmentAddress + 20) = (DWORD)SAS_DefineClass;
+	JniDefineClass = oldDefineClassAddress;
+	VirtualProtectEx(hCurProc, (LPVOID)jvmEnvironmentAddress, 0x18u, flOldProtect, &flOldProtect);
+	CloseHandle(hCurProc);
+
+	// ---
+
 	if (jRet == JNI_OK) {
 		TRACE("Java Virtual Machine Initialization with additional parameters successful!\r\n");
 		if (IsServerExe()) {
@@ -331,209 +473,34 @@ jint JNICALL SAS_CreateJavaVM(JavaVM **p_vm, void **p_env, void *vm_args)
 	else {
 		TRACE("Error in SAS_CreateJavaVM: JNI_CreateJavaVM return code = %d\r\n", jRet);
 	}
+	free(newOptions);
 	return jRet;
 }
 
-char* getClassName(byte *theClassBytes) {
-	byte* classBytes = theClassBytes;
-	classBytes += 8;
-	unsigned short cpcnt = *(reinterpret_cast<unsigned short *>(classBytes));
-	cpcnt = _byteswap_ushort(cpcnt);
-	classBytes += 2;
-	int classNameIndex = -1;
-	char* retVal = NULL;
-
-	// 1st loop, just skip across the constant pool, we need to get to the index for "this" class
-	for (int i = 0; i < cpcnt - 1; i++) {
-		byte tag = (byte)*classBytes;
-		classBytes++;
-		switch (tag) {
-		case 1:
-		{
-			unsigned short wslen = *(reinterpret_cast<unsigned short *>(classBytes));
-			wslen = _byteswap_ushort(wslen);
-			classBytes += 2 + wslen;
-			break;
-		}
-		case 5:
-		case 6:
-			classBytes += 8;
-			i++;
-			break;
-		case 7:
-		case 8:
-		case 16:
-			classBytes += 2;
-			break;
-		default:
-			classBytes += 4;
-			break;
-		}
-	}
-	classBytes += 2;
-	unsigned short cnidx = *(reinterpret_cast<unsigned short *>(classBytes));
-	cnidx = _byteswap_ushort(cnidx);
-
-	classBytes = theClassBytes + 10;
-
-	// 2nd loop, try to get index of classname constant (needs "this" class index) and ClassName string constant (the latter won't work if they are in reversed order)
-	for (int i = 0; i < cpcnt - 1; i++) {
-		byte tag = (byte)*classBytes;
-		classBytes++;
-		switch (tag) {
-		case 7:
-		{
-			unsigned short cidx = *(reinterpret_cast<unsigned short *>(classBytes));
-			cidx = _byteswap_ushort(cidx);
-			classBytes += 2;
-			if (i == cnidx - 1) classNameIndex = cidx;
-			break;
-		}
-		case 1:
-		{
-			unsigned short slen = *(reinterpret_cast<unsigned short *>(classBytes));
-			slen = _byteswap_ushort(slen);
-			classBytes += 2;
-			if (i == classNameIndex - 1) {
-				retVal = (char*)calloc(slen + 1, 1);
-				memcpy(retVal, classBytes, slen);
-			}
-			classBytes += slen;
-			break;
-		}
-		case 5:
-		case 6:
-			classBytes += 8;
-			i++;
-			break;
-		case 8:
-		case 16:
-			classBytes += 2;
-			break;
-		default:
-			classBytes += 4;
-			break;
-		}
-	}
-
-	// 3rd loop, finally get the ClassName even if it came after it's index.
-	if (retVal == NULL) {
-		classBytes = theClassBytes + 10;
-		for (int i = 0; i < cpcnt - 1; i++) {
-			byte tag = (byte)*classBytes;
-			classBytes++;
-			switch (tag) {
-			case 1:
-			{
-				unsigned short slen = *(reinterpret_cast<unsigned short *>(classBytes));
-				slen = _byteswap_ushort(slen);
-				classBytes += 2;
-				if (i == classNameIndex - 1) {
-					retVal = (char*)calloc(slen + 1, 1);
-					memcpy(retVal, classBytes, slen);
-				}
-				classBytes += slen;
-				break;
-			}
-			case 5:
-			case 6:
-				classBytes += 8;
-				i++;
-				break;
-			case 7:
-			case 8:
-			case 16:
-				classBytes += 2;
-				break;
-			default:
-				classBytes += 4;
-				break;
-			}
-		}
-	}
-
-	return retVal;
-}
-
 //************************************
-// Method:    SAS_DefineClass
-// FullName:  SAS_DefineClass
+// Method:    SAS_SFS_mount
+// FullName:  SAS_SFS_mount
 // Access:    public
-// Returns:   jclass JNICALL
+// Returns:   int __cdecl
 // Qualifier:
-// Parameter: JNIEnv * env
-// Parameter: const char * name
-// Parameter: jobject loader
-// Parameter: const jbyte * buf
-// Parameter: jsize bufLen
-// Parameter: jobject pd
+// Parameter: const char* sfs
+// Parameter: int i
+// Parameter: char c
 //************************************
-jclass JNICALL SAS_DefineClass(JNIEnv *env, const char *name, jobject loader, const jbyte *buf, jsize bufLen, jobject jo)
-{
-	BOOL isEncrypted = TRUE;
-	BOOL needsFreeClassName = FALSE;
-	BOOL needsJniRelease = TRUE;
-	DWORD* classHeader = (DWORD*)buf;
-	if (*classHeader == 0xBEBAFECA) isEncrypted = FALSE;
-	jclass theNewClass = JniDefineClass(env, name, loader, buf, bufLen, jo);
-	char *className;
-	jstring jname;
-	jobject   classObj;
-	jclass    theNewClassClass;
-	if (isMain) {
-		className = "com.maddox.il2.game.Main";
-		isMain = FALSE;
-		needsJniRelease = FALSE;
-	} else {
-		try {
-			jmethodID mid_getClass = NULL;
-			if (isEncrypted)
-				mid_getClass = env->GetMethodID(theNewClass, "getClass", "()Ljava/lang/Class;");
-			if (mid_getClass != NULL) {
-				classObj = env->CallObjectMethod(theNewClass, mid_getClass);
-				theNewClassClass = env->GetObjectClass(classObj);
-				jmethodID mid_getName = env->GetMethodID(theNewClassClass, "getName", "()Ljava/lang/String;");
-				jname = (jstring)env->CallObjectMethod(theNewClass, mid_getName);
-				className = (char*)env->GetStringUTFChars(jname, JNI_FALSE);
-			}
-			else {
-				className = getClassName((byte*)buf);
-				char* current_pos = strchr(className, '/');
-				for (char* p = current_pos; (current_pos = strchr(className, '/')) != NULL; *current_pos = '.');
-				needsJniRelease = FALSE;
-				needsFreeClassName = TRUE;
-			}
+int __cdecl SAS_SFS_mount(const char* sfs, int i, char c) {
+	// In case we are being asked to mount files.sfs, check whether il2fb.ini references an alternative files.sfs instead and if so, mount that one.
+	if (stricmp(sfs, "files.sfs") == 0) {
+		int retVal = 0;
+		char* pch = strtok(g_cFilesSFS, ",");
+		while (pch != NULL) {
+			retVal = Il2fbSFS_mount(pch, i, c);
+			if (g_bDumpSFSAccess) TRACE("SFS_mount(%s, %d, %d) = %d\r\n", pch, i, c, retVal);
+			pch = strtok(NULL, ",");
 		}
-		catch (...) {
-			TRACE("############################## ERROR RESOLVING CLASS NAME ##############################");
-			return theNewClass;
-		}
+		return retVal;
 	}
-	if (g_bDumpFileAccess) {
-		AddClassesList(isEncrypted, (char*)className);
-	}
-
-	if (g_bDumpClassFiles) {
-		std::string classDumpPath(cCurDir);
-		std::string classNameToPath(className);
-		std::replace(classNameToPath.begin(), classNameToPath.end(), '.', '\\');
-		if (isEncrypted)
-			classDumpPath = classDumpPath.append("classdump\\SFS\\").append(classNameToPath).append(".class");
-		else
-			classDumpPath = classDumpPath.append("classdump\\MOD\\").append(classNameToPath).append(".class");
-		std::filesystem::path p(classDumpPath);
-		if (!std::filesystem::exists(p.parent_path()))
-			std::filesystem::create_directories(p.parent_path());
-		std::ofstream(p, std::ios::binary).write((char*)buf, bufLen);
-	}
-	if (needsFreeClassName) free(className);
-	else if (needsJniRelease) env->ReleaseStringUTFChars(jname, className);
-	return theNewClass;
-}
-
-int __cdecl SAS_SFS_mount(const char *sfs, int i, char c) {
-	int retVal=Il2fbSFS_mount(sfs, i, c);
-	TRACE("SFS_mount(%s, %d, %d) = %d\r\n", sfs, i, c, retVal);
+	int retVal = Il2fbSFS_mount(sfs, i, c);
+	if (g_bDumpSFSAccess) TRACE("SFS_mount(%s, %d, %d) = %d\r\n", sfs, i, c, retVal);
 	return retVal;
 }
 
@@ -610,7 +577,7 @@ BOOL IsServerExe()
 
 	try {
 		int iIl2ServerID = 0x0041EBA8;
-		char* cFilesServer = "filesserver.sfs"; // this file reference is present in IL-2 Server executable only.
+		char* cFilesServer = (char*)"filesserver.sfs"; // this file reference is present in IL-2 Server executable only.
 
 		if (NULL != VirtualProtectEx(hCurProc, (LPVOID)iIl2ServerID, 15, PAGE_EXECUTE_READWRITE, &dwOldProtect)) {
 			if (memcmp((LPVOID)iIl2ServerID, cFilesServer, 15) == 0) {
@@ -652,6 +619,7 @@ void AdjustJvmParams()
 			TRACE("Watchdog Start failed.");
 		}
 	}
+	Sleep(0);
 	StartPipeLogger();
 
 	// Get original function pointer of Java VM's JNI_CreateJavaVM() function.
@@ -660,17 +628,14 @@ void AdjustJvmParams()
 		_stprintf(szJvmPath, L"%sbin\\hotspot\\jvm.dll", szCurDir);
 		hJvm = LoadLibraryW(szJvmPath);
 	}
-	JniCreateJavaVM = (ORI_CreateJavaVM)GetProcAddress(hJvm, "JNI_CreateJavaVM");
-	if (g_bDumpFileAccess || g_bDumpClassFiles || g_bDumpOtherFiles) {
-		JniDefineClass = (ORI_DefineClass)GetProcAddress(hJvm, "_JVM_DefineClass@24");
-	}
+	JniCreateJavaVM = (JVM_CreateJavaVM)GetProcAddress(hJvm, "JNI_CreateJavaVM");
 
 	if (JniCreateJavaVM == NULL) {
 		TRACE("Error in AdjustJvmParams: Couldn't find original JNI_CreateJavaVM entry point!\r\n");
 		return;
 	}
 
-	Il2fbSFS_mount = (ORI_SFS_mount)GetProcAddress(GetModuleHandle(NULL), "SFS_mount");
+	Il2fbSFS_mount = (IL2_SFS_mount)GetProcAddress(GetModuleHandle(NULL), "SFS_mount");
 
 	// When running an IL-2 server, show some output string on command line
 	if (IsServerExe()) {
@@ -683,36 +648,8 @@ void AdjustJvmParams()
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 	DetourAttach(&(PVOID&)JniCreateJavaVM, SAS_CreateJavaVM);
-	if (g_bDumpSFSAccess) DetourAttach(&(PVOID&)Il2fbSFS_mount, SAS_SFS_mount);
-	if (g_bDumpFileAccess || g_bDumpClassFiles || g_bDumpOtherFiles) {
-		DetourAttach(&(PVOID&)JniDefineClass, SAS_DefineClass);
-		SYSTEMTIME stSystemTime;
-		/////////////////////////////////////////////////////////////////////////
-		// Generate Time Stamp
-		/////////////////////////////////////////////////////////////////////////
-		GetLocalTime(&stSystemTime);
-		_stprintf(ClassesRuntimeFileName, CLASSES_RUNTIME_FILE_NAME,
-			szCurDir,
-			stSystemTime.wYear,
-			stSystemTime.wMonth,
-			stSystemTime.wDay);
-		_stprintf(ClassesSortedFileName, CLASSES_SORTED_FILE_NAME,
-			szCurDir,
-			stSystemTime.wYear,
-			stSystemTime.wMonth,
-			stSystemTime.wDay);
-		_stprintf(ClassesSummaryFileName, CLASSES_SUMMARY_FILE_NAME,
-			szCurDir,
-			stSystemTime.wYear,
-			stSystemTime.wMonth,
-			stSystemTime.wDay);
-	}
+	DetourAttach(&(PVOID&)Il2fbSFS_mount, SAS_SFS_mount);
 	DetourTransactionCommit();
-
-	if (g_bDumpFileAccess) {
-		InitClassesList();
-		ResetFile(ClassesRuntimeFileName);
-	}
 
 	if (bDisableMutex) {  // strip mutex string from process
 		DWORD dwOldProtect = 0;
@@ -742,11 +679,11 @@ void AdjustJvmParams()
 					int iIl2fbUpxDecompressEnd = 0x01EA16EB;
 
 					if (NULL != VirtualProtectEx(hCurProc, (LPVOID)iIl2fbUpxDecompressEnd, 9, PAGE_EXECUTE_READWRITE, &dwOldProtect)) {
-						*(DWORD *)iIl2fbUpxDecompressEnd = 0x90909090; // fill with NOPs
-						*(DWORD *)(iIl2fbUpxDecompressEnd + 4) = 0x90909090; // fill with NOPs
-						*(BYTE *)(iIl2fbUpxDecompressEnd + 8) = 0x90; // fill with NOPs
-						*(BYTE *)iIl2fbUpxDecompressEnd = 0xE9; // near JMP
-						*(DWORD *)(iIl2fbUpxDecompressEnd + 1) = (DWORD)ApplyMutexSetting - 0x01EA16EB - 5; // run ApplyMutexSetting() after decompressing
+						*(DWORD*)iIl2fbUpxDecompressEnd = 0x90909090; // fill with NOPs
+						*(DWORD*)(iIl2fbUpxDecompressEnd + 4) = 0x90909090; // fill with NOPs
+						*(BYTE*)(iIl2fbUpxDecompressEnd + 8) = 0x90; // fill with NOPs
+						*(BYTE*)iIl2fbUpxDecompressEnd = 0xE9; // near JMP
+						*(DWORD*)(iIl2fbUpxDecompressEnd + 1) = (DWORD)ApplyMutexSetting - 0x01EA16EB - 5; // run ApplyMutexSetting() after decompressing
 						VirtualProtectEx(hCurProc, (LPVOID)iIl2fbUpxDecompressEnd, 9, dwOldProtect, NULL);
 					}
 					else {
@@ -818,10 +755,8 @@ void ReadSelectorSettings()
 	int iSelectorMemStrategy = GetPrivateProfileInt(L"Settings", L"MemoryStrategy", 0, szIniFile);
 	g_iSplashScreenMode = GetPrivateProfileInt(L"Settings", L"SplashScreenMode", 0, szIniFile);
 	int iDumpMode = GetPrivateProfileInt(L"Settings", L"DumpMode", 0, szIniFile);
-	if (iDumpMode & 0x01) g_bDumpFileAccess = TRUE;
-	if (iDumpMode & 0x02) g_bDumpClassFiles = TRUE;
-	if (iDumpMode & 0x04) g_bDumpOtherFiles = TRUE;
-	if (iDumpMode & 0x08) g_bDumpSFSAccess = TRUE;
+	if (iDumpMode & 0x01) g_bDumpSFSAccess = TRUE;
+	if (iDumpMode & 0x02) g_bDumpFiles = TRUE;
 	g_bInstantDump = GetPrivateProfileInt(L"Settings", L"InstantDump", 0, szIniFile) != 0;
 	ZeroMemory(szBuffer, sizeof(szBuffer));
 	if (GetPrivateProfileString(L"Settings", L"DumpSeparatorChar", L" ", szBuffer, sizeof(szBuffer) / sizeof(TCHAR), szIniFile) > 0) {
@@ -859,29 +794,45 @@ void ReadSelectorSettings()
 		}
 
 		int iDynamicSize = iSelectorRamSize - (iStackSize / 1024) - iPermSize;
-		LPSTR lpBuf = (LPSTR)malloc(sizeof(char) * 16);
-		ZeroMemory(lpBuf, sizeof(lpBuf));
-		sprintf(lpBuf, "-Xms%dM", iDynamicSize);
-		AddJvmOption(lpBuf);
-		ZeroMemory(lpBuf, sizeof(lpBuf));
-		sprintf(lpBuf, "-Xmx%dM", iDynamicSize);
-		AddJvmOption(lpBuf);
+		ZeroMemory(cBuffer, sizeof(cBuffer));
+		sprintf(cBuffer, "-Xms%dM", iDynamicSize);
+		AddJvmOption(cBuffer);
+		ZeroMemory(cBuffer, sizeof(cBuffer));
+		sprintf(cBuffer, "-Xmx%dM", iDynamicSize);
+		AddJvmOption(cBuffer);
 
 		if (iSelectorMemStrategy == MEM_STRATEGY_HEAPONLY) {
 			// TRACE("ReadSelectorSettings()---1\r\n");
 			return;
 		}
 
-		ZeroMemory(lpBuf, sizeof(lpBuf));
-		sprintf(lpBuf, "-Xss%dK", iStackSize);
-		AddJvmOption(lpBuf);
-		ZeroMemory(lpBuf, sizeof(lpBuf));
-		sprintf(lpBuf, "-XX:PermSize=%dM", iPermSize);
-		AddJvmOption(lpBuf);
-		ZeroMemory(lpBuf, sizeof(lpBuf));
-		sprintf(lpBuf, "-XX:MaxPermSize=%dM", iPermSize);
-		AddJvmOption(lpBuf);
+		ZeroMemory(cBuffer, sizeof(cBuffer));
+		sprintf(cBuffer, "-Xss%dK", iStackSize);
+		AddJvmOption(cBuffer);
+		ZeroMemory(cBuffer, sizeof(cBuffer));
+		sprintf(cBuffer, "-XX:PermSize=%dM", iPermSize);
+		AddJvmOption(cBuffer);
+		ZeroMemory(cBuffer, sizeof(cBuffer));
+		sprintf(cBuffer, "-XX:MaxPermSize=%dM", iPermSize);
+		AddJvmOption(cBuffer);
 	}
+
+	int iModType = GetPrivateProfileInt(L"Settings", L"ModType", 0, szIniFile);
+	memset(szBuffer2, 0, sizeof(szBuffer2));
+	_stprintf(szBuffer2, L"Modtype_%02d", iModType);
+	BOOL defaultFilesSfs = TRUE;
+	if (GetPrivateProfileString(szBuffer2, L"Files.SFS", L"files.sfs", szBuffer, sizeof(szBuffer) / sizeof(TCHAR), szIniFile) > 0) {
+		if (_tcslen(szBuffer) > 0) {
+			ZeroMemory(g_cFilesSFS, sizeof(g_cFilesSFS));
+			wcstombs(g_cFilesSFS, szBuffer, sizeof(g_cFilesSFS));
+			defaultFilesSfs = FALSE;
+		}
+	}
+	if (defaultFilesSfs) {
+		strcpy(g_cFilesSFS, "files.sfs");
+	}
+	memset(g_szSplashImage, 0, sizeof(g_szSplashImage));
+	GetPrivateProfileString(szBuffer2, L"Splash", L"", g_szSplashImage, sizeof(g_szSplashImage) / sizeof(TCHAR), szIniFile);
 }
 
 //************************************
@@ -939,7 +890,7 @@ bool IsInJvmOptions(LPCSTR lpSearch)
 	std::string searchString(lpSearch);
 	std::transform(searchString.begin(), searchString.end(), searchString.begin(), ::tolower);
 	size_t searchStringLen = searchString.length();
-	for (const std::string &jvmOption : JvmOptions) {
+	for (const std::string& jvmOption : JvmOptions) {
 		std::string jvmOptionLower(jvmOption);
 		std::transform(jvmOptionLower.begin(), jvmOptionLower.end(), jvmOptionLower.begin(), ::tolower);
 		if (searchStringLen > jvmOption.length()) continue;
@@ -1017,7 +968,7 @@ BOOL StartWatchdog()
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
 
-	_stprintf(szWatchdogParams, L"%d", g_iSplashScreenMode);
+	_stprintf(szWatchdogParams, L"%d \"%s\"", g_iSplashScreenMode, g_szSplashImage);
 
 	_tcscpy(szWatchdogFile, szCurDir);
 	_tcscat(szWatchdogFile, L"bin\\selector\\basefiles\\IL-2 Watchdog.exe");
@@ -1095,6 +1046,16 @@ BOOL StartPipeLogger()
 	return TRUE;
 }
 
+//************************************
+// Method:    versionString
+// FullName:  versionString
+// Access:    public 
+// Returns:   void
+// Qualifier:
+// Parameter: char* buffer
+// Parameter: int numToken
+// Parameter: ...
+//************************************
 void versionString(char* buffer, int numToken, ...) {
 	va_list argptr;
 	va_start(argptr, numToken);
@@ -1102,12 +1063,28 @@ void versionString(char* buffer, int numToken, ...) {
 	va_end(argptr);
 }
 
+//************************************
+// Method:    FileExists
+// FullName:  FileExists
+// Access:    public 
+// Returns:   BOOL
+// Qualifier:
+// Parameter: LPCTSTR szPath
+//************************************
 BOOL FileExists(LPCTSTR szPath) {
 	DWORD dwAttrib = GetFileAttributes(szPath);
 	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
 		!(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
+//************************************
+// Method:    _tcstrim
+// FullName:  _tcstrim
+// Access:    public 
+// Returns:   void
+// Qualifier:
+// Parameter: LPTSTR str
+//************************************
 void _tcstrim(LPTSTR str) {
 	int start = 0; // number of leading spaces
 	LPTSTR buffer = str;
@@ -1121,7 +1098,17 @@ void _tcstrim(LPTSTR str) {
 	while ((*buffer++ = *str++));  // remove leading spaces: K&R
 }
 
-JNIEXPORT jstring JNICALL Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo(JNIEnv *env, jobject obj, jint infoRequested) {
+//************************************
+// Method:    getSelectorInfo
+// FullName:  Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo
+// Access:    public 
+// Returns:   JNIEXPORT jstring JNICALL
+// Qualifier:
+// Parameter: JNIEnv* env
+// Parameter: jobject obj
+// Parameter: jint infoRequested
+//************************************
+JNIEXPORT jstring JNICALL Java_com_maddox_sas1946_il2_util_BaseGameVersion_getSelectorInfo(JNIEnv* env, jobject obj, jint infoRequested) {
 	char buffer[128];
 	ZeroMemory(buffer, sizeof(buffer));
 	switch (infoRequested) {

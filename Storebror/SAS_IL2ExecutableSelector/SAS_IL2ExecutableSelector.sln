@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F2B3A9E-7767-442C-8EE5-96F44CF4708D}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,11 +22,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "il2fb.exe Server Placeholde
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PipeLogger", "PipeLogger\PipeLogger.vcxproj", "{0170545E-BE45-44DD-A95A-F4F0B79C6200}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileCrypter", "FileCrypter\FileCrypter.vcxproj", "{BF473175-C955-4ADE-A823-E71C28496F05}"
+EndProject
 Global
-	GlobalSection(SubversionScc) = preSolution
-		Svn-Managed = True
-		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
@@ -78,12 +76,24 @@ Global
 		{0170545E-BE45-44DD-A95A-F4F0B79C6200}.Release|Win32.Build.0 = Release|Win32
 		{0170545E-BE45-44DD-A95A-F4F0B79C6200}.Release|x64.ActiveCfg = Release|x64
 		{0170545E-BE45-44DD-A95A-F4F0B79C6200}.Release|x64.Build.0 = Release|x64
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Debug|Win32.Build.0 = Debug|Win32
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Debug|x64.ActiveCfg = Debug|x64
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Debug|x64.Build.0 = Debug|x64
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Release|Win32.ActiveCfg = Release|Win32
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Release|Win32.Build.0 = Release|Win32
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Release|x64.ActiveCfg = Release|x64
+		{BF473175-C955-4ADE-A823-E71C28496F05}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		VisualSVNWorkingCopyRoot = .
 		SolutionGuid = {AFDEAC90-9116-4BEF-9A55-1FC2C4089967}
+		VisualSVNWorkingCopyRoot = .
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,6 @@
 //*****************************************************************
 // PipeLogger.exe - Enhanced Logging Tool for IL-2 1946
-// Copyright (C) 2019 SAS~Storebror
+// Copyright (C) 2021 SAS~Storebror
 //
 // This file is part of PipeLogger.exe.
 //
