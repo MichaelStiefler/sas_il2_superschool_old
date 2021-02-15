@@ -139,6 +139,7 @@ int WINAPI _tWinMain(
 		if (!(g_iSplashScreenMode & SPLASH_SCREEN_TOPMOST)) {
 			SetForegroundWindow(g_hSplashWnd);
 		}
+		if (g_hMsgWnd != NULL) SetTimer(g_hMsgWnd, WATCHDOG_TIMER_CHECKIL2WINDOW_EVENT, WATCHDOG_TIMER_TIMEOUT, NULL);
 		TRACE("Splash Screen Created.\r\n");
 	}
 
@@ -233,6 +234,20 @@ static LRESULT MsgWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 				KillTimer(g_hMsgWnd, WATCHDOG_TIMER_CHECKACTIVE_EVENT);
 				if (!CheckActivated(g_hIl2MainWindow)) SetTimer(g_hMsgWnd, WATCHDOG_TIMER_EVENT, WATCHDOG_TIMER_TIMEOUT, NULL);
 				break;
+			case WATCHDOG_TIMER_CHECKIL2WINDOW_EVENT:
+			{
+				HWND hwndIl2 = FindWindow(L"MaddoxRtsWndClassW", L"Il2-Sturmovik Forgotten Battles");
+				if (hwndIl2 != NULL) {
+					KillTimer(g_hMsgWnd, WATCHDOG_TIMER_CHECKIL2WINDOW_EVENT);
+					g_hIl2MainWindow = hwndIl2;
+					if (g_iSplashScreenMode & SPLASH_SCREEN_VISIBLE) {
+						SendMessage(g_hSplashWnd, WM_CLOSE, 0, 0);
+					}
+					ActivateIl2MainWindow(g_hIl2MainWindow);
+					SetTimer(g_hMsgWnd, WATCHDOG_TIMER_CHECKACTIVE_EVENT, WATCHDOG_TIMER_TIMEOUT, NULL);
+				}
+				break;
+			}
 			default:
 				break;
 		}
@@ -360,6 +375,7 @@ void CALLBACK WinEventProc(
 				GetWindowText(hwnd, szName, ARRAYSIZE(szName));
 				TRACE(L"IL-2 Main Window %s: \"%s\" (%s), Handle= 0x%p\r\n", pszAction, szName, szClass, hwnd);
 				if (bCreated) {
+					KillTimer(g_hMsgWnd, WATCHDOG_TIMER_CHECKIL2WINDOW_EVENT);
 					g_hIl2MainWindow = hwnd;
 					if (g_iSplashScreenMode & SPLASH_SCREEN_VISIBLE) {
 						SendMessage(g_hSplashWnd, WM_CLOSE, 0, 0);

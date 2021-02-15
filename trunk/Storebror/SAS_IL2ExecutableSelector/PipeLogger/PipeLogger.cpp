@@ -89,11 +89,15 @@ int CALLBACK WinMain(
 	SetEvent(g_hTerminatePipeLogger);
 
 	int retry = MAX_ALL_WAIT_TIME / 100;
+	if (g_aiPendingMessages.load() > 0) retry *= 10;
 	while (g_aiLogWriters.load() > 0 && retry-- > 0) Sleep(100);
+	if (g_aiLogWriters.load() < 1)
+		while (g_aiPendingMessages.load() > 0) Sleep(100);
 	if (retry > 0)
 		TRACE("All Writers Threads finished, exiting.\r\n");
 	else
 		TRACE("%d Writer Thread(s) stalled, exiting.\r\n", g_aiLogWriters.load());
+
 
 	return 0;
 }
