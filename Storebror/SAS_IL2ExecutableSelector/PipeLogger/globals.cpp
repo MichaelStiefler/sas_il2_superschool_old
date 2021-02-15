@@ -37,5 +37,6 @@ TCHAR g_szBuf[1024];
 CHAR g_cBuf[1024];
 CHAR g_cPipeBuf[PIPE_BUF_SIZE];
 std::atomic<int> g_aiLogWriters = 0;
+std::atomic<int> g_aiPendingMessages = 0;
 HANDLE g_hTerminatePipeLogger;
 DWORD g_dwCurInstance = 0;

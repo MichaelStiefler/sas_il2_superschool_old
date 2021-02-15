@@ -30,6 +30,7 @@
 #include "LogWriter.h"
 #include "trace.h"
 #include "globals.h"
+#include <regex>
 
 FILE* OpenLogFile(LPCTSTR logFileName) {
 	FILE *retVal = NULL;
@@ -55,12 +56,22 @@ FILE* FlushLogFile(FILE *logFile, LPCTSTR logFileName) {
 	return OpenLogFile(logFileName);
 }
 
-BOOL flushQueue(FILE *logFile, TQueueConcurrent<std::string> *logQueue) {
+BOOL flushQueue(FILE *logFile, TQueueConcurrent<std::string> *logQueue, unsigned long *bytesWritten, unsigned long *exceptions, unsigned long *errors) {
 	BOOL retVal = FALSE;
 	try {
 		std::optional<std::string> queueElement = logQueue->pop_front();
 		while (queueElement.has_value()) {
-			fprintf(logFile, queueElement->c_str());
+			std::regex rgxexception("java\\.(lang|util|io|net|time|security)\\.[a-zA-Z]+Exception");
+			std::regex rgxerror("java\\.(lang|util|io|net|time|security)\\.[a-zA-Z]+Error");
+			std::ptrdiff_t const match_count_exception(std::distance(
+				std::sregex_iterator(queueElement.value().begin(), queueElement.value().end(), rgxexception),
+				std::sregex_iterator()));
+			std::ptrdiff_t const match_count_error(std::distance(
+				std::sregex_iterator(queueElement.value().begin(), queueElement.value().end(), rgxerror),
+				std::sregex_iterator()));
+			*exceptions += (unsigned long)match_count_exception;
+			*errors += (unsigned long)match_count_error;
+			*bytesWritten += fprintf(logFile, queueElement->c_str());
 			retVal = TRUE;
 			queueElement = logQueue->pop_front();
 		}
@@ -69,6 +80,24 @@ BOOL flushQueue(FILE *logFile, TQueueConcurrent<std::string> *logQueue) {
 		TRACE("Exception occured in flushQueue()\r\n");
 	}
 	return retVal;
+}
+
+void format_commas(unsigned long n, TCHAR* out)
+{
+	int c;
+	TCHAR buf[20];
+	TCHAR* p;
+
+	_stprintf(buf, L"%d", n);
+	c = 2 - _tcslen(buf) % 3;
+	for (p = buf; *p != 0; p++) {
+		*out++ = *p;
+		if (c == 1) {
+			*out++ = L',';
+		}
+		c = (c + 1) % 3;
+	}
+	*--out = 0;
 }
 
 DWORD WINAPI LogWriterThread(LPVOID lpvParam)
@@ -85,6 +114,9 @@ DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 		return -1;
 	}
 	HANDLE waitHandles[] = { hNewData, hEndLogWriter, hTerminatePipeLogger };
+	unsigned long totalBytesWritten = 0;
+	unsigned long totalExceptions = 0;
+	unsigned long totalErrors = 0;
 
 	TCHAR* pchLogFile = (TCHAR*)calloc(_tcslen(pLogWriterParams->pchLogFile) + 1, sizeof(TCHAR));
 	_tcscpy(pchLogFile, pLogWriterParams->pchLogFile);
@@ -108,7 +140,7 @@ DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 		{
 			switch (WaitForMultipleObjects(3, waitHandles, FALSE, dwFlushTimeout)) {
 			case WAIT_OBJECT_0:
-				bFlushPending = flushQueue(logFile, logQueue);
+				bFlushPending = flushQueue(logFile, logQueue, &totalBytesWritten, &totalExceptions, &totalErrors);
 				if (bInstantFlush) {
 					if (bFlushPending) {
 						logFile = FlushLogFile(logFile, pchLogFile);
@@ -123,7 +155,7 @@ DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 				break;
 			case WAIT_OBJECT_0 + 1:
 			case WAIT_OBJECT_0 + 2:
-				flushQueue(logFile, logQueue);
+				flushQueue(logFile, logQueue, &totalBytesWritten, &totalExceptions, &totalErrors);
 				bContinue = FALSE;
 				break;
 			case WAIT_TIMEOUT:
@@ -137,13 +169,82 @@ DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 		}
 	}
 	catch (...) { }
+	long size = ftell(logFile);
+	if (totalBytesWritten < size) totalBytesWritten = size;
 	CloseLogFile(logFile);
 	g_aiLogWriters--;
-	free(pchLogFile);
 	CloseHandle(hNewData);
 	CloseHandle(hEndLogWriter);
 	CloseHandle(hTerminatePipeLogger);
-	TRACE("Log Writer No.%d terminated\r\n", dwIndex);
+	TCHAR buf2[32];
+	TCHAR buf3[32];
+	TCHAR buf4[32];
+	memset(buf2, 0, sizeof(buf2));
+	memset(buf3, 0, sizeof(buf3));
+	memset(buf4, 0, sizeof(buf4));
+	format_commas(totalBytesWritten, buf2);
+	format_commas(totalExceptions, buf3);
+	format_commas(totalErrors, buf4);
+	TRACE(L"Log Writer No.%d terminated. %s bytes written, %s exceptions, %s errors.\r\n", dwIndex, buf2, buf3, buf4);
+
+	if (totalBytesWritten > 10000000 || totalExceptions > 10 || totalErrors > 0) {
+	//if (totalBytesWritten > 1 || totalExceptions > 10 || totalErrors > 0) {
+		TCHAR drive[_MAX_DRIVE];
+		TCHAR dir[_MAX_DIR];
+		TCHAR fname[_MAX_FNAME];
+		TCHAR ext[_MAX_EXT];
+		TCHAR buf[1024];
+		memset(buf, 0, sizeof(buf));
+		_tsplitpath(pchLogFile, drive, dir, fname, ext);
+		_stprintf(buf, TEXT("Your logfile %s%s seems to contain issues that might need to be addressed.\r\n"
+			"These are the key figures of your logfile %s%s:\r\n"
+			"Size: %s Bytes\r\n"
+			"Exceptions: %s\r\n"
+			"Errors: %s\r\n"
+			"\r\n"
+			"Please choose whether you want to save a backup of this logfile for later reference!"),
+			fname, ext,
+			fname, ext,
+			buf2,
+			buf3,
+			buf4);
+		g_aiPendingMessages++;
+		if (IDYES == MessageBox(NULL,
+			buf,
+			TEXT("The Logfile needs your attention!"),
+			MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON1 | MB_SETFOREGROUND | MB_TOPMOST)) {
+			SYSTEMTIME stSystemTime;
+			GetLocalTime(&stSystemTime);
+			_stprintf(buf, TEXT("%s%s%s (%04d-%02d-%02d %02d·%02d·%02d.%03d)%s"),
+				drive, dir, fname,
+				stSystemTime.wYear,
+				stSystemTime.wMonth,
+				stSystemTime.wDay,
+				stSystemTime.wHour,
+				stSystemTime.wMinute,
+				stSystemTime.wSecond,
+				stSystemTime.wMilliseconds,
+				ext);
+			if (CopyFile(pchLogFile, buf, FALSE)) {
+				TRACE(L"Backing up logfile \"%s\" to \"%s\" succeeded.\r\n", pchLogFile, buf);
+			} else {
+				TRACE(L"Backing up logfile \"%s\" to \"%s\" failed.\r\n", pchLogFile, buf);
+				_stprintf(buf, TEXT("Unable to save a backup of your logfile.\r\n"
+					"Please make sure to backup the logfile %s%s yourself!"),
+					fname, ext
+				);
+				MessageBox(NULL,
+					buf,
+					TEXT("Failed to save a backup of your logfile!\r\n"),
+					MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+			}
+		}
+		else {
+			TRACE(L"User chose not to backup logfile \"%s\".\r\n", pchLogFile);
+		}
+		g_aiPendingMessages--;
+	}
+	free(pchLogFile);
 	return 0;
 }
 

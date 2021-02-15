@@ -54,5 +54,6 @@ extern TCHAR g_szBuf[1024];
 extern CHAR g_cBuf[1024];
 extern CHAR g_cPipeBuf[PIPE_BUF_SIZE];
 extern std::atomic<int> g_aiLogWriters;
+extern std::atomic<int> g_aiPendingMessages;
 extern HANDLE g_hTerminatePipeLogger;
 extern DWORD g_dwCurInstance;
