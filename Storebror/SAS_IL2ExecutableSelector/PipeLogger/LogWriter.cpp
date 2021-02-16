@@ -82,24 +82,6 @@ BOOL flushQueue(FILE *logFile, TQueueConcurrent<std::string> *logQueue, unsigned
 	return retVal;
 }
 
-void format_commas(unsigned long n, TCHAR* out)
-{
-	int c;
-	TCHAR buf[20];
-	TCHAR* p;
-
-	_stprintf(buf, L"%d", n);
-	c = 2 - _tcslen(buf) % 3;
-	for (p = buf; *p != 0; p++) {
-		*out++ = *p;
-		if (c == 1) {
-			*out++ = L',';
-		}
-		c = (c + 1) % 3;
-	}
-	*--out = 0;
-}
-
 DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 {
 	LogWriterParams* pLogWriterParams =(LogWriterParams*)lpvParam;
@@ -187,8 +169,7 @@ DWORD WINAPI LogWriterThread(LPVOID lpvParam)
 	format_commas(totalErrors, buf4);
 	TRACE(L"Log Writer No.%d terminated. %s bytes written, %s exceptions, %s errors.\r\n", dwIndex, buf2, buf3, buf4);
 
-	if (totalBytesWritten > 10000000 || totalExceptions > 10 || totalErrors > 0) {
-	//if (totalBytesWritten > 1 || totalExceptions > 10 || totalErrors > 0) {
+	if (g_bShowLogWarnings && (totalBytesWritten > g_ulLogSizeThreshold || totalExceptions > g_ulExceptionThreshold || totalErrors > g_ulErrorThreshold)) {
 		TCHAR drive[_MAX_DRIVE];
 		TCHAR dir[_MAX_DIR];
 		TCHAR fname[_MAX_FNAME];
