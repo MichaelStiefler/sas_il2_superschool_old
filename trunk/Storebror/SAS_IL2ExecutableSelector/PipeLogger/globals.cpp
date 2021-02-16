@@ -40,3 +40,26 @@ std::atomic<int> g_aiLogWriters = 0;
 std::atomic<int> g_aiPendingMessages = 0;
 HANDLE g_hTerminatePipeLogger;
 DWORD g_dwCurInstance = 0;
+BOOL g_bShowLogWarnings = FALSE;
+unsigned long g_ulLogSizeThreshold = 10000000;
+unsigned long g_ulExceptionThreshold = 10;
+unsigned long g_ulErrorThreshold = 0;
+
+void format_commas(unsigned long n, TCHAR* out)
+{
+	int c;
+	TCHAR buf[20];
+	TCHAR* p;
+
+	_stprintf(buf, L"%d", n);
+	c = 2 - _tcslen(buf) % 3;
+	for (p = buf; *p != 0; p++) {
+		*out++ = *p;
+		if (c == 1) {
+			*out++ = L',';
+		}
+		c = (c + 1) % 3;
+	}
+	*--out = 0;
+}
+

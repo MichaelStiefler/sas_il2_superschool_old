@@ -1028,10 +1028,13 @@ BOOL StartPipeLogger()
 	ZeroMemory(&pi, sizeof(pi));
 	TCHAR szPipeLoggerFile[MAX_PATH];
 	ZeroMemory(szPipeLoggerFile, sizeof(szPipeLoggerFile));
-	_tcscpy(szPipeLoggerFile, szCurDir);
-	_tcscat(szPipeLoggerFile, L"bin\\selector\\basefiles\\PipeLogger.exe");
+	TCHAR szPipeLoggerArgs[MAX_PATH];
+	ZeroMemory(szPipeLoggerArgs, sizeof(szPipeLoggerArgs));
+	_stprintf(szPipeLoggerFile, L"%s%s", szCurDir, L"bin\\selector\\basefiles\\PipeLogger.exe");
+	_stprintf(szPipeLoggerArgs, L"\"%s\" \"%s\"", szPipeLoggerFile, szIniFile);
+
 	TRACE(L"Starting Pipe Logger at %s\r\n", szPipeLoggerFile);
-	if (!CreateProcess(szPipeLoggerFile, NULL, NULL,
+	if (!CreateProcess(szPipeLoggerFile, szPipeLoggerArgs, NULL,
 		NULL, TRUE,
 		CREATE_NEW_CONSOLE,
 		NULL, szCurDir, &si, &pi)) {

@@ -33,6 +33,7 @@
 #include "globals.h"
 #include <shellapi.h>
 #include <tlhelp32.h>
+#include <filesystem>
 
 //*************************************************************************
 // Suppress new style warning messages
@@ -60,7 +61,32 @@ int CALLBACK WinMain(
 	_tcscat(g_szLogFileName, L"\\");
 	_tcscat(g_szLogFileName, LOGFILE_NAME);
 
-	TRACE("Starting\r\n");
+	TRACE("PipeLogger Starting\r\n");
+
+	LPWSTR* szArglist;
+	int nArgs;
+	szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+	if (szArglist != NULL && nArgs > 1 && std::filesystem::exists(szArglist[1])) {
+		TRACE(L"Reading PipeLogger Settings from %s\r\n", szArglist[1]);
+		g_bShowLogWarnings = (GetPrivateProfileInt(L"Settings", L"ShowLogWarnings", 0, szArglist[1]) != 0);
+		g_ulLogSizeThreshold = GetPrivateProfileInt(L"Settings", L"LogSizeThreshold", g_ulLogSizeThreshold, szArglist[1]);
+		g_ulExceptionThreshold = GetPrivateProfileInt(L"Settings", L"ExceptionThreshold", g_ulExceptionThreshold, szArglist[1]);
+		g_ulErrorThreshold = GetPrivateProfileInt(L"Settings", L"ErrorThreshold", g_ulErrorThreshold, szArglist[1]);
+		TRACE(L"PipeLogger Settings:\r\n", szArglist[1]);
+	}
+	else {
+		TRACE(L"PipeLogger using default Settings:\r\n");
+	}
+	TCHAR buf[1024];
+	memset(buf, 0, sizeof(buf));
+	TRACE(L"ShowLogWarnings = %s\r\n", g_bShowLogWarnings ? L"true" : L"false");
+	format_commas(g_ulLogSizeThreshold, buf);
+	TRACE(L"LogSizeThreshold = %s Bytes\r\n", buf);
+	format_commas(g_ulExceptionThreshold, buf);
+	TRACE(L"ExceptionThreshold = %s Exceptions\r\n", buf);
+	format_commas(g_ulErrorThreshold, buf);
+	TRACE(L"ErrorThreshold = %s Errors\r\n", buf);
+
 
 	DWORD pid = GetCurrentProcessId();
 	DWORD ppid = -1;

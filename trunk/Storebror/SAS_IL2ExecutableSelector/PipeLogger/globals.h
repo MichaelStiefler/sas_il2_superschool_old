@@ -42,6 +42,8 @@
 #define MAX_THREAD_WAIT_TIME 5000
 #define MAX_ALL_WAIT_TIME 10000
 
+void format_commas(unsigned long n, TCHAR* out);
+
 //*************************************************************************
 // Type definitions
 //*************************************************************************
@@ -57,3 +59,7 @@ extern std::atomic<int> g_aiLogWriters;
 extern std::atomic<int> g_aiPendingMessages;
 extern HANDLE g_hTerminatePipeLogger;
 extern DWORD g_dwCurInstance;
+extern BOOL g_bShowLogWarnings;
+extern unsigned long g_ulLogSizeThreshold;
+extern unsigned long g_ulExceptionThreshold;
+extern unsigned long g_ulErrorThreshold;
