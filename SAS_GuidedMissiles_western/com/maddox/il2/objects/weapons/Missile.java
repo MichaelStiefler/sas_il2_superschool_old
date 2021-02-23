@@ -1046,7 +1046,7 @@ public class Missile extends Rocket
 		if (this instanceof MissileInterceptable) {
 			// damage parameters borrowing from House.class -- Body=FuelSmall
 			this.damage_MAT_TYPE = MAT_STEEL;
-			this.damage_EXPL_TYPE = 0;
+//			this.damage_EXPL_TYPE = 0; // TODO: Fixed by SAS~Storebror, unused definition!
 			this.damage_EFF_BODY_MATERIAL = 2;
 			this.damage_PANZER = 0.001F;
 			this.damage_MIN_TNT = 0.2F * (this.damage_PANZER / 0.002F);
@@ -1056,7 +1056,7 @@ public class Missile extends Rocket
 		} else {
 			// almost Immortal
 			this.damage_MAT_TYPE = MAT_BRICK;
-			this.damage_EXPL_TYPE = 4;
+//			this.damage_EXPL_TYPE = 4; // TODO: Fixed by SAS~Storebror, unused definition!
 			this.damage_EFF_BODY_MATERIAL = 4;
 			this.damage_PANZER = 50F;
 			this.damage_MIN_TNT = 300F * (this.damage_PANZER / 0.48F);
@@ -1176,8 +1176,8 @@ public class Missile extends Rocket
 							this.lockingVictim = true;
 						}
 					} else {
-						if (GuidedMissileUtils.angleBetween(this.getOwner(), this.victim) > 45.0F ||
-							GuidedMissileUtils.pitchBetween(this.getOwner(), this.victim) > 45.0F) {
+						if (GuidedMissileUtils.angleBetween(this.getOwner(), this.victim) > 45.0F/* || // TODO: Fixed by SAS~Storebror: Get rid of the "pitchBetween"
+							GuidedMissileUtils.pitchBetween(this.getOwner(), this.victim) > 45.0F*/) { //       Method, it's all bull.
 							this.lockingVictim = false;
 						} else {
 							this.lockingVictim = true;
@@ -1634,7 +1634,7 @@ public class Missile extends Rocket
 	public void sustainEngine() {
 		// EventLog.type("sustainEngine");
 
-		Class localClass = this.getClass();
+		// Class localClass = this.getClass(); // TODO: Fixed by SAS~Storebror, surplus class instance.
 
 		Hook localHook = null;
 		String str = this.effSpriteSustain;
@@ -1682,7 +1682,7 @@ public class Missile extends Rocket
 	public void afterFireEngineTrail() {
 		// EventLog.type("afterFireEngineTrail");
 
-		Class localClass = this.getClass();
+		// Class localClass = this.getClass();  // TODO: Fixed by SAS~Storebror, surplus class instance.
 
 		Hook localHook = null;
 		String str = this.effSmokeTrail;
@@ -1976,8 +1976,8 @@ public class Missile extends Rocket
 				while ((this.getOwner() instanceof TypeLaserDesignator) && (((TypeLaserDesignator) this.getOwner()).getLaserOn())) {
 					Point3d point3d = new Point3d();
 					point3d.set(((TypeLaserDesignator) this.getOwner()).getLaserSpot());
-					if (point3d == null)
-						break;
+//					if (point3d == null) // TODO: Fixed by SAS~Storebror: point3d can't be null at this point, impossible.
+//						break;
 					if (Main.cur().clouds != null &&
 						(   Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F
 						 || Main.cur().clouds.getVisibility(point3d, this.getOwner().pos.getAbsPoint()) < 1.0F))
@@ -2067,15 +2067,15 @@ public class Missile extends Rocket
 			if ( bLogDetail ) System.out.println("Missile(" + actorString(this) + ") - stepTargetHoming() - 5th else if(bSACLOSHoming)");
 			double targetDistance = 0.0D;
 			float targetAngle = 0.0F;
-			float targetBait = 0.0F;
-			float maxTargetBait = 0.0F;
+//			float targetBait = 0.0F;    // TODO: Fixed by SAS~Storebror: Remove unused local variables
+//			float maxTargetBait = 0.0F; // TODO: Fixed by SAS~Storebror: Remove unused local variables
 
 			if (saclosOwner == null) {
 				while ((this.getOwner() instanceof TypeSACLOS) && (((TypeSACLOS) this.getOwner()).getSACLOSenabled())) {
 					Point3d point3d = new Point3d();
 					point3d.set(((TypeSACLOS) this.getOwner()).getSACLOStarget());
-					if (point3d == null)
-						break;
+//					if (point3d == null) // TODO: Fixed by SAS~Storebror: point3d can't be null at this point, impossible.
+//						break;
 					if (Main.cur().clouds != null &&
 						(   Main.cur().clouds.getVisibility(point3d, this.pos.getAbsPoint()) < 1.0F
 						 || Main.cur().clouds.getVisibility(point3d, this.getOwner().pos.getAbsPoint()) < 1.0F))
@@ -2160,29 +2160,30 @@ public class Missile extends Rocket
 				this.victim = flarechaff;
 		}
 	}
-
+	
+	// TODO: Fixed by SAS~Storebror: Use "KinEnergy_" defines instead of separate values!
 	private static final void InitTablesOfEnergyToKill() {
 		PenetrateEnergyToKill = new float[4][][];
 		PenetrateThickness = new float[4][];
 		PenetrateThickness[0] = (new float[] { 0.025F, 0.15F });
 		PenetrateEnergyToKill[0] = (new float[][] {
-			new float[] {  23400F, 131400F,  252000F },
-			new float[] { 131400F, 369000F, 1224000F }
+			new float[] {  KinEnergy_20, KinEnergy_37,  KinEnergy_45 },
+			new float[] { KinEnergy_37, KinEnergy_50, KinEnergy_75 }
 		});
 		PenetrateThickness[1] = (new float[] { 0.12F, 0.24F });
 		PenetrateEnergyToKill[1] = (new float[][] {
-			new float[] { 131400F,  252000F, 3295500F },
-			new float[] { 369000F, 3295500F, 5120000F }
+			new float[] { KinEnergy_37,  KinEnergy_45, KinEnergy_100 },
+			new float[] { KinEnergy_50, KinEnergy_100, KinEnergy_203 }
 		});
 		PenetrateThickness[2] = (new float[] { 0.002F, 0.008F });
 		PenetrateEnergyToKill[2] = (new float[][] {
-			new float[] {  511.225F,  2453.88F, 23400F },
-			new float[] { 2453.88F,  10140F,	23400F }
+			new float[] {  KinEnergy_4,  KinEnergy_7_62, KinEnergy_20 },
+			new float[] { KinEnergy_7_62,  KinEnergy_12_7,	KinEnergy_20 }
 		});
 		PenetrateThickness[3] = (new float[] { 0.025F, 0.15F });
 		PenetrateEnergyToKill[3] = (new float[][] {
-			new float[] {  23400F, 131400F,  252000F },
-			new float[] { 131400F, 369000F, 1224000F }
+			new float[] {  KinEnergy_20, KinEnergy_37,  KinEnergy_45 },
+			new float[] { KinEnergy_37, KinEnergy_50, KinEnergy_75 }
 		});
 		for (int i = 0; i < 4; i++) {
 			if (Math.abs(PenetrateThickness[i][0] - PenetrateThickness[i][1]) < 0.001F)
@@ -2296,7 +2297,7 @@ public class Missile extends Rocket
 				die(explosion.initiator, true);
 			return;
 		}
-		Explosion _tmp = explosion;
+// 		Explosion _tmp = explosion; // TODO: Fixed by SAS~Storebror: Surplus instance
 		if (explosion.powerType == 1) {
 			float af[] = new float[6];
 			mesh().getBoundBox(af);
@@ -2534,11 +2535,11 @@ public class Missile extends Rocket
 
 	private boolean bRealisticRadarSelect = false;
 
-	private static final int MAT_WOOD = 0;
+// 	private static final int MAT_WOOD = 0; // TODO: Fixed by SAS~Storebror, unused definition!
 	private static final int MAT_BRICK = 1;
 	private static final int MAT_STEEL = 2;
 	private static final int MAT_FLESH = 3;
-	private static final int N_MAT_TYPES = 4;
+//	private static final int N_MAT_TYPES = 4; // TODO: Fixed by SAS~Storebror, unused definition!
 	private static float PenetrateEnergyToKill[][][] = (float[][][])null;
 	private static float PenetrateThickness[][] = (float[][])null;
 	private static final float KinEnergy_4 = 511.225F;
@@ -2552,7 +2553,7 @@ public class Missile extends Rocket
 	private static final float KinEnergy_100 = 3295500F;
 	private static final float KinEnergy_203 = 5120000F;
 	private int damage_MAT_TYPE = -1;
-	private int damage_EXPL_TYPE = -1;
+//	private int damage_EXPL_TYPE = -1; // TODO: Fixed by SAS~Storebror, unused definition!
 	private int damage_EFF_BODY_MATERIAL = -1;
 	private float damage_PANZER = 0.001F;
 	private float damage_MIN_TNT = 0.07F;
