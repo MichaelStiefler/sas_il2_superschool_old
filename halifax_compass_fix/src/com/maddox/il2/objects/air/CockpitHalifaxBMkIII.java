@@ -180,7 +180,7 @@ public class CockpitHalifaxBMkIII extends CockpitPilot {
         wiStart = new Sample("wip_002_s.wav", 256, 65535);
         wiRun = new Sample("wip_002.wav", 256, 65535);
         wiState = 0;
-        /* with realistic navigation on, player sets course themselves
+        /* With realistic navigation on, player sets course themselves
          * as opposed to simplified mode when course is set automatically
          * to the next way point; consequently, no need to show manual 
          * course adjustments */
