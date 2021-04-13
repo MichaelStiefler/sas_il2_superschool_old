@@ -222,6 +222,7 @@ public abstract class ME_264 extends Scheme4 implements TypeBomber, TypeRocketBo
 
     protected void hitBone(String s, Shot shot, Point3d point3d) {
         int k1 = 0;
+        if (s.startsWith(".")) s=s.substring(1);
         if (s.startsWith("xx")) {
             if (s.startsWith("xxarmor")) if (s.endsWith("01")) getEnergyPastArmor(12.7D / (Math.abs(Aircraft.v1.z) + 0.000001D), shot);
             else if (s.endsWith("02")) getEnergyPastArmor(12.7D / (Math.abs(Aircraft.v1.x) + 0.000001D), shot);
