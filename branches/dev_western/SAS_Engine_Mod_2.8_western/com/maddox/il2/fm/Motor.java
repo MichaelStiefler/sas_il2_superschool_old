@@ -1,5 +1,6 @@
 /*Modified Motor class for the SAS Engine Mod*/
 /*By Storebror, fix decompiling error 18th/Apr./2017*/
+/*By Storebror, fix forcePropAOA method error 27th/Apr./2021*/
 
 package com.maddox.il2.fm;
 
@@ -3408,7 +3409,7 @@ public class Motor extends FMMath
 				reference.Loc.set(0.0D, 0.0D, fAltitude);
 				reference.Vwld.set(fSpeed, 0.0D, 0.0D);
 				reference.Vflow.set(fSpeed, 0.0D, 0.0D);
-				pressureExtBar = 9.8716683E-006F * Atmosphere.pressure(reference.getAltitude()) + compressorSpeedManifold * 0.5F * Atmosphere.density(reference.getAltitude()) * fSpeed * fSpeed; // Pa (N/m2) to atmosphere conversion
+				pressureExtBar = 9.8716683E-006F * (Atmosphere.pressure(reference.getAltitude()) + compressorSpeedManifold * 0.5F * Atmosphere.density(reference.getAltitude()) * fSpeed * fSpeed); // TODO: Fix by SAS~Storebror 2021-04-27 (added brackets). Pa (N/m2) to atmosphere conversion
 				maxMoment = getCompressorMultiplier(0.033F) * getN();
 				if(isWEP && bWepRpmInLowGear && controlCompressor == compressorMaxStep) {
 					w = wMax * fRPMfactor;
