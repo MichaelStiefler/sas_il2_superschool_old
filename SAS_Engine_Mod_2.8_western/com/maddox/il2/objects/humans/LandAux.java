@@ -173,12 +173,12 @@ public class LandAux extends ActorMesh
 
 
 	public static void resetGame() {
-		preload1 = preload2 = null;
+//		preload1 = preload2 = null;
 	}
 
 	public static void PRELOAD() {
-		preload1 = new Mesh(GetMeshName(1));
-		preload2 = new Mesh(GetMeshName(2));
+//		preload1 = new Mesh(GetMeshName(1));
+//		preload2 = new Mesh(GetMeshName(2));
 	}
 
 	public void msgCollisionRequest(Actor actor, boolean aflag[]) {
@@ -241,7 +241,7 @@ public class LandAux extends ActorMesh
 			return;
 		float f = 0.005F;
 		float f1 = 0.1F;
-		Explosion _tmp = explosion;
+//		Explosion _tmp = explosion;
 		if(Explosion.killable(this, explosion.receivedTNT_1meter(this), f, f1, 0.0F))
 			Die(explosion.initiator);
 	}
@@ -358,7 +358,7 @@ public class LandAux extends ActorMesh
 
 	private static String GetMeshName(int i) {
 		boolean flag = i == 2;
-		boolean flag1 = World.cur().camouflage == 1;
+//		boolean flag1 = World.cur().camouflage == 1;
 		//return "3do/humans/soldiers/" + (flag ? "Germany" : "Russia") + (flag1 ? "Winter" : "Summer") + "/mono.sim";
 		return "3do/humans/LandAux/" + (flag ? "Germany" : "Russia") + "/mono.sim";
 	}
@@ -408,46 +408,56 @@ public class LandAux extends ActorMesh
 		st = ST_FLY;
 		animStartTime = Time.tick() + (long)World.Rnd().nextInt(0, 2300);
 		dying = DYING_NONE;
-		//By PAL, scale it, to make different size persons. By western, skip it by conf.ini setting to avoid shadow error lines in log.lst .
-		if (!((Aircraft)getOwner()).FM.Gears.bShowChocksLandAuxiliarFIXsize)
-			this.mesh().setScaleXYZ(1F, World.Rnd().nextFloat(0.85F, 1.15F), World.Rnd().nextFloat(0.85F, 1.15F));
+		
+        // +++ TODO: Updated by SAS~Storebror: Fix Member -> Static access, fix HW shadows issues with scaled meshes!
 
-		collide(true);
+//		//By PAL, scale it, to make different size persons. By western, skip it by conf.ini setting to avoid shadow error lines in log.lst .
+//		if (!((Aircraft)getOwner()).FM.Gears.bShowChocksLandAuxiliarFIXsize)
+//			this.mesh().setScaleXYZ(1F, World.Rnd().nextFloat(0.85F, 1.15F), World.Rnd().nextFloat(0.85F, 1.15F));
+
+        if (!Gear.bShowChocksLandAuxiliarFIXsize) {
+            this.mesh().setScaleXYZ(1F, World.Rnd().nextFloat(0.85F, 1.15F), World.Rnd().nextFloat(0.85F, 1.15F));
+            this.mesh().setFastShadowVisibility(2); // Makes the game ignore shadow mesh data, which is necessary to avoid log flooding from scaled meshes!
+        }
+        
+        // ---
+
+        collide(true);
 		draw = new AuxDraw();
 		drawing(true);
 		if(!interpEnd("move"))
 			interpPut(new Move(), "move", Time.current(), null);
 	}
 
-	private static final int FREEFLY_START_FRAME = 0;
-	private static final int FREEFLY_LAST_FRAME = 19;
-	private static final int FREEFLY_N_FRAMES = 20;
-	private static final int FREEFLY_CYCLE_TIME = 633;
-	private static final int FREEFLY_ROT_TIME = 2500;
-	private static final int PARAUP1_START_FRAME = 19;
-	private static final int PARAUP1_LAST_FRAME = 34;
-	private static final int PARAUP1_N_FRAMES = 16;
-	private static final int PARAUP1_CYCLE_TIME = 500;
-	private static final int PARAUP2_START_FRAME = 34;
-	private static final int PARAUP2_LAST_FRAME = 54;
-	private static final int PARAUP2_N_FRAMES = 21;
-	private static final int PARAUP2_CYCLE_TIME = 666;
+//	private static final int FREEFLY_START_FRAME = 0;
+//	private static final int FREEFLY_LAST_FRAME = 19;
+//	private static final int FREEFLY_N_FRAMES = 20;
+//	private static final int FREEFLY_CYCLE_TIME = 633;
+//	private static final int FREEFLY_ROT_TIME = 2500;
+//	private static final int PARAUP1_START_FRAME = 19;
+//	private static final int PARAUP1_LAST_FRAME = 34;
+//	private static final int PARAUP1_N_FRAMES = 16;
+//	private static final int PARAUP1_CYCLE_TIME = 500;
+//	private static final int PARAUP2_START_FRAME = 34;
+//	private static final int PARAUP2_LAST_FRAME = 54;
+//	private static final int PARAUP2_N_FRAMES = 21;
+//	private static final int PARAUP2_CYCLE_TIME = 666;
 	private static final int RUN_START_FRAME = 55;
 	private static final int RUN_LAST_FRAME = 77;
-	private static final int RUN_N_FRAMES = 23;
+//	private static final int RUN_N_FRAMES = 23;
 	private static final int RUN_CYCLE_TIME = 733;
 	private static final int FALL_START_FRAME = 77;
 	private static final int FALL_LAST_FRAME = 109;
-	private static final int FALL_N_FRAMES = 33;
+//	private static final int FALL_N_FRAMES = 33;
 	private static final int FALL_CYCLE_TIME = 1066;
 	private static final int LIE_START_FRAME = 109;
 	private static final int LIE_LAST_FRAME = 128;
-	private static final int LIE_N_FRAMES = 20;
+//	private static final int LIE_N_FRAMES = 20;
 	private static final int LIE_CYCLE_TIME = 633;
-	private static final int LIEDEAD_START_FRAME = 129;
-	private static final int LIEDEAD_N_FRAMES = 4;
-	private static final int PARADEAD_FRAME = 133;
-	private static final int FREEFLYDEAD_FRAME = 134;
+//	private static final int LIEDEAD_START_FRAME = 129;
+//	private static final int LIEDEAD_N_FRAMES = 4;
+//	private static final int PARADEAD_FRAME = 133;
+//	private static final int FREEFLYDEAD_FRAME = 134;
 //	private static final int FPS = 30;
 //	private static final int RUN_START_FRAME = 0;
 //	private static final int RUN_LAST_FRAME = 22;
@@ -480,11 +490,11 @@ public class LandAux extends ActorMesh
 	private long animStartTime;
 	private long disappearTime;
 	private int nRunCycles;
-	private static Mesh preload1 = null;
-	private static Mesh preload2 = null;
+//	private static Mesh preload1 = null;
+//	private static Mesh preload2 = null;
 	private static Point3d p = new Point3d();
 	private static Orient o = new Orient();
-	private static Vector3f n = new Vector3f();
+//	private static Vector3f n = new Vector3f();
 	//By PAL
 	private Vector3d speedPar; //By PAL, speed and Orient to run parallel to the runway.
 	private static Orient oPar = new Orient();
