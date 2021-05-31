@@ -252,6 +252,12 @@ DINPUT_API HRESULT __stdcall DllUnregisterServer(void)
 jclass __stdcall SAS_DefineClass(JNIEnv* env, const char* name, jobject loader, const jbyte* buf, jsize len) {
 	jclass result;
 
+	//if (g_iLoadedClasses >= -1000) {
+	//	result = JniDefineClass(env, name, loader, buf, len);
+	//	++g_iLoadedClasses;
+	//	return result;
+	//}
+
 	// First five classes are to be loaded from embedded resources, afterwards we proceed with normal class loading behaviour
 	if (g_iLoadedClasses >= 5)
 	{
