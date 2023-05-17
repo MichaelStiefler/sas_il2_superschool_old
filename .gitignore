@@ -1,0 +1,5 @@
+.externalToolBuilders
+*.classpath
+.settings
+/Storebror/UP3.4 Patch 2 Hotfix/bin
+postbuild
